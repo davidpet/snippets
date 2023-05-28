@@ -25,3 +25,8 @@ const [fruit, hasStock, quantity] = tuple2;
 console.log(fruit); // Output: orange
 console.log(hasStock); // Output: true
 console.log(quantity); // Output: 10
+    
+// Don't-care values (_, __, etc.)
+const [fruit2, _, quantity2] = tuple2;
+console.log(fruit2);
+console.log(quantity2);
