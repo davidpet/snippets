@@ -1,0 +1,229 @@
+I. Variables
+  A.  Interning
+  B.  Data Types
+  C.  Constants/Final Variables
+  D.  Statics
+  E.  Enums (inc. numeric, string, and strongly-typed)
+  F.  Nullability
+  G.  NaN, Infinity, etc.
+  H.  References and Mutability
+  I.  Type Inference
+  J.  Equality (all ways)
+  K.  Casting & Coercion
+  L.  Type Alias
+  M.  Type Union
+  N.  Variable Lifetime inc. Caveats
+  O.  Scope and Visibility
+  P.  Local, Instance, and Class Variables
+  Q.  Pointers, References, Smart Pointers, Memory Management
+  R.  Garbage Collection, Memory Leaks
+  S.  Move and Copy Semantics
+
+II. Operators
+  A.  All Math & Logic Operators
+  B.  Save Navigation
+  C.  Coalescing
+  D.  Comparison
+  E.  Assignment
+  F.  String Concatenation
+  G.  Reflection
+  H.  Bitwise
+  I.  Boolean Operators on Non-Boolean Values
+  J.  Operator Precedence
+
+III. Strings and Printing
+  A.  All Ways to Quote Strings
+  B.  Character Types and Quoting
+  C.  Formatted and Template Strings
+  D.  String Methods
+  E.  String Concatenation
+  F.  Conversions To/From String
+  G.  Encodings
+  H.  Printing
+  I.  Logging
+  J.  Regular Expressions
+  K.  Serialization
+  L.  StringBuilder/StringBuffer/etc.
+
+IV. Control Flow
+  A.  if/then statements
+  B.  if/then/else statements
+  C.  switch statements
+  D.  for loops
+  E.  while loops
+  F.  do-while loops
+  G.  break and continue
+  H.  try/catch/finally and throwing exceptions
+  I.  truthiness in conditionals
+  J.  emptiness checks
+  K.  context management
+  L.  asserts
+  M.  when braces are required vs. optional
+  N.  Generator/Lazy List
+
+V. Functions
+  A.  Basic Syntax
+  B.  Positional Arguments
+  C.  Named Arguments
+  D.  Optional/Default Arguments
+  E.  Variadic Functions
+  F.  Overloading
+  G.  Lambdas
+  H.  Nested Functions
+  I.  Spread Operator
+  J.  Return Type Inference
+  K.  Higher-Order Functions
+  L.  Inline Functions
+  M.  Macros
+  N.  Extension Methods
+
+VI. Functional Programming
+  A.  Lambdas
+  B.  Closures (ref vs. value)
+  C.  Ignored Parameters
+  D.  Partial Application
+  E.  Bound vs. Unbound (eg. 'this')
+  F.  Declaration of Variable Holding Function
+  G.  map, reduce, and filter
+  H.  Return Object from Lambda
+
+VII. Classes
+  A.  Basic Syntax and Instantiation (inc. static, instance, class members, etc.)
+  B.  Access Modifiers
+  C.  Inheritance
+  D.  Polymorphism
+  E.  Nullability
+  F.  Constructors, Initialization Lists
+  G.  Base and Delegating Constructors
+  H.  Calling Base Class
+  I.  Interfaces and Abstract Base Classes
+  J.  Multiple Inheritance
+  K.  Name Hiding
+  L.  Construction Order
+  M.  Nested Classes
+  N.  Dynamic Types
+  O.  Operator Overloading (inc. toString())
+  P.  Common Base Class/Boxing
+  Q.  Indexers
+  R.  Copying
+  S.  Declaration Order
+  T.  Structural typing
+  U.  Partial Classes
+  V.  Reference Type vs. Value Type
+  W.  Properties (manual and auto-implemented)
+  X.  Return Type Inference
+  Y.  Destructors/Finalizers/Disposable Pattern
+  Z.  Callable Object/Call Operator
+
+VIII. Generics/Templates
+  A.  Generic Function
+  B.  Generic Class
+  C.  Generic Lambda
+  D.  Important Built-in Generic Types
+  E.  Void as T argument
+  F.  Metaprogramming
+  G.  Type Erasure/Runtime Type
+
+IX. Modules/Packages/Imports
+  A.  Importing Built-In Libraries
+  B.  Declarting Importable Module/Package
+  C.  Importing Custom Module/Package by Relative path from Subfolder
+  D.  Other Package Management Options
+  E.  Renaming Imported Symbols
+  F.  Wrapping Multiple Imported Symbols
+  G.  Exporting and Access levels
+  H.  Multiple Imports on One Line
+  I.  Barrelling
+  J.  Statefulness of Imported Packages
+  K.  Namespaces
+  L.  Ambient Declarations
+  M.  Search Path
+
+X. Docstrings
+  A.  Functions
+  B.  Classes
+  C.  Variables
+  D.  Package/File
+
+XI. Decorators
+  A.  Function Decorators
+  B.  Class Decorators
+  C.  Useful Built-In Decorators
+
+XII. Collections
+  A.  Array
+  B.  List
+  C.  Dictionary
+  D.  Set
+  E.  String Builder
+  F.  Tuple
+  G.  Struct
+  H.  Immutable Types
+  I.  String as Collection
+  J.  Generic Sequence/Iterable Type
+  K.  Aggregate functions (max, min, etc.)
+  L.  Iterating Keys vs. Values
+  M.  Zipping
+  N.  Slicing
+  O.  Sorting
+  P.  Stack and Queue
+
+XIII. Standard library
+  A.  Console I/O
+  B.  Math
+  C.  File I/O
+  D.  Threading/async/await/lock/promise
+  E.  HTTP
+  F.  Paths and Environment Variables
+
+XIV. Testing (JUnit-style)
+  A.  Test Class/Suite and Methods
+  B.  Setup and Teardown
+  C.  Persistence of Class/Suite Data Between Tests
+  D.  Asserts
+  E.  Mocking
+  F.  Faking
+  G.  Screendiffs
+
+XV. Language-Specific Features
+  A. Checked Exceptions
+  B. Generics
+  C. Annotations
+  D. Lambda Expressions
+  E. Streams
+  F. Optional
+  G. Functional Interfaces
+  H. Type Inference (var keyword)
+  I. Modules (Java 9+)
+  J. Records (Java 14+)
+
+XVI. 3rd Party Libraries
+  A. Apache Commons
+  B. Google Guava
+  C. Jackson JSON
+  D. Spring Framework
+  E. Hibernate ORM
+  F. JUnit
+  G. Log4j
+  H. Mockito
+  I. Retrofit
+  J. Apache Kafka
+
+XVII. Recent Versions
+  A. Java 1.0 (1995)
+  B. Java 1.1 (1997)
+  C. Java 1.2 (1998)
+  D. Java 1.3 (2000)
+  E. Java 1.4 (2002)
+  F. Java 5 (2004)
+  G. Java 6 (2006)
+  H. Java 7 (2011)
+  I. Java 8 (2014)
+  J. Java 9 (2017)
+  K. Java 10 (2018)
+  L. Java 11 (2018)
+  M. Java 12 (2019)
+  N. Java 13 (2019)
+  O. Java 14 (2020)
+  P. Java 15 (2020)
+  Q. Java 16 (2021)
