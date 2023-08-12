@@ -156,6 +156,9 @@ Cloning
 	arr.clone()
 	copy constructor for the rest
 
+Extending
+	not marked final, so you can extend
+
 [Strings]
 c++style comments (// and /* */)
 
@@ -441,6 +444,9 @@ you can have multiple top-level classes in a .class file, but:
 
 only classes and enums (which act like classes) can be top-levels (not functions or variables)
 	but can have effectively global stuff by making static and importing statically
+
+you can use types without importing them (use as fully-qualified name)
+	a way to deal with naming conflicts
 
 [stdlib]
 System.out.println(), System.out.print(), System.out.printf()
