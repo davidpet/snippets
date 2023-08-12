@@ -316,7 +316,8 @@ Access Modifiers
 	public, private, protected, default (which is never specified)
 	default means package (not file necessarily)
 	applies to methods, variables, classes within classes, and top-level classes
-
+	like C++, can access and possibly change private members from other instances (we are all robots)
+	"friend class" equivalance = nested class, package-private members
 Inheritance
 	"extends" to subclass
 	"implements" to implement interface
