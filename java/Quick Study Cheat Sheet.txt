@@ -42,7 +42,6 @@ for (auto x : numbers) {}
 int[] [] numbers = {{1, 2}, {3, 4}}
 
 java.util.* for collection interfaces and implementations
-
 List<T> interface
 	ArrayList<T> implementation (like c++ vector)
 	LinkedList<T> implementation
@@ -160,7 +159,7 @@ Cloning
 [Strings]
 c++style comments (// and /* */)
 
-reference type/interned
+reference type/interned/immutable
 not array, not indexable with []
 
 + or .concat() [fluent]
@@ -255,6 +254,8 @@ big difference from all other languages = what the type of a lambda (or a method
 	"functional interface" = an interface containing 1 method signature
 	assigning a lambda or method to it automatically makes it callable via the method on the interface
 	primitive types ok in your own interface, but generic interfaces like in java.util.function can't take them
+	@FunctionalInterface annotation recommended on functional interfaces
+
 Runnable = takes nothing, returns void
 	.run()
 java.util.function.Predicate = takes val and returns boolean
@@ -265,8 +266,8 @@ java.util.function.Supplier = takes nothing and returns a value
 	.get()
 java.util.function.Function<TArg, TReturn> = takes params and returns value
 	.apply()
-	UnaryOperator<T> takes T to T
-	BinaryOperator<T> takes (T, T) to T
+UnaryOperator<T> takes T to T
+BinaryOperator<T> takes (T, T) to T
 
 "effectively final rule" - closures must treat enclosed variable as read-only
 	but they can change members, so that's how you can use a lambda to modify state
@@ -306,6 +307,7 @@ finalize() for destructor on garbage collection
 Cloneable interface clone() method for copy
 default constructor (just 1) if no constructor, otherwise only the one(s) you specify
 not supported: operator overloading, partial classes, custom value types, properties (as other languages use them)[setValue, getValue pattern], call operator
+	a key effect of not supporting properties is that there can't be read-only fields (except by methods)
 
 static members can be accessed via method or class and use . (not :: like C++)
 
