@@ -311,6 +311,7 @@ Cloneable interface clone() method for copy
 default constructor (just 1) if no constructor, otherwise only the one(s) you specify
 not supported: operator overloading, partial classes, custom value types, properties (as other languages use them)[setValue, getValue pattern], call operator
 	a key effect of not supporting properties is that there can't be read-only fields (except by methods)
+name hiding also not supported (all methods virtual and always get the most derived one no matter which reference type)
 
 static members can be accessed via method or class and use . (not :: like C++)
 
@@ -325,7 +326,7 @@ Access Modifiers
 	"friend class" equivalance = nested class, package-private members
 Inheritance
 	"extends" to subclass
-	"implements" to implement interface
+	"implements" to implement interface (comma separator for multiple)
 	@Override annotation for overridden methods (in java.lang)(technically optional since all are virtual)[even for interfaces]
 	super() to call base constructor in constructor
 	super.method() to call base method from derived method
@@ -352,6 +353,14 @@ Interfaces
 		body used in implementing class if not overriden
 	can also have 'private' methods (with bodies only)
 		only to be used by static and default methods (not from outside)
+	
+	method name collisions = same method just use for both automatically
+		if default methods, have to override it
+			Interface1.super.f() to call within the class method
+
+	an abstract class can leave out interface methods, but a concrete class cannot
+		an ABC can specify missing methods as abstract, or just ignore them
+		either way, a concrete class must have everything filled in
 ABCs
 	mark the class as 'abstract' and then mark methods as 'abstract' (no bodies or =0)
 	an interface is not an ABC because it can't have variables inside an instance
