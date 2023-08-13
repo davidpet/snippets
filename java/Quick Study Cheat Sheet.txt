@@ -5,43 +5,73 @@ Going forward, I should review the actual notebooks, but this is so I can study 
 *************************************************************************************
 
 [Variables]
-capitalize String and spell out boolean
-interning
-'final' for all constants (but only reference locked)
+String
+boolean
+char, byte, short, int, long
 no unsigned
 L for long literal
 f for float literal
 C++ style quoting for strings and chars
-static initializer block
-enum is like a class, values are constructor calls, namespaced with ., ordinal() for position
-no TCO
+
+interning for numbers and strings
 all reference types are nullable
 primitive value types are not Object and have boxed equivalents (which have static things too)
-Double.NaN, Double.POSITIVE_INFINITY, Double.isNaN(), Double.isInfinite()
-'var' keyword for type inference
+
 == reference or primitive value, .equals() contents, .compareTo() lex, Object.equals() null safe
 implicit widening, c-style narrowing (truncates)
+	numeric conversions via cast operator only work for primitives
+	to do it for boxed types, use methods like intValue()
+		these come from the superclass, Number
+
+float near-equality just via Math.abs() on difference and < tolerance
+Double.NaN, Double.POSITIVE_INFINITY, Double.isNaN(), Double.isInfinite()
+
+'final' for all constants (but only reference locked)
+	local variables and class members
+	also for preventing overrides (same keyword)
+'var' keyword for type inference
 no typedef
 variable scoping like C++ instead of Python
-float near-equality just via Math.abs() on difference and < tolerance
+enum is like a class, values are constructor calls, namespaced with ., ordinal() for position
+	enum MyEnum { VALUE1, VALUE2 }
+	enum MyEnum { VALUE1(0), VALUE2(1); MyEnum(int val) {} }
+	can put as many args of any types in c'tor as you want and values will take them
+	can put whatever else you want inside and treat like a class
 uninitialized values have sensible defaults inc. null for reference and numeric 0s for numbers
 	however, local variables are still required to be initialized before use or compile error
 		ok to initialize in conditional blocks if exhuastive
+		same rule whether final or not
+	final class instance variables also have to be initialized before use
+		have to be initialized by end of c'tor body (can be inline, in a block, in the c'tor)
+		can only be set once, but can be set in a conditional, etc.
 
 [Collections]
-literal, concat, indexer, etc. only available for arrays, which are a weird type in general (behaves sort of like a value type)
+in general, ranges are inclusive lower bound and exclusive upper bound
+
+literal, concat, indexer, etc. only available for arrays, which are a weird type in general
 	others only use methods
-also, array can take primtive types but the others must take boxed types
+array can take primitive types but the others must take boxed types
 
 int[] numbers = {1, 2, 3, 4, 5}; // fixed size, mutable contents
 f(new int[] {1, 2, 3});		// only way to pass an array literal
 numbers[0]
 numbers.length
 Arrays.sort(numbers)
-for (auto x : numbers) {}
 int[] [] numbers = {{1, 2}, {3, 4}}
+for (auto x : numbers) {} // This is the only thing here that matches other collections
+Arrays class
+	static methods to do collection operations on arrays
+	searching, sorting, conversion to string, equality, filling, etc.
+	
+	asList() is varargs and thus can take an array or individual arguments
+	the list it returns is a mutable view on the original array (2-way mutable) but cannot be resized
+	
+	list.toArray() makes a separate array copy instead of acting like this
+
+	toString() needed because arr.toString() doesn't work as expected
 
 java.util.* for collection interfaces and implementations
+
 List<T> interface
 	ArrayList<T> implementation (like c++ vector)
 	LinkedList<T> implementation
@@ -56,7 +86,7 @@ list.contains(item)
 list.containsAll(iterable)
 list.indexOf(item)
 list.lastIndexOf(item)
-list.size()
+list.size() // instead of .length like with array
 list.isEmpty()
 list.clear()
 list.sort(comparitor) // null for default sort, lambda of 2 things otherwise
@@ -83,18 +113,17 @@ iterate values with .values() which gets a Collection<TValue>
 
 Set<T> interface
 	HashSet<T> implementation
-more or less looks like List<T> but with no indexes
+more or less looks like List<T> but with no indices
 
 StringBuilder
-	*ranges are start to stop, exclusive stop*
-	append()
-	length()
+	append() // instead of add()
+	length() // instead of size()
 	capacity()
 	toString()/substring()
-	insert(index, str)
-	delete(index1, index2)
-	reverse()
-	replace()
+	insert(index, str) // instead of add()
+	delete(index1, index2) // instead of remove()
+	reverse() // instead of reverseOrder()
+	replace() // instead of using SubList() and changing
 StringBuffer
 	thread-safe version of StringBuilder
 
@@ -123,10 +152,12 @@ Casting
 	the issue of boxing only comes up in arrays because they can take primitives
 	you cannot cast a whole array between boxed vs. unboxed in one cast
 	you can cast an array from Object[] to Integer[] for instance though
+		you can't do this (directly) with generics though
 
 	to cast elements for collections/generics, the syntax is weird:
 		List<Object> objList = (List<Object>)(List<?>)list;
         	List<Integer> castedList = (List<Integer>)(List<?>)objList;
+		or just use the wildcard to declare objList and don't cast anything
 
 Aggregates
 	Collections.max(), Collections.min()
@@ -140,24 +171,14 @@ Filling with Values
 	new int[5] gets 5 0s
 	Arrays.fill(arr, 100) fills the array with 100 afterward
 	Collections.nCopies(n, val) gets a new list
+	Collections.fill(list) to fill existing
 	
-Arrays class
-	static methods to do collection operations on arrays
-	searching, sorting, conversion to string, equality, filling, etc.
-	
-	asList() is varargs and thus can take an array or individual arguments
-	the list it returns is a mutable view on the original array (2-way mutable) but cannot be resized
-	
-	list.toArray() makes a separate array copy instead of acting like this
-
-	toString() needed because arr.toString() doesn't work
-
 Cloning
 	arr.clone()
 	copy constructor for the rest
 
 Extending
-	not marked final, so you can extend
+	collection types in java.util not marked final, so you can extend
 
 [Strings]
 c++style comments (// and /* */)
@@ -174,6 +195,11 @@ str.charAt(index)
 str.trim()
 str.startsWith()
 str.toUpperCase()
+str.substring()
+str.replaceFirst()
+str.replaceAll()
+to modify part of a string, you need to break it (eg. with substring) and concat the result
+	even for single characters
 
 String.join(delimStr, collection)
 
@@ -205,7 +231,7 @@ math & bit & boolean & comparison & assignment operators are exactly like C++
 string concat + with things like ints and list automatically converts with toString()
 	null becomes "null" in the actual string
 string .concat() fluent method available too
-no coalescing or safe navigation
+no coalescing (other than methods of Optional and Map) or safe navigation
 .getClass() for instances and .class for types
 A instance of B (for reference types only)[false if null]
 
@@ -232,10 +258,12 @@ throws keyword to specify exceptions (checked required, unchecked optional)
 	checked inherit from Exception (more general)
 positional args only, no keyword args
 overloading allowed
+	if overloading between static and non-static, the signature can't match
 no default args directly (simulate with Optional and/or overloading)
 	java.util.Optional
 	Optional.of() [no value]
-	Optional.of(value) [populated]
+	Optional.of(value) [populated, assumed not null]
+	Optional.ofNullable(value) [populated if not null]
 	val.isPresent(), val.get(), val.orElse(default)
 variadic functions
 	int... numbers
@@ -245,7 +273,7 @@ not supported: spread, nested functions, inline functions, macros, extension met
 var
 	ok as variable that gets a function call as a value
 	not ok as function return type or parameter type
-recursion works like normal, but no TCO
+recursion works like normal (by name), but no TCO
 
 [Functional]
 "skinny arrows"
@@ -272,7 +300,7 @@ java.util.function.Function<TArg, TReturn> = takes params and returns value
 UnaryOperator<T> takes T to T
 BinaryOperator<T> takes (T, T) to T
 
-"effectively final rule" - closures must treat enclosed variable as read-only
+"effectively final rule" - closures must treat enclosed variable as final
 	but they can change members, so that's how you can use a lambda to modify state
 not supported: _ for ignored args, partial application (just use a lambda), type inference (var) on lambda variable
 
@@ -313,10 +341,11 @@ not supported: operator overloading, partial classes, custom value types, proper
 	a key effect of not supporting properties is that there can't be read-only fields (except by methods)
 name hiding also not supported (all methods virtual and always get the most derived one no matter which reference type)
 
-static members can be accessed via method or class and use . (not :: like C++)
+static members can be accessed via method or class and use . (not :: like C++, only method references use that)
 
 values can be initialized inline or left to their defaults
 	need not be constant expressions
+	more caveats about this in Construction Order below
 
 Access Modifiers
 	public, private, protected, default (which is never specified)
@@ -332,20 +361,24 @@ Inheritance
 	super.method() to call base method from derived method
 	can "extend" 1 class but "implements" as many interfaces as you want
 	can mark a method as "final" to prevent overriding
-	can mark a class as "final" to prevent subclassing
+	can mark a class as "final" to prevent subclassingf
+	covariant return types supported
 Initialization Blocks
 	no initialization list like in C++, but this is very similar intent
 	naked {} inside class means code that will run before the constructor, which you can use to initialize things
 	static {} are static initialization blocks that effectively gives you a static constructor like in C#
 	multiple {} and/or static {} in class are run in sequence
 Delegating Constructors
-	this() within constructor to call another overload
+	this() within constructor to call another overload (presumably has to be first)
 
+ABCs
+	mark the class as 'abstract' and then mark methods as 'abstract' (no bodies or =0)
+	an interface is not an ABC because it can't have variables inside an instance
 Interfaces
-	'interface' keyword and then abstract methods (no body, no =0 like C++)
+	'interface' keyword and then abstract methods (no body, no =0 like C++, NO 'abstrat' keyword)
 	all methods public and abstract by default (and can't be changed)
 		the normal case is to just have those
-		need to declare the overridden methods as 'public' when implemtning
+		need to explicitly declare the overridden methods as 'public' when implementing
 	can also have static members
 		variables with no modifiers automatically public static final
 		methods marked with static can have a body
@@ -361,9 +394,6 @@ Interfaces
 	an abstract class can leave out interface methods, but a concrete class cannot
 		an ABC can specify missing methods as abstract, or just ignore them
 		either way, a concrete class must have everything filled in
-ABCs
-	mark the class as 'abstract' and then mark methods as 'abstract' (no bodies or =0)
-	an interface is not an ABC because it can't have variables inside an instance
 
 Object
 	root of all reference types (implicitly inherited if no inheritance specified)
@@ -383,8 +413,9 @@ Nested Classes (a weirdness of Java)
 		so it's basically just a subsection of the main class rather than its own thing
 
 Boxing/Unboxing
-	implicitly works most of the time
+	implicitly works most of the time (autoboxing/autounboxing)
 		can use Integer.valueOf() and boxedInt.intValue() to do it explicitly if needed
+			eg. to cast to another reference type, you need to box first
 	short lowercase primtivies <-> capitalized full word boxed types (eg. Integer, Character)
 	the boxed types also have static methods you can call to do useful stuff and get attributes like MAX
 	boxed types are still interned unless you used 'new' to create them
@@ -418,21 +449,37 @@ generic methods are weird in Java
 	public static <T> void f(T t) {}	// the <T> goes before the return type
 	myObj.<Integer>f();			// the <T> goes after the dot
 		only if need to specify (just myObj.f() if can be inferred)
+		CANNOT call as <Integr>f() with no . in front
 generic classes are more normal (<T> after class)
 	type can be inferred or specified as normal
 <T extends Number> type constraints (Number of a subclass of Number)
-	<T super Number> is opposite (Number or a base of Number)
 type inference boxes for you when it can
 nested <> are fine
 not supported: metaprogramming, void as type arg, overloading by # type args
 type erasure: runtime type of generic has no type args
+diamond operator: List<Integer> l = new ArrayList<>();
 Wildcards
 	because casting element types in the parent generic type doesn't work, the concept of wildcards is needed
 		for method params, variable declarations, etc.
 	List<?> is like List<Object> but with no casting needed
 	List<? extends Number> works like <T exends Number>
 	it is possible to cast to the wildcard version first and then to the Object version and such (runtime error when access but not create if wrong)
-diamond operator: List<Integer> l = new ArrayList<>();
+	wildcard type constraints are totally separate from generic type constraints
+		you can't ommit or copy and paste them - have to consider the covariance/contravariance
+Covariance/Contravariance
+	<? extends Number> is Covariance [read-only]
+		don't know the type but know it's AT LEAST a Number
+		that means we can read Number from the generic (return values)
+			but we can't write values to it (pass parameters)
+	<? super Number> is Contravariance [write-only] (only for wildcards, not generics themselves)
+		don't know the type but know it's AT MOST a Number
+		that means we can write Number (pass as parameter)
+			but we can't read values from it (return values)
+Casting
+	you can cast to T inside a generic as long as the thing being casted is a reference type
+		it won't be autoboxed, but if you need to box, you can use something like Integer.valueOf()
+	because T is determined by an outsider, you can't assume too much about it
+		eg. if T extends Integer, you can't just return an Integer (but you can cast if you know it's ok)
 
 [Imports]
 import java.util.List;	// only 1 per line allowed
@@ -446,9 +493,9 @@ no renaming of symbols like in other languages
 package com.example;	// to specify the package (which should match the path of the folder relative to classpath)
 a package is a folder containing class files
 
-you can have multiple top-level classes in a .class file, but:
+you can have multiple top-level classes in a .java file, but:
 	only one can be public
-	the public one should have the same name as the .class file
+	the public one should have the same name as the .java file
 		if no public one, can name file anything
 
 only classes and enums (which act like classes) can be top-levels (not functions or variables)
@@ -458,14 +505,18 @@ you can use types without importing them (use as fully-qualified name)
 	a way to deal with naming conflicts
 
 [stdlib]
+java.lang auto imported symbols
+
 System.out.println(), System.out.print(), System.out.printf()
 console = System.console();  console.readLine("Enter a value: "); console.readPassword is same but without echo
+
 System.gc()
-java.lang auto imported symbols
+
 Math.floor(), Math.abs(), Math.max(), Math.round(), Math.cos()
 java.util.Random
 	new Random().nextInt(100) or nextFloat(), etc.
 	nextGaussian() for gaussian distribution, etc.
+
 File I/O
 	many different ways
 	one way is java.io.BufferedReader/BufferedWriter/InputStream/OutputStream (text vs. binary)
@@ -482,7 +533,9 @@ java.lang.Thread
 	thread = new Thread(() -> {Thread.sleep(1000)})	// 1s
 	thread.start()
 	thread.join()
-	InterruptedException
+	InterruptedException/interrupt()
+		Thread.currentThread().isInterrupted()/Thread.isInterrupted()
+		Thread.sleep()
 java.util.concurrent.CompletableFuture
 	CompletableFuture<Integer> completableFuture = 
             CompletableFuture.supplyAsync(() -> 42);
@@ -490,6 +543,29 @@ java.util.concurrent.CompletableFuture
             completableFuture.thenApply(result -> "The answer is: " + result);
 	System.out.println(transformedFuture.get());
 	java.util.concurrent.ExecutionException
+no async/await keywords
+synchronized keyword for critical sections (java.util.concurrent for more specialized lock types)
+	mark a method as synchronized to use instance as lock object when method called
+	mark a static method as synchronized to lock on the class itself
+	synchonized(lockObject) {} // block to lock on arbitrary object (which can be 'this' if you want)
+	reentrant - same thread can lock multiple times and it will be refcounted
+wait()/notify()/notifyAll()
+	Object methods (called on lock object)
+	must be called from a critical section
+	wait() puts thread in waiting state, releases lock, and waits to get notified and get lock back
+	notify() takes 1 random thread out of waiting state, but it still has to wait for the lock
+		then caller continues within its critical section
+	notifyAll() release all from waiting state
+	canonical usage is producer/consumer
+		product() method fills a buffer and notifies
+		consume() method waits and uses buffer
+	these are considered old-fashioned (java.util.concurrent has better stuff)
+		but still essential to know about
+
+main thread ending will not stop threads and futures
+	completableFuture.cancel(true)
+	the future still has to check for isInterrupted using Thread
+System.exit() to force kill everything immediately
 
 [JUnit]
 @Test test* methods in class
@@ -553,6 +629,7 @@ if (obj instanceof String str) {
 
 [Sealed Classes]
 a new thing to restrict which classes can sublcass a class
+note that before this feature, 
 
 [Effective Java Tips]
 ** see the Effective Java notebook **
