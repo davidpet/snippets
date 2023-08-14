@@ -270,7 +270,7 @@ variadic functions
 	int... numbers
 		this param becomes an array
 		you can either pass an array to it or pass multiple integer arguments that it will put together for you
-not supported: spread, nested functions, inline functions, macros, extension methods
+not supported: spread, nested functions, inline functions, macros, extension methods, ref and out parameters
 var
 	ok as variable that gets a function call as a value
 	not ok as function return type or parameter type
