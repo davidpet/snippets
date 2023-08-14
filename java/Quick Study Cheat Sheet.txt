@@ -200,6 +200,7 @@ str.replaceFirst()
 str.replaceAll()
 to modify part of a string, you need to break it (eg. with substring) and concat the result
 	even for single characters
+	or alternatively, use toCharArray(), modify the array, and use new String(arr) [incurs 2 copies]
 
 String.join(delimStr, collection)
 
