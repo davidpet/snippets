@@ -2,11 +2,12 @@
 This document represents items that jumped out at me as needing to be studied for Java interviews at a point in time.
 Since in the future, different items would jump out at me based on the experience I have between now and then, it is only an artifact of this moment in time.
 Going forward, I should review the actual notebooks, but this is so I can study up quickly at first.
+Also, the interview tips section is only in here (not elsewhere).
 *************************************************************************************
 
 [Variables]
 String
-boolean
+boolean [true, false]
 char, byte, short, int, long
 no unsigned
 L for long literal
@@ -32,11 +33,47 @@ Double.NaN, Double.POSITIVE_INFINITY, Double.isNaN(), Double.isInfinite()
 'var' keyword for type inference
 no typedef
 variable scoping like C++ instead of Python
-enum is like a class, values are constructor calls, namespaced with ., ordinal() for position
+
+Enums
 	enum MyEnum { VALUE1, VALUE2 }
 	enum MyEnum { VALUE1(0), VALUE2(1); MyEnum(int val) {} }
-	can put as many args of any types in c'tor as you want and values will take them
-	can put whatever else you want inside and treat like a class
+	enum MyEnum { VALUE1, VALUE2; public void someOtherMember() {}}
+	MyEnum e = MyEnum.VALUE1;
+	if (e == MyEnum.VALUE1) {}
+
+	actually defines a class that inherits from java.lang.Enum
+		which makes all enums REFERENCE TYPES
+			and thus nullable
+		certain members like equals() are made final
+	c'tor is private and can only be called by the values
+		has default if none provided (no value specified in the values)
+		nobody else can call the constructor
+	values at the top are public static final instances
+		combined with new() not working, means == always safe
+		if any values provided with (), must have a c'tor
+	other members can be made private, public, whatever
+	could actually ignore what is passed into c'tor and == would still work
+		because still a separate instance for each value
+		== does nothing with any data owned by the enum, that is for its own use
+	
+	e.ordinal() for 0-based Index (regardless of actual value)
+	MyEnum.values() for MyEnum[] of all the constant values (just what's defined, no gaps filled or sentinels)
+		you can then read their ordinals and any public data defined in the enum
+		ordinals are indices into this array
+
+	== 5
+		doesn't work because not a number like C++
+
+	e.toString()
+		the literal name of the value (eg. VALUE1)
+	Enum.valueOf(MyEnum.class, "VALUE1")
+		string to enum
+
+	to use numbers (or any # of any type of thing) instead of ordinals:
+		provide your own method such as intValue() to get it
+		provide your own static method such as valueOf() to loop values() and find Matching
+		this is recommended over using ordinals because it's more resilient to inserts and deletions
+
 uninitialized values have sensible defaults inc. null for reference and numeric 0s for numbers
 	however, local variables are still required to be initialized before use or compile error
 		ok to initialize in conditional blocks if exhuastive
@@ -54,15 +91,18 @@ array can take primitive types but the others must take boxed types
 
 int[] numbers = {1, 2, 3, 4, 5}; // fixed size, mutable contents
 f(new int[] {1, 2, 3});		// only way to pass an array literal
+you cannot skip items or leave off the end like in C++
 numbers[0]
 numbers.length
 Arrays.sort(numbers)
 int[] [] numbers = {{1, 2}, {3, 4}}
-for (auto x : numbers) {} // This is the only thing here that matches other collections
+for (var x : numbers) {} // This is the only thing here that matches other collections
 Arrays class
 	static methods to do collection operations on arrays
+		in-place mutability
 	searching, sorting, conversion to string, equality, filling, etc.
-	
+		a lot of overloads such as ranges, comparators, etc.
+
 	asList() is varargs and thus can take an array or individual arguments
 	the list it returns is a mutable view on the original array (2-way mutable) but cannot be resized
 	
@@ -98,7 +138,7 @@ list.subList(from, to)	// inclusive, exclusive bounds, gets new List<T>
 	you can modify, append, etc.
 list.toArray()		// will give Object[]
 list.toArray(T[] a)	// to force proper runtime type
-for (auto x : list) {}
+for (var x : list) {}
 
 Map<TKey, TValue> interface
 	Hashtable<TKey, TValue> implementation (order not guaranteed)
@@ -129,10 +169,28 @@ StringBuffer
 
 Stack<T>
 	push/pop/peek/isEmpty
+	concrete
 Queue<T>
-	add/poll/peek/isEmpty	
+	add/poll/peek/isEmpty
+	interface
+		LinkedList, ArrayDeque, PriorityQueue
+Deque<T>
+	queue members but also addFirst, addLast, pollFirst, etc.
+	interface
+		LinkedList, ArrayDeque
+PriorityQueue<T>
+	add/poll/peek/isEmpty
+	concrete
+	smallest item (by natural sort) comes out first
+		can provide custom comparator to change how Ordered
+			eg. Comparator.reverseOrder() makes it use max value instead of min
+	implemented via heap that uses comparator (minheap by default, maxheap with reverseOrder)
 
-Missing from Java: tuple, struct/value type
+Missing from Java: tuple, struct/value type, tree, graph
+
+	POD Type
+		in addition to the newer record type, making a POD like a C++ struct is not that bad
+		just making a class with public variables and let the c'tor default
 
 Immutability
 	Collections.unmodifiableList(existingList)
@@ -162,6 +220,13 @@ Casting
 Aggregates
 	Collections.max(), Collections.min()
 
+Sorting/Shuffling
+	Collections.sort(), Collections.shuffle()
+	Comparator<T> functional interface can tell collections how to sort things
+	java.util.Comparator has static methods to get comparators to pass
+		Comparator.naturalOrder() = use Compareable<T> of elements
+		Comparator.reverseOrder() = use opposite of natural order
+
 Simulating Literals in non-arrays
 	Arrays.asList(item1, item2, item3) to make an array list that can't be resized (but is mutable)
 	{{ }} anonymous class with initializer block (caution!)
@@ -170,7 +235,8 @@ Simulating Literals in non-arrays
 Filling with Values
 	new int[5] gets 5 0s
 	Arrays.fill(arr, 100) fills the array with 100 afterward
-	Collections.nCopies(n, val) gets a new list
+	Collections.nCopies(n, val) gets a new immutable list
+		pass into ArrayList<> c'tor to get mutable one from it
 	Collections.fill(list) to fill existing
 	
 Cloning
@@ -189,18 +255,32 @@ not array, not indexable with []
 + or .concat() [fluent]
 automatically converts with toString() if type is not string
 
+str.length() [insted of size() like collections]
 str.toCharArray() char[]
-str.split() -> String[]
 str.charAt(index)
 str.trim()
 str.startsWith()
 str.toUpperCase()
 str.substring()
-str.replaceFirst()
-str.replaceAll()
+str.replace()
+	replace all occurences of string or character
+str.replaceFirst()/str.replaceAll()
+	replace all or first occurence(s) of REGEX
+str.matches()
+	full-string REGEX match check
+str.split() -> String[]
+	REGEX used for thing to split on
+	each occurence swallowed and becomes comma in array
+	internal empties possible but empties at end are removed
+compiled regex patterns have similar methods to the last few above
+no built-in reversal in either strings or arrays
+
 to modify part of a string, you need to break it (eg. with substring) and concat the result
 	even for single characters
 	or alternatively, use toCharArray(), modify the array, and use new String(arr) [incurs 2 copies]
+
+to sort a string, convert to char array, use Arrays.sort(), and new String(arr)
+	overloads like no params, range of indices, comparators, etc.
 
 String.join(delimStr, collection)
 
@@ -213,12 +293,19 @@ escaping just like in C++
 Character.isLetter(), Character.isDigit(), etc.
 
 System.out.printf(formatString, ...) like in C++
+	does NOT print a newline at end
 	%s
+		uses toString() of the object passed in
 	%d
-	%.2f
+	%02d [2 digits padded with 0]
+	%.2f [2 places after decimal]
+	%2$d [2nd arg after format string used for the %d, instead of natural order]
 String.format() is like sprintf
+do not pass a float when int is expected or vice versa
+	but passing short or long instead of int for instance is fine
 
 Double.parseDouble(str) to get double from string
+Double.toString(d) to convert primitive to string
 
 java.util.regex.*
 	pattern = Pattern.compile(patternString)
@@ -226,6 +313,11 @@ java.util.regex.*
 	if (matcher.matches()) {}
 
 math on char -> integer -> can cast back to char
+
+line endings
+	file readers are resilient
+	writing with \n usuaully ok
+	System.lineSeparator() if need to get for system
 
 [Operators]
 math & bit & boolean & comparison & assignment operators are exactly like C++
@@ -238,18 +330,33 @@ A instance of B (for reference types only)[false if null]
 
 [Control Flow]
 ranged-based for (enhanced for loop)
+	[remember to use : instead of of, in, etc. like some others]
+	legal (but uncommon) to put 'final'
 if/else if/else and switch work basically just like C++ (with optional braces for single line, default fall-through in switches, etc.)
 switches also work on non-numeric types and for enum values, you don't have to specify the enum in front in the cases
 for/while/do while work just like C++ (plus the range-based for which c++ now also has)
+	remember middle condition is dynamic and variable can be messesd with
 try/catch/finally/throw just like in C++
 try-with-resources
 	try (BufferedReader reader1 = new BufferedReader(new FileReader("file1.txt"));
              BufferedReader reader2 = new BufferedReader(new FileReader("file2.txt"))) {}
+			 variable gone outside the scope (unlike python)
+	try(reader)
+		only if effectively final and already initialized
+	allowed to let exceptions propagate out
 assert condition: string
 lazy list: do it yourself
 main function args = just the args themselves (String[])
-truthiness: empty string (not blank), 0, false, null all considered false in conditions
-	empty collections are not (need to use isEmpty())
+truthiness: only actual booleans can be used in things like if/else
+	need to do == null, == 0, isEmpty(), etc. on anything else
+
+some useful built-in exceptions:
+	NumberFormatException (unchecked): bad conversion from string to a number
+	ArithmeticException (unchecked)
+	UnsupportedOperationException (unchecked)
+	IllegalArgumentException (unchecked)
+	java.io.IOException
+		java.io.FileNotFoundException
 
 [Functions]
 just like TypeScript, C#, etc. (access, modifiers, etc. all together)
@@ -270,11 +377,20 @@ variadic functions
 	int... numbers
 		this param becomes an array
 		you can either pass an array to it or pass multiple integer arguments that it will put together for you
+		ommit args entirely to get empty array
 not supported: spread, nested functions, inline functions, macros, extension methods, ref and out parameters
 var
 	ok as variable that gets a function call as a value
 	not ok as function return type or parameter type
 recursion works like normal (by name), but no TCO
+
+params can be marked final, but it only prevents the local references and not the objects
+	uncommon
+
+param names aren't part of the unique identity of a method
+	just method name and param types
+	that makes things like lambdas work despite different param names being used
+	also means you can implement multiple interfaces where they use different param names but same types, with 1 method
 
 [Functional]
 "skinny arrows"
@@ -282,6 +398,7 @@ recursion works like normal (by name), but no TCO
 	(a, b) -> a + b
 	(a, b) -> { return a + b; }
 	(Integer a) -> a * a
+	x -> x * 2
 big difference from all other languages = what the type of a lambda (or a method reference) is and how you call it
 	"functional interface" = an interface containing 1 method signature
 	assigning a lambda or method to it automatically makes it callable via the method on the interface
@@ -327,6 +444,31 @@ Streams API
 	do the above fluently (eg. List<int> newList = list.stream().map().collect())
 	custom collectors can be implemented via Collector<> interface (which is complicated)
 
+	forEach(x -> System.out.println(x))
+		does not return another stream
+
+	Stream.of() for creating based on values
+		variadic (args or array)
+		don't use a primitive array - that will get interpretted as Stream<int[]> instead
+			Integer[] works though
+
+	any operation on stream closes it
+		different from Observables in JS
+		have to remake or collect intermediate to provide branching
+
+	IntStream = primitive int stream (not Stream<>) for perf.
+		IntStream.range(0, 10) for a stream of 0..9
+		IntStream.of(1, 2, 3) for variadic args(or single array) giving values
+		s.max(), s.asDoubleStream(), s.forEach()
+		s.toArray() to collect as an array of int
+		s.boxed() to make a Stream<Integer>
+		s.<T>mapToObj() to provide custom conversion to Stream<T>
+		cannot collect() [use boxed() or mapToObj first]
+
+	tips for readability:
+		use static imports (eg. toList())
+		use method references instead oflambdas (eg. Integer::valueOf)
+
 [Classes]
 overall syntax looks like a lot of other languages
 	access specifier on class, then methods as described in [functions] above, and variables
@@ -341,6 +483,7 @@ default constructor (just 1) if no constructor, otherwise only the one(s) you sp
 not supported: operator overloading, partial classes, custom value types, properties (as other languages use them)[setValue, getValue pattern], call operator
 	a key effect of not supporting properties is that there can't be read-only fields (except by methods)
 name hiding also not supported (all methods virtual and always get the most derived one no matter which reference type)
+	except for private members which are always hidden and non-virtual
 
 static members can be accessed via method or class and use . (not :: like C++, only method references use that)
 
@@ -354,6 +497,8 @@ Access Modifiers
 	applies to methods, variables, classes within classes, and top-level classes
 	like C++, can access and possibly change private members from other instances (we are all robots)
 	"friend class" equivalance = nested class, package-private members
+	'private' members are not virtual
+		subclass can provide one of same name and it means different thing
 Inheritance
 	"extends" to subclass
 	"implements" to implement interface (comma separator for multiple)
@@ -364,6 +509,9 @@ Inheritance
 	can mark a method as "final" to prevent overriding
 	can mark a class as "final" to prevent subclassingf
 	covariant return types supported
+	you can increase access in a subclass (eg. make a protected member public)
+		but you can't go the other way
+		remember that private members aren't seen by the subclass, so you're not exposing anything
 Initialization Blocks
 	no initialization list like in C++, but this is very similar intent
 	naked {} inside class means code that will run before the constructor, which you can use to initialize things
@@ -396,6 +544,7 @@ Interfaces
 		an ABC can specify missing methods as abstract, or just ignore them
 		either way, a concrete class must have everything filled in
 
+	interface can inherit one or more other interfaces
 Object
 	root of all reference types (implicitly inherited if no inheritance specified)
 	@Override methods to provide systemic behavior
@@ -412,13 +561,16 @@ Nested Classes (a weirdness of Java)
 		Outer.InnerClass inner = outer.new InnerClass()
 	methods of "inner classes" can access members of the outer class without any qualifier
 		so it's basically just a subsection of the main class rather than its own thing
+		can access private members
+	nested interfaces behave more like normal nested types (always static)
 
 Boxing/Unboxing
 	implicitly works most of the time (autoboxing/autounboxing)
 		can use Integer.valueOf() and boxedInt.intValue() to do it explicitly if needed
 			eg. to cast to another reference type, you need to box first
 	short lowercase primtivies <-> capitalized full word boxed types (eg. Integer, Character)
-	the boxed types also have static methods you can call to do useful stuff and get attributes like MAX
+	the boxed types also have static methods you can call to do useful stuff and get attributes like:
+		MAX_VALUE
 	boxed types are still interned unless you used 'new' to create them
 
 Anonymous Class
@@ -433,6 +585,8 @@ Anonymous Class
 		only 1 thing, no way to specify more
 	no way to specify constructor because no name
 		can do {} though, which will safely run after the base is constructed
+
+	can provide c'tor args for base class in the ()
 
 Construction Order
 	1. super() call [which must be first or not present in c'tor] kicks off base construction
@@ -453,12 +607,20 @@ generic methods are weird in Java
 		CANNOT call as <Integr>f() with no . in front
 generic classes are more normal (<T> after class)
 	type can be inferred or specified as normal
+	use the diamond operator on constructors to avoid unchecked warning from compmiler
+	c'tor doesn't need the <T>
 <T extends Number> type constraints (Number of a subclass of Number)
 type inference boxes for you when it can
 nested <> are fine
 not supported: metaprogramming, void as type arg, overloading by # type args
 type erasure: runtime type of generic has no type args
 diamond operator: List<Integer> l = new ArrayList<>();
+	other scenarios where it works:
+		passing into method because it knows what method expects
+		List<List<>> can be List<> if subtype can be inferred too
+		only class creation (not function call)
+	sometimes, ommiting the <> will work, but you should include it anyway
+		more explicit/readable and makes some compiler warnings go away
 Wildcards
 	because casting element types in the parent generic type doesn't work, the concept of wildcards is needed
 		for method params, variable declarations, etc.
@@ -481,12 +643,35 @@ Casting
 		it won't be autoboxed, but if you need to box, you can use something like Integer.valueOf()
 	because T is determined by an outsider, you can't assume too much about it
 		eg. if T extends Integer, you can't just return an Integer (but you can cast if you know it's ok)
+Comparable<T>
+	class MyClass implements Comparable<MyClass> {
+		public int compareTo(MyClass o) {}
+		// < 0 if this < o, > 0 if this > 0, 0 if =
+	}
+	this defines the "natural ordering" used by collections if no comparator passed in
+	a way to do comparisons in generics without having to rely on a type or even Number
+	the numeric boxed types implement this
+Math Operators on Generic Types
+	if T extends a specific type like Integer, operators like < may work
+		probably internally calling intValue()
+		Integer is 'final' though, so you can't subclass it to get operator overloading
+	T extends Number does not make that work
+Subclass as Type Arguments
+	class MyClass implements Comparable<MyClass>
+	<T extends Comparable<T>>
+Static Methods
+	treat as standalone methods (put <T> in front)
+	call on unbound class (eg. MyClass.<Integer>create())
+Nested Classes
+	static = on unbound type (MyClass.MyChild) [acts like static method]
+	other = on bound type (MyClass<Integer>.MyChild)
 
 [Imports]
 import java.util.List;	// only 1 per line allowed
 import java.util.*;	// can import all things from a package
 import static java.lang.Math.PI;	// importing a static variable into the file by name (state shared between all places that import)
 import static java.lang.Math.Square;	// importing static method to be called unqualified by name (simulated top-level function)
+import static java.lang.Math.*;	// importing all static members of class
 
 portions of the path are both subfolders in the path (relative to the classpath java is invoked with) and also the package name
 no renaming of symbols like in other languages
@@ -509,6 +694,14 @@ you can use types without importing them (use as fully-qualified name)
 java.lang auto imported symbols
 
 System.out.println(), System.out.print(), System.out.printf()
+	println has overloads for a lot of types and Object (which uses toString)
+	it also has an empty overload
+		useful for: blank lines, going to next line after a print() or printf(), etc.
+pass System.in to InputStreamReader and that to BufferedReader in try-resources (java.io.*)
+	readLine() will start at current position (no newline), echo what is typed, and then go to next line
+		returns String that keeps all spaces but not the newline that ended it
+	IOException thrown
+	use Stream.of(str.split()).map(Integer::parseInt).collect(toList()) to get list of integers from user
 console = System.console();  console.readLine("Enter a value: "); console.readPassword is same but without echo
 
 System.gc()
@@ -520,10 +713,9 @@ java.util.Random
 
 File I/O
 	many different ways
-	one way is java.io.BufferedReader/BufferedWriter/InputStream/OutputStream (text vs. binary)
-		try-with-resources
 	Files.newBufferedReader(Paths.get("myfile.txt"))
 	you can write directly, and read either one line at a time, one thing at a time, or via a stream
+	new BufferedWriter(new FileWriter(path)) [and read equivs]
 Paths
 	java.nio.file.Path and java.nio.file.Paths
 	Path path = Paths.get("C:/Users/John/Documents/file.txt");
@@ -613,8 +805,15 @@ automatically generated: constructor, equals, hashCode, toString, getters of sam
 no automatic copy constructor, but you can pass the private args as constructor args to make a copy
 
 [Switch Expressions]
+int m = switch (n) {
+	case 1 -> 10; // semicolons here
+	case 2 -> 20;
+	default -> 30;
+}; // need semicolon here
+
 -> instead of : to get values for cases
 then the result of the switch is a value
+because it returns a value, it has to be EXHAUSTIVE (but can have default)
 
 [Compact Numbers]
 can put _ between digits in a numeric literal and they will be ignored (for visual convenience)
@@ -632,6 +831,58 @@ if (obj instanceof String str) {
 a new thing to restrict which classes can sublcass a class
 note that before this feature, 
 
+[AutoBuilder]
+google library with annotations to make value classes and builders
+you provide an abstract class and it can fill in the data for you during the build phase
+
 [Effective Java Tips]
 ** see the Effective Java notebook **
 readable on phone
+
+[Interview Tips ***not from notebooks**]
+if need to implement linked list, just do it from scratch
+	trying to use built-in and then replacing it sounds cool, but causes problems
+	by coding to the List<> interface, you end up coding against a lot of methods you won't need
+	also causes weirdness with empty Lists
+if in an environment where you can't change the imports, you can always use full-qualified symbols!
+	but they may have use * with a bunch of stuff to give you a lot of things
+don't be hesitant to make classes for tuples and stuff quickly
+	copy and paste is your friend (unless on a whiteboard)
+if you have to do I/O, consider testing the functions first using hardcoded data and prints
+	depending on time and how much a part of the problem the I/O is
+if you need a tree or graph, do it yourself (no java version)
+	consider just making Node class a struct-like class with no methods
+		then updates can be done inline in the algorithm
+		depends on how much time you have and how central the abstraction is
+compiler doesn't like constructors without <> operator (unchecked warning)
+	it works but the type is erased and you lose type safety
+
+Patterns
+	struct-like wrapper for updating multiple variables in a helper
+		record = f(record, blabla);
+		basically simulating python tuple
+	dealing with empty linked lists/graphs/trees
+		usually easier to just use null
+			but may need a static wrapper to avoid hardcoded copies of logic to set if null
+	for operations like adding items one at a time, consider a wrapper class
+		eg. keeps head and last pointers even if singly-linked list
+	DFS = recursion or stack
+	BFS = corecusion or queue
+	to add funtionality to collection, extend class
+		interface remains implemented for you
+		don't implement interface unless you're prepareed to do the whole thing
+		to add your own interface, just add your own as a mixin
+	don't forget to subract '0' from char if it's a digit and doing math
+
+HackerRank-specific tips
+	if you exceed the time limit, make sure you aren't updating the wrong variable or something
+		sometimes you think it's because it's pick and you used n^2, but a lot of time it's a bug
+		esp. if n is small
+	since they hide the test data, you need to System.out.println() a lot to diagnose failures
+		don't be too quite to delete these until you're absolutely done
+	make pseudocode and clarifications in comments
+		and make your prints look like the pseudocode so you can see if it's working
+	there's a hidden area in between panes to scroll the whole window (eg. to get back to the code from looking at tests)
+	beware of fake errors (slightly yellow/brown colored) due to thing not being used yet
+	var doesn't work in Java 8 but does in 15 (don't get confused by things like that)
+	watch out for holding down or repeated spaces causing erroneous . to be inserted
