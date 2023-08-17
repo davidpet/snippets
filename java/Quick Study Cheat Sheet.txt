@@ -147,6 +147,7 @@ Map<TKey, TValue> interface
 	java.util.concurrent.ConcurrentHashMap = recommended for multithreaded
 	LinkedHashMap<TKey, TValue> implementation (ordered by insertion)
 	TreeMap<> = ordered by key natural order
+	EnumMap<> = bitfield version
 a lot like List<T> except use keys instead of indices and:
 	.put() instead of .set()/.add()
 	.containsKey() and .containsValue() instead of just contains
@@ -157,6 +158,7 @@ iterate values with .values() which gets a Collection<TValue>
 
 Set<T> interface
 	HashSet<T> implementation
+	EnumSet<T> implementation (for bitfield)
 more or less looks like List<T> but with no indices
 
 StringBuilder
@@ -287,6 +289,12 @@ Sorted interfaces
 		inherited from Set and Map
 		add methods like first, last, subSet (or firstKey, lastKey, subMap)
 		implementations include TreeSet and TreeMap
+
+Bitfields
+	EnumSet and EnumMap are implementations of Set and Map
+		they take enum type in c'tor
+		then they use the least bits necessary for each entry and store compactly
+		eg. an enum with 2 values could be 1 bit per key
 
 [Strings]
 c++style comments (// and /* */)
