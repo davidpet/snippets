@@ -142,7 +142,11 @@ for (var x : list) {}
 
 Map<TKey, TValue> interface
 	Hashtable<TKey, TValue> implementation (order not guaranteed)
-	LinkedHashMap<TKey, TValue> implementation (ordered)
+		old and not performant, but is thread-safe
+	HashMap<> = recommended for non-multi-threaded
+	java.util.concurrent.ConcurrentHashMap = recommended for multithreaded
+	LinkedHashMap<TKey, TValue> implementation (ordered by insertion)
+	TreeMap<> = ordered by key natural order
 a lot like List<T> except use keys instead of indices and:
 	.put() instead of .set()/.add()
 	.containsKey() and .containsValue() instead of just contains
@@ -245,6 +249,44 @@ Cloning
 
 Extending
 	collection types in java.util not marked final, so you can extend
+
+Thread Safety of Collections (and other types)
+	to make any non-thread safe thing thread-safe, you need to do your own locking and such
+		but some types are already thrad-safe and some have thread-safe alternatives
+	primitive numbers themselves are thread-safe
+		but operands like ++ (as post-increment) are not because they store and modify non-automatically
+		java.util.concurrent.atomic.AtomicInteger is example of an atomic version provided for that purpose
+	anything immutable is thread-safe by default ONCE CREATED because you can only read it
+		eg. String, Integer, List.of(), etc.
+		keep in mind any iterator from an immutable collection is mutable and thus not itself thread-safe
+	mutable collections (and arrays) can be assumed to be NOT THREAD-SAFE by default
+		Collections.synchronizedList(), Collections.synchronizedSet(), Collections.synchronizedSortedSet(), etc.
+			can wrap mutable instances of the various interfaces
+			because the wrapping is done at the interface level, basically you use the same interface (eg. List<>)
+				and the wrapper locks (on itself) before forwarding calls
+				if you access the unwrapped one, you are bypassing the locking
+			similarly, Collections.unmodifiableList() and those wrap the same interfaces and make any writes fail
+				this can also make it thread-safe if you don't need to write to it
+				if you don't need writes, this might be a more efficient way to be thread-safe
+	the following collections are already thread-safe
+		Hashtable is thread-safe but slow (ConcurrentHashMap is faster)
+		Stack is thread-safe because inherits Vector
+			but Deque is not
+	there are also thread-safe alternatives to some of the built-in collections you can instantiate
+		Vector <-> List
+		ConcurrentHashMap <-> HashMap
+		PriorityBlockingQueue <-> PriorityQueue
+		StringBuilder <-> StringBuffer
+
+		Vector implements List<> and is thread-safe
+			but is much older and retrofitted to support List
+			so don't use unless you have to
+
+Sorted interfaces
+	SortedSet and SortedMap interfaces
+		inherited from Set and Map
+		add methods like first, last, subSet (or firstKey, lastKey, subMap)
+		implementations include TreeSet and TreeMap
 
 [Strings]
 c++style comments (// and /* */)
@@ -572,6 +614,7 @@ Boxing/Unboxing
 	the boxed types also have static methods you can call to do useful stuff and get attributes like:
 		MAX_VALUE
 	boxed types are still interned unless you used 'new' to create them
+	boxed types are IMMUTABLE (value can't be reset for an instance)
 
 Anonymous Class
 	MyInterface obj = new MyInterface() {
