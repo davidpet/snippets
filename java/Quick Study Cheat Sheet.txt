@@ -909,6 +909,23 @@ main thread ending will not stop threads and futures
 	the future still has to check for isInterrupted using Thread
 System.exit() to force kill everything immediately
 
+Reactive Streams (not streams API)
+	Publisher<T> is like observable from rxjs
+		has a .subscribe(subscriber) method and that's it
+	Subscriber<T> is passed into it and is an interface to handle the data
+		onComplete(), onError(), onNext(), onSubscribe()
+		gets a Subscription object in onSubscribe so that it can store and use it in the others
+		no implementation - you're supposed to implement it (perhaps via anonymous class)
+	Subscription
+		passed into Subscriber<T> on subscribe
+		request(n) to buffer more items
+		cancel() to stop
+	SubmissionPublisher<T>
+		concrete Subscriber<T> with a lot more functionality and methods than just that
+			probably need to store it instead of Publisher<T> reference
+			asynchronous buffered data
+		mainly submit() and close()
+
 [JUnit]
 @Test test* methods in class
 assertTrue() etc.
