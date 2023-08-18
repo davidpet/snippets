@@ -110,6 +110,8 @@ Arrays class
 
 	toString() needed because arr.toString() doesn't work as expected
 
+	hashCode() to get hash code of an array of Object
+
 java.util.* for collection interfaces and implementations
 
 List<T> interface
@@ -121,6 +123,8 @@ list.addAll(iterable)
 list.get(index)
 list.set(index, item)
 list.remove(index)
+list.remove(item)
+	depends on item.equals() [or both being null] to find FIRST MATCh
 list.removeAll(iterable)
 list.contains(item)
 list.containsAll(iterable)
@@ -155,6 +159,7 @@ iterate keys with .keySet() which gets a Set<TKey>
 iterate values with .values() which gets a Collection<TValue>
 	iterable collection in case order matters, but for HashMap it doesn't
 .getOrDefault(key, defaultValue)
+.remove() can take just key or key and value
 
 Set<T> interface
 	HashSet<T> implementation
@@ -184,13 +189,18 @@ Deque<T>
 	queue members but also addFirst, addLast, pollFirst, etc.
 	interface
 		LinkedList, ArrayDeque
-PriorityQueue<T>
-	add/poll/peek/isEmpty
-	concrete
+
+PriorityQueue<T> (concrete, implements Queue<T>)
 	smallest item (by natural sort) comes out first
 		can provide custom comparator to change how Ordered
 			eg. Comparator.reverseOrder() makes it use max value instead of min
 	implemented via heap that uses comparator (minheap by default, maxheap with reverseOrder)
+
+RandomAccess interface
+	a marker interface with no members
+	used by algorithms like binary search to check whether a collection can do random access
+		eg. implemented by ArrayList but not LinkedList
+		that way the algorithm won't do something bad like seek back and forth on a linked list
 
 Missing from Java: tuple, struct/value type, tree, graph
 
@@ -232,6 +242,22 @@ Sorting/Shuffling
 	java.util.Comparator has static methods to get comparators to pass
 		Comparator.naturalOrder() = use Compareable<T> of elements
 		Comparator.reverseOrder() = use opposite of natural order
+
+Searching
+	assuming a sorted collection (natural order)
+
+	Collections.binarySearch(list, item)
+		natural order search, taking into account whether instanceof RandomAccess
+		depends on Comparable<T>
+		gets index if found (same = undefined which will get)
+		-(insertionPoint + 1) if not found
+			so that you can use < 0 to know
+			where you'd insert it if you wanted
+	Collections.binarySearch(list, item comparator)
+		same but custom comparator
+	Arrays.binarySearch()
+		same as all the above for arrays
+		lots of overloads for primitive types since not generic
 
 Simulating Literals in non-arrays
 	Arrays.asList(item1, item2, item3) to make an array list that can't be resized (but is mutable)
@@ -295,6 +321,13 @@ Bitfields
 		they take enum type in c'tor
 		then they use the least bits necessary for each entry and store compactly
 		eg. an enum with 2 values could be 1 bit per key
+
+Implementing Objects for Collections
+	to put into a collection that uses hashes, you will need hashCode() and equals()
+		to do operations like remove() on a list, you will need those as well
+		utilize Objects.hash(...) to make this easy
+	to support sorting and operations like that, you will need to implement Comparable<T>
+	to support writing the collection to a string, implement toString()
 
 [Strings]
 c++style comments (// and /* */)
@@ -378,6 +411,22 @@ no coalescing (other than methods of Optional and Map) or safe navigation
 .getClass() for instances and .class for types
 A instance of B (for reference types only)[false if null]
 
+Casting Details
+	Object o = m;
+		implicit cast that compiler can handle - no runtime check needed
+	m = n; // same type
+		compiler can already tell, so no runtime check needed
+	MyClass m = (MyClass)o;
+		runtime cast
+	short s = (short)x;
+		runtime cast
+	int x = s;
+		runtime cast (implicit)
+	Integer x = list.get(0)
+		runtime cast because generics store bases
+	
+	a runtime cast will throw ClassCastException (unchecked) if it fails
+
 [Control Flow]
 ranged-based for (enhanced for loop)
 	[remember to use : instead of of, in, etc. like some others]
@@ -405,6 +454,7 @@ some useful built-in exceptions:
 	ArithmeticException (unchecked)
 	UnsupportedOperationException (unchecked)
 	IllegalArgumentException (unchecked)
+	ClassCastException (unchecked)
 	java.io.IOException
 		java.io.FileNotFoundException
 
@@ -562,6 +612,12 @@ Inheritance
 	you can increase access in a subclass (eg. make a protected member public)
 		but you can't go the other way
 		remember that private members aren't seen by the subclass, so you're not exposing anything
+	static members are not virtual and exhibit name hiding behavior
+		a subclass type or instance can access all statics from it and all bases
+			but any of the same signature in subclass will hide the base
+		a base class reference or the type itself will see its ow statics, not the overriden ones
+		interfaces are special - classes implmenting them do not see the statics at all
+			they have to be referenced via the interface as the type
 Initialization Blocks
 	no initialization list like in C++, but this is very similar intent
 	naked {} inside class means code that will run before the constructor, which you can use to initialize things
@@ -594,11 +650,23 @@ Interfaces
 		an ABC can specify missing methods as abstract, or just ignore them
 		either way, a concrete class must have everything filled in
 
-	interface can inherit one or more other interfaces
+	interface can inherit one or more other interfaces via 'extends'
+
+	interfaces can be generic (as many of the built-in collection ones are)
 Object
 	root of all reference types (implicitly inherited if no inheritance specified)
 	@Override methods to provide systemic behavior
 		toString(), equals(), hashCode(), etc.
+Objects static class
+	some null-safe versions of normal Object methods
+	Objects.equals(a, b)
+	Objects.hashCode(o)
+	Objects.toString(o) and Objets.toString(o, default)
+		returns null or default on null
+	Objects.hash(o1, o2, o3)
+		variadic method to hash multiple objects into 1 hash
+		useful to call for hashCode() implementation of class with its members
+		hashes the varargs array using Arrays.hashCode()
 
 Useful Built-in Interfaces
 	Cloneable
@@ -658,13 +726,38 @@ generic methods are weird in Java
 		CANNOT call as <Integr>f() with no . in front
 generic classes are more normal (<T> after class)
 	type can be inferred or specified as normal
-	use the diamond operator on constructors to avoid unchecked warning from compmiler
-	c'tor doesn't need the <T>
+	use the diamond operator on constructors to avoid unchecked warning from compiler
+	unchecked warning is triggered when you use raw types and should never be suppressed
 <T extends Number> type constraints (Number of a subclass of Number)
 type inference boxes for you when it can
 nested <> are fine
+
 not supported: metaprogramming, void as type arg, overloading by # type args
-type erasure: runtime type of generic has no type args
+Type Erasure
+	runtime type of generic has no type args
+Raw Types
+	use of raw types triggers an unchecked warning from compiler
+	List<Integer> l = new List();
+		technically allowed and will work correctly
+		bad style because less explicit and could result in refactoring mistakes
+		use <> operator
+	List l = ...
+		the interface used on the left is raw
+		the compiler will allow you to use any type with it because the type is unknown
+		List<Integer> l2 = l;  List<String> l3 = l;
+			both of these work because for all the compiler knows, this is List<Object>
+		l.add("Hi") will work even if the instance is List<Integer>
+			because the generic class is just dealing with Object references
+				or if it does <T extends...> then whatever that type is
+		if the instance has <T extends...> then l.add() will check against that
+			but could still be the wrong type compared to code using it
+		x = l2.get(0) will throw exception at runtime because it will cast
+			because generics are dealing with Object, an implicit cast has to happen
+			thus, the runtime type is checked in the assignment
+		however, using System.out.println(l.get(0)) will not throw an exception
+			because println takes Object and doesn't care
+	this is allowed due to backward compatibility from before generics were introduced
+	also, the raw type is legit to use for STATICS in the class
 diamond operator: List<Integer> l = new ArrayList<>();
 	other scenarios where it works:
 		passing into method because it knows what method expects
@@ -716,6 +809,11 @@ Static Methods
 Nested Classes
 	static = on unbound type (MyClass.MyChild) [acts like static method]
 	other = on bound type (MyClass<Integer>.MyChild)
+Variadic Generic Functions
+	<T> void f(T... args) {}
+		if you pass int[], T = int[] and has 1 element!
+			because generics can't be int
+		if you pass Integer[], T = Integer and has all the Elements
 
 [Imports]
 import java.util.List;	// only 1 per line allowed
@@ -832,11 +930,13 @@ put before method, class, or package declaration
 @interface DecoratorName {} // may need @Retention and @Target annotations on it
 can then apply @DecoratorName before targets (such as methods)
 retrievable via reflection on the annotated symbol (used by linters, compiler, etc.)
+more syntax for adding params and defaults
 
 java.lang has some useful built-in ones
 	@Override
 	@Deprecated
 	@FunctionalInterface
+	@SuppressWarnings("name")
 
 [Records]
 *not supported by ijava*
@@ -882,7 +982,7 @@ if (obj instanceof String str) {
 a new thing to restrict which classes can sublcass a class
 note that before this feature, 
 
-[AutoBuilder]
+[AutoValue]
 google library with annotations to make value classes and builders
 you provide an abstract class and it can fill in the data for you during the build phase
 
@@ -910,7 +1010,9 @@ compiler doesn't like constructors without <> operator (unchecked warning)
 
 Patterns
 	struct-like wrapper for updating multiple variables in a helper
-		record = f(record, blabla);
+		record = f(record, blabla); // treat as immutable
+			OR
+		f(record, blabla);	// mutate the instance passed in
 		basically simulating python tuple
 	dealing with empty linked lists/graphs/trees
 		usually easier to just use null
