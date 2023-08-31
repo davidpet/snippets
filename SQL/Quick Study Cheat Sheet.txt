@@ -1,0 +1,246 @@
+*************************************************************************************
+This document represents items that jumped out at me as needing to be studied for SQL interviews at a point in time.
+Since in the future, different items would jump out at me based on the experience I have between now and then, it is only an artifact of this moment in time.
+Going forward, I should review the actual notebooks, but this is so I can study up quickly at first.
+
+Also, since there are a lot of dialect-specific things and advanced topics only a DBA
+probably needs, it is not a very complete cheat sheet, at least this time around.
+*************************************************************************************
+
+[Syntax]
+statements end with ;
+	some systems allow DELIMITER command to specify a new one temporarily
+	this is useful for things like stored procedures
+	just remember to DELIMITER ; when done
+-- this is a comment for the rest of the line
+/* this is a multiline comment */
+
+[Data Types]
+INT
+FLOAT
+DECIMAL(m, n): fixed length before and after decimal point
+CHAR(n): fixed length string (null not counted)
+VARCHAR(n): variable length string (up to max) (null not counted)
+BIT: boolean (0 or 1)
+DATE: set to a string that has a proper date format (eg. 2012-01-01)
+DATETIME: same but with timestamp after space
+JSON: json string with object data
+
+CAST(column1 AS DATE)
+	in some systems, CONVERT() instead
+DATE '2012-02-02'
+	called type constructor
+
+[Strings]
+strings usually single-quoted (double-quoted not always even supported)
+other types of quoting like [] and `` are system-dependent
+double up quotes to escape them
++ for concat
+N prefix before quote for unicode
+double quotes can also be used to make identifiers CASE SENSITIVE
+	by default they are not
+
+SUBSTR(column1, start, stop)
+
+UPPER(col)
+LOWER(col)
+
+LENGTH(strcol)
+CONCAT()
+REPLACE()
+TRIM()
+REPEAT()
+REVERSE()
+
+[Nullability]
+all data types can have the value NULL if not present
+NULL can be specified in a column spec (eg. in CREATE TABLE)
+
+WHERE column1 IS NULL
+WHERE column1 IS NOT NULL
+
+COALESCE(column1, 0)
+IFNULL(column1, 0) = same thing as COALESCE
+
+[Select Statement]
+overall order of clauses: [SELECT] [FROM] [JOIN] [WHERE] [ORDER BY] [LIMIT] [JOIN] [GROUP BY] [HAVING]
+	actual execution order not quite the same though
+
+[SELECT] = for defining what columns will be present in result
+	SELECT *
+		all columns
+	SELECT column1, SUM(column2) AS total_column2, column3 AS col3
+		SUM() is an aggregate
+		others are AVG(), MAX(), MIN(), etc.
+		they mostly make sense in terms of statements involving a GROUP BY (though can work standalone)
+		COUNT(*) to count # of rows
+		COUNT(col) to count # of non-null column values
+	AS lets you alias the column names in the results
+		they are not usable in the WHERE but are in the ORDER BY and GROUP BY
+
+	SELECT name, age, CASE 
+				WHEN age < 30 THEN 'No Bonus'
+				WHEN age > 30 THEN 'Bonus'
+				ELSE 'Some bonus'
+			  END AS bonus
+
+	SELECT UPPER(name), age * 10
+
+	SELECT column1 as "The First Column"
+		a way to have multiple words (case sensitive)
+[FROM] = specifying what table to use
+	can alias table names here which applies in rest of statement
+		eg. FROM employees AS e
+		then you can use e as the tablename in all other parts of the statement
+[JOIN] = joining with another table
+	eg. FROM employees INNER JOIN department ON employees.department_id = departments.id
+	can alias the columns from the tables in the SELECT statement
+	can filter with WHERE clause (using the table names from the join)
+
+	INNER JOIN = all combinations matching the ON
+	LEFT JOIN = all rows from left, matched with right where applicable
+		LEFT OUTER JOIN = synonymous
+	RIGHT JOIN = all rows from right, matched with left where applicable
+		RIGHT OUTER JOIN = synonymous
+	FULL OUTER JOIN = all rows from both tables, matched when applicable
+	CROSS JOIN = all combos of rows from both tables (no ON)
+	
+	self join = a term for using the same table as both sides of the join
+	
+[WHERE] = which rows to include (no aliases)
+	eg. col1 = 25
+	eg. col2 <> 25
+	eg. col3 = 'hi'
+	eg. age <= 30 AND salary > 5500
+	eg. salary BETWEEN 5500 AND 6500
+	eg. name LIKE '%mi%'
+		each % is a wildcard'
+	eg. salary IS NOT NULL
+
+	can use table name inc. alias as prefix if needed
+
+	for json, use ->> operator to dereference column as a field from the JSON
+		for inserting a new row, need to use a json string
+ORDER BY column ASC
+	or DESC
+	default is ASC
+
+	ORDER BY column1 ASC, column2 DESC
+		for 2 level ordering
+LIMIT n
+GROUP BY column1, column2
+	generally you select column1 and column2 in the SELECT
+	then you can aggregate other columns with MAX, AVG, etc.
+	each combo of column1 and column2 is a row
+
+subqueries grouped with () can be used for single values if aggregate
+	WHERE EXISTS () if a subquery returns at least 1 row
+
+[Union, Intersect, Except]
+SELECT * FROM table1 INTERSECT SELECT * FROM table2;
+INTERSECT = rows that are identical in results from both tables
+UNION = deduplicated rows from results from either table
+EXCEPT = result rows in first and not in 2nd
+
+[Database Creation]
+CREATE DATABASE mydatabase;
+USE DATABASE mydatabase;
+DROP DATABASE mydatabase;
+
+[Table Creation]
+-- can leave out the OR REPLACE
+-- query involving Customers table still needs an ON with the 2 fields being compared with =
+CREATE OR REPLACE TABLE employees (
+    id INT PRIMARY KEY, -- primary key (automatically indexed as UNIQUE)
+    name VARCHAR(50),
+    age INT UNIQUE, -- putting UNIQUE here means the column is indexed as each row having unique value
+    salary DECIMAL(10,2) NULL, -- nullable column
+    customer_id INT, -- this will be used as foreign key
+    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id) -- link foreign key to other table's primary key
+);
+
+CREATE TABLE IF NOT EXISTS employees (...);
+
+CREATE TABLE employees 2 AS SELECT * FROM employees; -- cloning a table
+
+DESCRIBE employees;
+
+[Table Deletion]
+DROP TABLE employees;
+DROP TABLE IF EXISTS employees;
+
+[Inserting Rows]
+INSERT INTO employees (id, name, age, salary)
+VALUES (1, 'John Doe', 30, 5000.00),
+       (2, 'Jane Smith', 25, NULL),
+       (3, 'Mike Johnson', 35, 8000.00),
+       (4, 'Sarah Williams', 40, NULL);
+
+[Updating Rows]
+UPDATE employees SET salary = 75000.00 WHERE id = 2;
+
+[Deleting Rows]
+DELETE FROM employees WHERE id = 1;
+
+TRUNCATE TABLE employees; -- clearing
+
+[Changing Table Spec]
+ALTER TABLE, ALTER COLUMN, etc.
+
+[Temporary Table]
+CREATE TEMPORARY TABLE mytable AS SELECT * FROM employees;
+	this table will die after this session ends
+	you can also DROP TABLE it explicitly
+
+[Normalization/Denormalization]
+having a lot of smaller tables with foreign keys to avoid redundancy is known as Normalization
+having a bigger table with rows that have a lot of duplicated fields (as if JOINed) and a few columns different is Denormalization
+generally you have one or the other depending on the needs of the system
+Denormalization is faster for larger queries while Normalization uses less space
+
+[Indexing]
+primary key automatically indexed as unique
+can also specify unique index in the CREATE TABLE as above
+attempting to insert a redundant value is an ERROR
+
+you can also index retroactively:
+CREATE INDEX idx_name ON employees (name); -- not unique
+CREATE UNIQUE INDEX idx_id ON employees (id);
+CREATE INDEX idx_age_salary ON employees (age, salary); -- combination of columns indexed
+CREATE UNIQUE INDEX idx_name_age ON employees (name, age);
+
+you are indexing the existing columns but you have an index name that you can DROP INDEX on later for instance
+
+indices are transparent to the queryer
+	they have a performance hit on inserting new items but make queries faster
+	excessive indexing will use extra storage and slow down insert/update/delete operations
+
+[Foreign Keys]
+since you still have to do an ON statement, foreign keys don't appear to do much on the surface
+they have some less obvious benefits:
+	prevent inserting row with invalid foreign key
+	some systems automatically delete obsolete rows of the foreign table when delete rows of the parent table
+
+[Views]
+A view acts like a table for querying and lives in the DB, but it is just a query that gets executed when needed
+	this makes it dynamically responsive to changes in the tables it queries against
+
+CREATE OR REPLACE VIEW myview AS SELECT * FROM employees WHERE age < 30;
+	the part after AS becomes what's stored in the DB as the query to execute dynamically
+DROP VIEW IF EXISTS myview;
+	delete the view
+SELECT * FROM myview;
+	query just like any table
+
+[Built-in Functions]
+** many others mentioned in [Strings] section **
+CURRENT_DATE
+CURRENT_TIME
+CURRENT_TIMESTAMP
+EXTRACT(YEAR FROM col)
+
+[User-Defined Functions and Stored Procedures]
+user-defined functions are stored in the DB to return a value
+stored procedures are stored in the DB to execute actions (eg. maintenance)
+syntax of both is rather ugly - not included here because can't run in Jupiter
+you can also have triggers and transactions (w/ commit and rollback)
