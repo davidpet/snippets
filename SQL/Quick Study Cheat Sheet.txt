@@ -65,8 +65,8 @@ COALESCE(column1, 0)
 IFNULL(column1, 0) = same thing as COALESCE
 
 [Select Statement]
-overall order of clauses: [SELECT] [FROM] [JOIN] [WHERE] [ORDER BY] [LIMIT] [JOIN] [GROUP BY] [HAVING]
-	actual execution order not quite the same though
+overall order of clauses: [SELECT [DISTINCT]] [FROM] [JOIN] [WHERE] [ORDER BY] [LIMIT] [OFFSET] [JOIN] [GROUP BY] [HAVING]
+actual execution order is: [FROM] [WHERE] [GROUP BY] [HAVING] [SELECT] [DISTINCT] [ORDER BY] [LIMIT/OFFSET]
 
 [SELECT] = for defining what columns will be present in result
 	SELECT *
@@ -90,6 +90,9 @@ overall order of clauses: [SELECT] [FROM] [JOIN] [WHERE] [ORDER BY] [LIMIT] [JOI
 
 	SELECT column1 as "The First Column"
 		a way to have multiple words (case sensitive)
+
+	SELECT DISTINCT column1, column2
+		deduplicates whole result set rows
 [FROM] = specifying what table to use
 	can alias table names here which applies in rest of statement
 		eg. FROM employees AS e
@@ -130,13 +133,25 @@ ORDER BY column ASC
 	ORDER BY column1 ASC, column2 DESC
 		for 2 level ordering
 LIMIT n
+	only get first n rows
+OFFSET n
+	skip first n rows
 GROUP BY column1, column2
 	generally you select column1 and column2 in the SELECT
 	then you can aggregate other columns with MAX, AVG, etc.
 	each combo of column1 and column2 is a row
+HAVING
+	a condition on aggregates of groups (eg. SUM())
+	the resulting filtration happens on whole groups from group by
 
 subqueries grouped with () can be used for single values if aggregate
 	WHERE EXISTS () if a subquery returns at least 1 row
+
+Full Examples:
+	SELECT col1 AS column1, col2 AS column2, SUM(col3) AS column3_sum FROM employees
+		WHERE column1 > 10  ORDER BY column3_sum GROUP BY column1, column2;
+
+	SELECT e.id, e.name, o.id AS orderId, o.product FROM employees AS e INNER JOIN orders AS o ON e.id = o.customer_id
 
 [Union, Intersect, Except]
 SELECT * FROM table1 INTERSECT SELECT * FROM table2;
