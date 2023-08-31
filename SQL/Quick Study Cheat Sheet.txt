@@ -123,6 +123,8 @@ actual execution order is: [FROM] [WHERE] [GROUP BY] [HAVING] [SELECT] [DISTINCT
 	eg. salary IS NOT NULL
 
 	can use table name inc. alias as prefix if needed
+		but not column aliases in this part yet
+	columns don't have to be explicitly mentioned (or even included) in the SELECT
 
 	for json, use ->> operator to dereference column as a field from the JSON
 		for inserting a new row, need to use a json string
@@ -148,6 +150,8 @@ subqueries grouped with () can be used for single values if aggregate
 	WHERE EXISTS () if a subquery returns at least 1 row
 
 Full Examples:
+	SELECT * FROM Book WHERE price > 100.00 ORDER BY title;
+
 	SELECT col1 AS column1, col2 AS column2, SUM(col3) AS column3_sum FROM employees
 		WHERE column1 > 10  ORDER BY column3_sum GROUP BY column1, column2;
 
@@ -261,3 +265,45 @@ user-defined functions are stored in the DB to return a value
 stored procedures are stored in the DB to execute actions (eg. maintenance)
 syntax of both is rather ugly - not included here because can't run in Jupiter
 you can also have triggers and transactions (w/ commit and rollback)
+
+[ACID]
+** the syntax here is hypothetical as JupySQL doesn't allow any of it **
+
+Atomicity = transactions
+Consistency = schema constraints
+Isolation = transactions
+Durability = once transaction over, the result is permanent
+
+BEGIN TRANSACTION;
+
+-- do multiple reads and updates
+
+IF ERRORS <> 0 ROLLBACK; -- end transaction with nothing changed
+IF ERRORS = 0 COMMIT;  -- end transaction with everything atomically committed
+
+up to the DB system and config what granularity of timestamps, locking, etc. used
+	and what kind of consistency, parallelism, etc. is desired
+	eg. could lock rows, or whole tables, etc.
+
+sidenote: languages like Clojure can do OCC with help of CAS (compare and swap)
+
+APIs for programming languages often have their own transaction calls instead of having to do it in SQL
+
+[APIs]
+think of entity framework
+an entity's type determines what table it belongs in already (because a table is a list of entities of a type)
+you create an instance of the entity and save it (eg. with session object that is connected to DB)
+session can also start and commit/rollback transactions
+a session can have a query method to take a SQL query and give back, for instance, a list of entities
+	in Java you need to pass a class object to let it know what kind of object to create from it
+remember to rollback transaction if an exception is thrown
+
+Java = Hibernate
+C# = Entity framework
+Python = SQLAlchemy
+
+[Security of Connection String]
+if stored locally, must be encrypted
+have to think about how to store the decryption key though
+external solutions from Google and AWS can help make it more secure
+easier to make secure on a web app than on a desktop app (because can choose what's exposed to clients)
