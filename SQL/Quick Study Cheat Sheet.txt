@@ -159,6 +159,8 @@ Full Examples:
 
 [Union, Intersect, Except]
 SELECT * FROM table1 INTERSECT SELECT * FROM table2;
+	combines two WHOLE QUERIES (including the where, etc.)
+	
 INTERSECT = rows that are identical in results from both tables
 UNION = deduplicated rows from results from either table
 EXCEPT = result rows in first and not in 2nd
