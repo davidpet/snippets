@@ -505,8 +505,8 @@ big difference from all other languages = what the type of a lambda (or a method
 	primitive types ok in your own interface, but generic interfaces like in java.util.function can't take them
 	@FunctionalInterface annotation recommended on functional interfaces
 
-	functional interfaces can have static members too (only the public abstract member matters for lambdas)
-		eg. Comparator<T> has a lot of statics such as Comparator.naturalOrder()
+	functional interfaces can have static and default members too (only the public abstract member matters for lambdas)
+		eg. Comparator<T> has a lot of statics such as Comparator.naturalOrder() and defaults as well
 
 Runnable = takes nothing, returns void
 	.run()
