@@ -505,6 +505,9 @@ big difference from all other languages = what the type of a lambda (or a method
 	primitive types ok in your own interface, but generic interfaces like in java.util.function can't take them
 	@FunctionalInterface annotation recommended on functional interfaces
 
+	functional interfaces can have static members too (only the public abstract member matters for lambdas)
+		eg. Comparator<T> has a lot of statics such as Comparator.naturalOrder()
+
 Runnable = takes nothing, returns void
 	.run()
 java.util.function.Predicate = takes val and returns boolean
@@ -517,8 +520,9 @@ java.util.function.Function<TArg, TReturn> = takes params and returns value
 	.apply()
 UnaryOperator<T> takes T to T
 BinaryOperator<T> takes (T, T) to T
+IntSupplier, LongUnaryOperator, BooleanSupplier, etc. for primitive typed functional interfaces
 
-"effectively final rule" - closures must treat enclosed variable as final
+"effectively final rule" - closures (and other code) must treat enclosed variable as final
 	but they can change members, so that's how you can use a lambda to modify state
 not supported: _ for ignored args, partial application (just use a lambda), type inference (var) on lambda variable
 
@@ -639,6 +643,8 @@ Interfaces
 		methods marked with static can have a body
 	can also have 'default' methods
 		body used in implementing class if not overriden
+		effectively adds another public abstract method but subclass can ignore it if wants to use default
+			should not collide with an explcitly public abstract method
 	can also have 'private' methods (with bodies only)
 		only to be used by static and default methods (not from outside)
 	
@@ -795,6 +801,12 @@ Comparable<T>
 	this defines the "natural ordering" used by collections if no comparator passed in
 	a way to do comparisons in generics without having to rely on a type or even Number
 	the numeric boxed types implement this
+Comparator<T>
+	functional interface with compare(T o1, T o2) method
+	also static methods like reverseOrder()
+	also default methods like thenComparing() for chaining
+		Collections.sort(people, Comparator.comparing(Person::getLastName)
+                                           .thenComparing(Person::getFirstName));
 Math Operators on Generic Types
 	if T extends a specific type like Integer, operators like < may work
 		probably internally calling intValue()
