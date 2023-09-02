@@ -735,6 +735,7 @@ generic classes are more normal (<T> after class)
 	use the diamond operator on constructors to avoid unchecked warning from compiler
 	unchecked warning is triggered when you use raw types and should never be suppressed
 <T extends Number> type constraints (Number of a subclass of Number)
+	<T extends MyClass & MyOtherInterface>
 type inference boxes for you when it can
 nested <> are fine
 
@@ -776,9 +777,19 @@ Wildcards
 		for method params, variable declarations, etc.
 	List<?> is like List<Object> but with no casting needed
 	List<? extends Number> works like <T exends Number>
+		and can use & operator if needed
 	it is possible to cast to the wildcard version first and then to the Object version and such (runtime error when access but not create if wrong)
 	wildcard type constraints are totally separate from generic type constraints
 		you can't ommit or copy and paste them - have to consider the covariance/contravariance
+	you are allowed to return wildcards from methods but most of the time won't want to
+		using a generic type param instead lets the caller specify the type and use it as more than Object
+	also in many cases a method could take a wildcard but takes a generic type arg instead
+		such as in standard library sort and search methods
+	<T extends Comparable<? super T>
+		this example shows a case where wildcards wouldn't even cut it by themselves
+		Collections.sort() looks like this
+			but Collections.swap() is not generic and takes List<?> because it doesn't need that interface
+		this idiom means we'll take a Dog that is a subclass of Animal even if only Animal implements Comparable
 Covariance/Contravariance
 	<? extends Number> is Covariance [read-only]
 		don't know the type but know it's AT LEAST a Number
