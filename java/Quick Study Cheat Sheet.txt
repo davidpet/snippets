@@ -663,6 +663,9 @@ Object
 	root of all reference types (implicitly inherited if no inheritance specified)
 	@Override methods to provide systemic behavior
 		toString(), equals(), hashCode(), etc.
+	not abstract
+		new Object() is allowed
+			eg. if need opaque object reference for synchronization lock, etc.
 Objects static class
 	some null-safe versions of normal Object methods
 	Objects.equals(a, b)
@@ -740,6 +743,8 @@ type inference boxes for you when it can
 nested <> are fine
 
 not supported: metaprogramming, void as type arg, overloading by # type args
+	there is a workaround for void as type arg (java.lang.Void type)
+		subclass of Object with no members (can't convey any state)
 Type Erasure
 	runtime type of generic has no type args
 Raw Types
@@ -894,13 +899,24 @@ Paths
 	path.isRelative(), path.getParent(), etc.
 Environment Variables
 	System.getenv(), System.getProperty(), System.setProperty()
+	
 java.lang.Thread
 	thread = new Thread(() -> {Thread.sleep(1000)})	// 1s
+		takes a Runnable
 	thread.start()
 	thread.join()
-	InterruptedException/interrupt()
-		Thread.currentThread().isInterrupted()/Thread.isInterrupted()
-		Thread.sleep()
+	Thread.sleep()
+
+	alternatively, you could subclass Thread and override run()
+		which will get called when you start() the thread
+		the lambda version is more recommended now
+Interrupting threads
+	thread.interrupt() sets an interrupt status on the thread
+	built-in methods that are blocking on this thread (eg. join(), wait(), sleep()) will throw InterruptedException
+	otherwise, you can detect it by doing thread.isInterrupted() or Thread.interrupted() [statically]
+		if checking from same thread where you'd catch exception, you might then choose to throw InterruptedException
+	java.lang.InterruptedException is a checked exception
+		you should catch it whenever block on a thread and do something like e.printStackTrace()
 java.util.concurrent.CompletableFuture
 	CompletableFuture<Integer> completableFuture = 
             CompletableFuture.supplyAsync(() -> 42);
@@ -908,12 +924,61 @@ java.util.concurrent.CompletableFuture
             completableFuture.thenApply(result -> "The answer is: " + result);
 	System.out.println(transformedFuture.get());
 	java.util.concurrent.ExecutionException
+	completableFuture.cancel(true) is like thread.interrupt()
+		but immediately causes CancellationException to be thrown by anyone waiting
+	java.util.concurrent.Future<T> and java.util.concurrent.CompletionStage<T> are the implemented interfaces
+		Future<T> provides get(), isDone(), cancel(), isCancelled(), with and without timeouts
+		CompletionStage<T> provides thenApply(), etc.
 no async/await keywords
 synchronized keyword for critical sections (java.util.concurrent for more specialized lock types)
 	mark a method as synchronized to use instance as lock object when method called
 	mark a static method as synchronized to lock on the class itself
 	synchonized(lockObject) {} // block to lock on arbitrary object (which can be 'this' if you want)
 	reentrant - same thread can lock multiple times and it will be refcounted
+
+	another example usage is to have lock objects created with Object() in a class
+		then you can lock in small blocks within methods for fine-grained control
+java.util.concurrent.lock.*
+	more flexible than synchronized
+		eg. multiple conditions per lock and more types of locks
+	Lock interface
+		lock(),unlock(),lockInterruptably()
+		tryLock(), tryLock(50L, TimeUnit.MILLISECONDS) [booleans, immediate]
+		newCondition() to get Condition instance
+	Condition interface
+		can have multiple per Lock
+		do not need to lock to create, but do need to lock to signal or await them
+		signal(), signalAll(), await()
+			with or without timeouts as above
+	ReadWriteLock interface
+		separate lock for reading and writing
+		unlimited people can hold read lock as long as nobody holds write lock
+			write lock is exclusive of everything
+	ReentrantLock and ReentrantReadWriteLock
+		implementations for Lock and ReadWriteLock
+Other Synchronizers
+	Semaphore(n)
+		acquire()
+		release()
+	CountDownLatch(n)
+		countDown()
+		await()
+volatile
+	keyword for instance variables (not local variables)
+	instance variables can end up cached in registers, so multiple threads might de-sync on modification
+	volatile tells Java not to do this, which can have a performance impact
+	variables that are marked final (or are never modified after creation) don't need this as they won't de-sync
+	local variables can't use this because local variables used in lambdas should be effectively final
+	synchronized {} blocks automatically sync up memory and cache, so variables inside don't need to be volatile
+		lock itself doesn't if it's treated as final
+	other utilities like atomic numbers and such in java.util.concurrent also don't require variables to be volatile
+		see documentation for guarantees
+	volatile does not mean atomic
+		for instance post-increment ++ still not atomic on a volatile int
+	if an object reference is volatile, that only affects the reference variable (not the contents)
+atomiticity
+	all primitive numerics are atomic for read/write (but not stuff like ++)
+	long and double used to not be but are now (for a very long time now)
 wait()/notify()/notifyAll()
 	Object methods (called on lock object)
 	must be called from a critical section
@@ -926,11 +991,16 @@ wait()/notify()/notifyAll()
 		consume() method waits and uses buffer
 	these are considered old-fashioned (java.util.concurrent has better stuff)
 		but still essential to know about
-
+Guarded block
+	while(!joy) {
+            try {
+                // Thread goes to sleep until signalled
+                wait();
+            } catch (InterruptedException e) {}
+        }
+	// instead of while (!joy) {} which wastes CPU
 main thread ending will not stop threads and futures
-	completableFuture.cancel(true)
-	the future still has to check for isInterrupted using Thread
-System.exit() to force kill everything immediately
+	System.exit() to force kill everything immediately
 
 Reactive Streams (not streams API)
 	Publisher<T> is like observable from rxjs
@@ -948,6 +1018,84 @@ Reactive Streams (not streams API)
 			probably need to store it instead of Publisher<T> reference
 			asynchronous buffered data
 		mainly submit() and close()
+
+java.util.concurrent.Callable<V>
+	like java.lang.Runnable but returns a value of type V
+
+Executors
+	interfaces for managing threads (executing tasks) in java.util.concurrent
+	instead of using Thread directly, lets you separate the concerns of thread mgmt and business logic
+
+	Executor
+		execute(runnable)
+			how and when runnable is called is up to the implementation
+	ExecutorService (extends Executor)
+		submit(runnable or callable)
+			gives back a Future<T> or Future<?>
+		shutdown()
+			prevents new tasks being picked up and kills workers as tasks complete
+		awaitTermination(timeout, duration)
+			tries to wait for all workers to die with a timeout
+			to be called after shutdown()
+		shutdownNow()
+			call if awaitTermination() doesn't work (at least one worker is taking too long)
+			returns List<Runnable> of tasks that didn't finish
+			uses interrupt() to tell threads to die
+			you should make sure to at least do this by the end (eg. in a finally)
+	ScheduledExecutorService (extends ExecutorService)
+		periodic and/or delayed execution
+		uses ScheduledFuture<T>
+		for periodic, the value is meaningless (future is just for management)
+			if you want to collect results, do it with a concurrent collection yourself
+		schedule() is a bit like setTimeout() in JavaScript
+Thread Pools
+	implementations of Executors
+	left side is executor interface, right side is a static call to java.util.concurrent.Executors
+	newFixedThreadPool(n)
+		n worker threads
+	newCachedThreadPool()
+		dynamically sized worker thread pool
+	newSingleThreadExecutor()
+		one single worker thread
+	newScheduled*()
+		scheduled versions of the above
+Fork/Join Framework
+	you use a special thread pool (both as interface and implementation)
+		ForkJoinPool
+	then you call invoke() on a subclass of ForkJoinTask<V>
+		the result is a synchronous return value (if applicable)
+	you generally will subclass either RecursiveTask<V> to return a value or RecursiveAction
+		override the abstract compute() method
+		provide base case(s) and return synchronous values for them
+		for recursive cases, create more instances of the same type and call fork()
+		then call join() to get the synchrnous results of those and aggregate them together
+		in RecursiveAction, you can use invokeAll() to invoke a bunch of tasks synchronously
+Thread-Local Random
+	java.util.Random is already thread-safe
+		but in tight loops, that makes it slower because threads have to wait on each other to get a random number
+	this is usually not necessary as you just want random numbers
+	so java.util.concurrent.ThreadLocalRandom.current() gives you a thread-local random number generator
+		already created and seeded
+CopyOnWriteArrayList and CopyOnWriteSet
+	thread-safe List and Set that make new copy on all modification operations internally
+	very expensive if doing a lot of writes (don't use in that case)
+	iterators obtained before modification remain valid and use the old snapshot
+TimeUnit
+	java.util.concurrent.TimeUnit enum
+	DAYS, HOURS, MINUTES, SECONDS, MILLISECONDS, MICROSECONDS, NANOSECONDS
+	represents a unit of time rather than a duration value
+	used in a lot of java.util.concurrent utilities such as tryLock() as a unit of measure
+		tryLock(long duration, TimeUnit unit)
+	convenience conversion methods
+		eg. DAYS.convert(24, TimeUnit.HOURS) -> returns 1
+		eg. HOURS.toDays(24) -> returns 1
+	also some threading methods
+		eg. SECONDS.sleep(10);	// sleep for 10 SECONDS using Thread.sleep
+		eg. SECONDS.timedJoin(thread, 10); // thread.join with timeout
+		eg. SECONDS.timedWait(lockObject, timeout); // object.wait()
+java.time.Duration
+	Duration.ofHours(24).plusDays(2).toMinutes()
+	can be negative
 
 [JUnit]
 @Test test* methods in class
