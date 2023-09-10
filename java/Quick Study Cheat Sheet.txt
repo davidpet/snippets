@@ -74,6 +74,41 @@ Enums
 		provide your own static method such as valueOf() to loop values() and find Matching
 		this is recommended over using ordinals because it's more resilient to inserts and deletions
 
+	Constant-Specific Class body
+		enum MyOperation {
+			ADD {
+				public double apply(double x, double y) { return x + y; }
+				public void f() {}
+			},
+			SUBTRACT {
+				public double apply(double x, double y) { return x - y; }
+			};
+
+			abstract double apply(double x, double y);
+		}
+		MyOperation.ADD.apply(10, 20);	// YES
+		MyOperation.ADD.f(); // NO
+	Enum inheriting interface
+		interface Operation {
+			double apply(double x, double y);
+		}
+
+		enum MyOperation implements Operation {
+			ADD {
+				public double apply(double x, double y) { return x + y; }
+			},
+			SUBTRACT {
+				public double apply(double x, double y) { return x - y; }
+			};
+		}
+
+		same as above but interface specifies the abstract method so enum doesn't have to
+	Extensible Enums
+		a design pattern that makes use of the above
+		you can make multiple enums that inherit the same interface
+		then code to the interface (eg. Operation) instead of the enum
+		in the future people can make more enums and add more constants, but the callee doesn't care
+
 uninitialized values have sensible defaults inc. null for reference and numeric 0s for numbers
 	however, local variables are still required to be initialized before use or compile error
 		ok to initialize in conditional blocks if exhuastive
@@ -899,7 +934,7 @@ Paths
 	path.isRelative(), path.getParent(), etc.
 Environment Variables
 	System.getenv(), System.getProperty(), System.setProperty()
-	
+
 java.lang.Thread
 	thread = new Thread(() -> {Thread.sleep(1000)})	// 1s
 		takes a Runnable
