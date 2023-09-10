@@ -571,6 +571,7 @@ Method References
 	if you use an instance to the left, it is "bound"
 		the 'this' is stored internally where you don't need to see it
 		just call it like it's a static method or lambda
+	you are not allowed to treat a static method as an instance method by just binding its first arg
 
 Streams API
 	this is the way you do functional operations on collections in Java (but it's also used other places)
