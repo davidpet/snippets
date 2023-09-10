@@ -912,6 +912,7 @@ System.out.println(), System.out.print(), System.out.printf()
 pass System.in to InputStreamReader and that to BufferedReader in try-resources (java.io.*)
 	readLine() will start at current position (no newline), echo what is typed, and then go to next line
 		returns String that keeps all spaces but not the newline that ended it
+		ok to print() in between (won't get sucked back in)
 	IOException thrown
 	use Stream.of(str.split()).map(Integer::parseInt).collect(toList()) to get list of integers from user
 console = System.console();  console.readLine("Enter a value: "); console.readPassword is same but without echo
