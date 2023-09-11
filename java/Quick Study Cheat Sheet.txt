@@ -1147,6 +1147,7 @@ Fork/Join Framework
 		provide base case(s) and return synchronous values for them
 		for recursive cases, create more instances of the same type and call fork()
 		then call join() to get the synchrnous results of those and aggregate them together
+			unlike in normal threads or futures, this only throws unchecked exceptions
 		in RecursiveAction, you can use invokeAll() to invoke a bunch of tasks synchronously
 Thread-Local Random
 	java.util.Random is already thread-safe
