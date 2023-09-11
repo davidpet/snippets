@@ -479,7 +479,9 @@ try-with-resources
 		only if effectively final and already initialized
 	allowed to let exceptions propagate out
 assert condition: string
-lazy list: do it yourself
+lazy list
+	streams are evaluated lazily
+	or you can do it yourself by making your own iterator for your object
 main function args = just the args themselves (String[])
 truthiness: only actual booleans can be used in things like if/else
 	need to do == null, == 0, isEmpty(), etc. on anything else
@@ -1214,6 +1216,9 @@ you provide an abstract class and it can fill in the data for you during the bui
 [Effective Java Tips]
 ** see the Effective Java notebook **
 readable on phone
+
+[Design Patterns]
+** see the Design Patterns Java notebook **
 
 [Interview Tips ***not from notebooks**]
 if need to implement linked list, just do it from scratch
