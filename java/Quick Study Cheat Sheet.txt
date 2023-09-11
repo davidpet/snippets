@@ -611,6 +611,13 @@ Streams API
 		use static imports (eg. toList())
 		use method references instead oflambdas (eg. Integer::valueOf)
 
+Exceptions
+	lambdas can't have throws specifications, but interface members and methods can
+	basically when you assign a lambda to a functional interface, it is assumed to match the throws
+	you can throw less than what is specified, but not more (in terms of checked exceptions)
+	this means that for instance, if you use Thread with Runnable, you can't throw any checked exceptions
+		have to rewrap to unchecked or silently deal with it internally somehow
+
 [Classes]
 overall syntax looks like a lot of other languages
 	access specifier on class, then methods as described in [functions] above, and variables
@@ -783,6 +790,8 @@ nested <> are fine
 not supported: metaprogramming, void as type arg, overloading by # type args
 	there is a workaround for void as type arg (java.lang.Void type)
 		subclass of Object with no members (can't convey any state)
+		can pass null
+		no way to intermix with true void
 Type Erasure
 	runtime type of generic has no type args
 Raw Types
@@ -943,31 +952,60 @@ java.lang.Thread
 	thread = new Thread(() -> {Thread.sleep(1000)})	// 1s
 		takes a Runnable
 	thread.start()
+	thread.isAlive()
 	thread.join()
+		optional timeout in millis (if thread not dead, return as if nothing wrong)
+			join = wait for thread to finish
+		check thread.isAlive() if needed after
 	Thread.sleep()
+		duration in millis plus optionally nanos in addition
 
 	alternatively, you could subclass Thread and override run()
 		which will get called when you start() the thread
 		the lambda version is more recommended now
+
+	Thread.currentThread() gets current executing thread's instance
 Interrupting threads
-	thread.interrupt() sets an interrupt status on the thread
-	built-in methods that are blocking on this thread (eg. join(), wait(), sleep()) will throw InterruptedException
-	otherwise, you can detect it by doing thread.isInterrupted() or Thread.interrupted() [statically]
-		if checking from same thread where you'd catch exception, you might then choose to throw InterruptedException
+	each thread has an interrupted flag (thread.isInterrupted() or Thread.interrupted() for current thread)
+	each thread also has thread.isAlive() which is separate from that
+		when a thread completes or dies somehow, isAlive() goes to false
+		can be both interrupted and alive at the same time
+	thread.interrupt() sets the interrupted flag (but does not affect isAlive())
+	calling a method like join(), sleep(), or get() in a thread that has interrupted flag will throw InterruptedException
+		these have nothing to do with the thread you're joining, for instance
+		if you join an interrupted thread that is still alive, it's fine
+	usually, the child thread will detect its own interruption via the exception and/or flag
+		then gracefully exit/stop working (die)
+		you might choose to throw InterruptedException from the flag check and then consolidate the death code in a handler
 	java.lang.InterruptedException is a checked exception
 		you should catch it whenever block on a thread and do something like e.printStackTrace()
+
+	you can join a dead thread as well - it will silently just return right away
+		won't throw any InterruptedException or anything like that, for instance
+
+	you can't throw any checked exceptions from the child thread that aren't declared in their interfaces
+		but you can throw unchecked exceptions
+		these will just kill the thread (making join() return immediately in another thread)
+		the exception will not propagate to other threads
+
 java.util.concurrent.CompletableFuture
 	CompletableFuture<Integer> completableFuture = 
             CompletableFuture.supplyAsync(() -> 42);
+				takes a Supplier<T>
 	CompletableFuture<String> transformedFuture = 
             completableFuture.thenApply(result -> "The answer is: " + result);
 	System.out.println(transformedFuture.get());
-	java.util.concurrent.ExecutionException
-	completableFuture.cancel(true) is like thread.interrupt()
-		but immediately causes CancellationException to be thrown by anyone waiting
 	java.util.concurrent.Future<T> and java.util.concurrent.CompletionStage<T> are the implemented interfaces
 		Future<T> provides get(), isDone(), cancel(), isCancelled(), with and without timeouts
 		CompletionStage<T> provides thenApply(), etc.
+	get() throws 2 checked exceptions
+		InterruptedException is for the main thread based on its own interrupted flag
+		ExecutionException is if any unchecked exception was thrown from inside the future's body
+			eg. you may choose to use CompletionException
+	to cancel the future from the outside, you can call cancel(true)
+		this will throw CancellationException on the call to get()
+		it is an unchecked exception
+
 no async/await keywords
 synchronized keyword for critical sections (java.util.concurrent for more specialized lock types)
 	mark a method as synchronized to use instance as lock object when method called
@@ -1105,6 +1143,7 @@ Fork/Join Framework
 		the result is a synchronous return value (if applicable)
 	you generally will subclass either RecursiveTask<V> to return a value or RecursiveAction
 		override the abstract compute() method
+			it returns void for RecursiveAction (not a member of ForkJoinTask)
 		provide base case(s) and return synchronous values for them
 		for recursive cases, create more instances of the same type and call fork()
 		then call join() to get the synchrnous results of those and aggregate them together
@@ -1125,6 +1164,7 @@ TimeUnit
 	represents a unit of time rather than a duration value
 	used in a lot of java.util.concurrent utilities such as tryLock() as a unit of measure
 		tryLock(long duration, TimeUnit unit)
+	not used in the older things like thread.join() and Thread.sleep()
 	convenience conversion methods
 		eg. DAYS.convert(24, TimeUnit.HOURS) -> returns 1
 		eg. HOURS.toDays(24) -> returns 1
@@ -1135,6 +1175,10 @@ TimeUnit
 java.time.Duration
 	Duration.ofHours(24).plusDays(2).toMinutes()
 	can be negative
+	converting to less precision will truncate
+System.nanoTime()
+	if need to get timestamp before and after algorithm
+	then subtract and convert as needed
 
 [JUnit]
 @Test test* methods in class
