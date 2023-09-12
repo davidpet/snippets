@@ -9,6 +9,7 @@ Also, the interview tips section is only in here (not elsewhere).
 String
 boolean [true, false]
 char, byte, short, int, long
+float (32-bit), double (64-bit)
 no unsigned
 L for long literal
 f for float literal
@@ -119,6 +120,7 @@ uninitialized values have sensible defaults inc. null for reference and numeric 
 
 [Collections]
 in general, ranges are inclusive lower bound and exclusive upper bound
+sizes in Java are int, which is signed, so collections have a 2 giga-element limit
 
 literal, concat, indexer, etc. only available for arrays, which are a weird type in general
 	others only use methods
@@ -935,6 +937,8 @@ Math.floor(), Math.abs(), Math.max(), Math.round(), Math.cos()
 java.util.Random
 	new Random().nextInt(100) or nextFloat(), etc.
 	nextGaussian() for gaussian distribution, etc.
+java.math.BigInteger
+	for numbers larger than long (eg. unsigned long since no unsigned)
 
 File I/O
 	many different ways
