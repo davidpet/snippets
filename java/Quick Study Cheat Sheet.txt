@@ -512,6 +512,7 @@ no default args directly (simulate with Optional and/or overloading)
 	Optional.of(value) [populated, assumed not null]
 	Optional.ofNullable(value) [populated if not null]
 	val.isPresent(), val.get(), val.orElse(default)
+	Optional.stream() to get 0 or 1 element stream
 variadic functions
 	int... numbers
 		this param becomes an array
@@ -590,6 +591,13 @@ Streams API
 
 	forEach(x -> System.out.println(x))
 		does not return another stream
+		if the stream has no guarnateed order (eg. parallel), use forEachOrdered() instead if needed
+
+	findFirst()/findAny()
+		terminal operations that get 1 single value (first or non-guranteed order)
+		use these after filter() to find the first or random matching value based on lambda
+			ok due to lazy evaluation
+		both return an Optional<> so you need to check it
 
 	Stream.of() for creating based on values
 		variadic (args or array)
@@ -612,6 +620,49 @@ Streams API
 	tips for readability:
 		use static imports (eg. toList())
 		use method references instead oflambdas (eg. Integer::valueOf)
+
+	lazy evaluation
+		only terminal operations (get actual value(s)) cause real evaluation
+	infinite sequences
+		Stream.iterate(seed, lambdaOnPrevValue) -> infinite lazy sequence
+		eg. Stream.iterate(1, n -> n + 1) -> all positive integers
+		eg. STream.iterate(0, n -> n + 2) -> all even nonnegative integers
+		then you can use map() etc. to transform further
+		do not accidentally assume n is the index! (be careful)
+
+	other interesting stream methods
+		allMatch(pred), anyMatch(pred), noneMatch(pred)
+		count(), max(), min()
+		distinct()
+		mapToDouble(fn), etc. (to get DoubleStream for instance)
+		flatMap(fn) (map elements to streams and then concat them lazily)
+		flatMapToDouble(fn), etc.
+		generate(supplier) to generate based on a generator function
+		limit(n) and skip(n)
+		toArray()
+		sorted() and sorted(comparator)
+		peek(fn) [like tap() in rxjs]
+
+	static members
+		concat(stream1, stream2)
+			lazily do stream1 elements then stream2 Elements
+		empty()
+			to get an empty stream
+
+	Other uses of Streams
+		Random.ints(), Random.longs(), etc. [infinite random sequences]
+		optional.stream() [0 or 1 elements]
+
+	Parallel Streams
+		collection.parallelStream()
+		stream.parallel()
+		lose order guarantee, gain performance on map() and stuff like that
+		sort() and similar will have no benefit
+		need to benchmark for specific problem to see if worth it
+		uses ForkJoin framework under the hood
+
+	Stream Builder
+		Stream.builder().add(val1).add(val2).build()
 
 Exceptions
 	lambdas can't have throws specifications, but interface members and methods can
@@ -937,6 +988,7 @@ Math.floor(), Math.abs(), Math.max(), Math.round(), Math.cos()
 java.util.Random
 	new Random().nextInt(100) or nextFloat(), etc.
 	nextGaussian() for gaussian distribution, etc.
+	ints(), longs(), etc. for infinite streams
 java.math.BigInteger
 	for numbers larger than long (eg. unsigned long since no unsigned)
 
@@ -1153,6 +1205,13 @@ Fork/Join Framework
 		then call join() to get the synchrnous results of those and aggregate them together
 			unlike in normal threads or futures, this only throws unchecked exceptions
 		in RecursiveAction, you can use invokeAll() to invoke a bunch of tasks synchronously
+	instead of methods like join() throwing exceptions, you can kind of ignore it in the task
+		unchecked exceptions will propagate up (rethrown) to the top level invoke()
+		no InterruptedException here
+
+Parallel Streams
+	you can use a parallel stream (see Streams API way above) to do parallel computations too
+		without having to worry about managing thread pools or tasks or anything
 Thread-Local Random
 	java.util.Random is already thread-safe
 		but in tight loops, that makes it slower because threads have to wait on each other to get a random number
