@@ -579,27 +579,79 @@ param names aren't part of the unique identity of a method
 	(Integer a) -> a * a
 	x -> x * 2
 big difference from all other languages = what the type of a lambda (or a method reference) is and how you call it
-	"functional interface" = an interface containing 1 method signature
+	"functional interface" = an interface containing 1 abstract method signature
 	assigning a lambda or method to it automatically makes it callable via the method on the interface
 	primitive types ok in your own interface, but generic interfaces like in java.util.function can't take them
 	@FunctionalInterface annotation recommended on functional interfaces
 
 	functional interfaces can have static and default members too (only the public abstract member matters for lambdas)
 		eg. Comparator<T> has a lot of statics such as Comparator.naturalOrder() and defaults as well
+		eg. Function<T1, T2> has compose() default method for doing function composition
+		default methods are fluently chained rather than modifying any state
 
 Runnable = takes nothing, returns void
 	.run()
-java.util.function.Predicate = takes val and returns boolean
-	.test()
-java.util.function.Consumer = takes val and return void
-	.accept()
-java.util.function.Supplier = takes nothing and returns a value
+java.util.concurrent.Callable<V> = like runnable but returns a value
+	.call()
+		can throw any checked exception
+java.util.function.Predicate<T> = takes val and returns boolean
+	.test(T val)
+	default methods for combining:
+		.and(predicate)
+		.or(predicte)
+		.negate()
+	static methods for creating:
+		.isEqual(otherObj)
+java.util.function.Consumer<T> = takes val and return void
+	.accept(T val)
+	default methods:
+		.andThen(consumer) for chaining consumers for each value
+java.util.function.Supplier<T> = takes nothing and returns a value
 	.get()
-java.util.function.Function<TArg, TReturn> = takes params and returns value
-	.apply()
-UnaryOperator<T> takes T to T
-BinaryOperator<T> takes (T, T) to T
-IntSupplier, LongUnaryOperator, BooleanSupplier, etc. for primitive typed functional interfaces
+java.util.function.Function<TArg, TReturn> = takes single param and returns value
+	.apply(TArg arg)
+	default methods:
+		.compose(beforeFunction) to apply another function first and then apply this one
+			eg. think of f(g(x)) - you have f(g) and then you make it f(g(x)) by calling this
+		.andThen(afterFunction) to do the opposite of compose
+			eg. you have g(x) and then you make it f(g(x))
+	static methods:
+		.identity() to always return argument as return
+java.util.function.BiFunction<TArg1, TArg2, TReturn> = function of 2 params
+	.apply(arg1, arg2)
+	default methods:
+		.andThen(function) to apply further transform on the result
+java.util.function.BiConsumer and java.util.function.BiPredicate = 2 arg input verisons of those
+
+java.util.function.UnaryOperator<T> = Function<T, T>
+	all members of Function
+java.util.function.BinaryOperator<T> = BiFunction<T, T, T>
+	static methods:
+		maxBy() and minBy() both taking Comparator<T>
+	plus all members of BiFunction
+
+java.util.function has versions of the above with various combinations of primitives as well
+	to get around the limitation of generics not accepting primitives
+	in general, composition methods tend to stick to their own type
+	the naming convention seems to be:
+		add AsType to the end of methods that return a primitive
+		leave name alone if just taking primitive as args
+
+	eg. BooleanSupplier
+		.getAsBoolean()
+	eg. DoubleBinaryOperator
+		.applyAsDouble(d1, d2)
+	eg. DoubleFunction<R>
+		.apply(d)
+	eg. DoubleToIntFunction
+		.applyAsInt(d)
+	eg. ObjectIntConsumer
+		.accept(obj, n)
+	eg. ToIntFunction<T> // note this is different from IntFunction!
+		.applyAsInt(T t)
+	eg. ToLongBiFunction<T1, T2>
+		.applyAsLong(T1 t1, T2 t2)
+	
 
 "effectively final rule" - closures (and other code) must treat enclosed variable as final
 	but they can change members, so that's how you can use a lambda to modify state
