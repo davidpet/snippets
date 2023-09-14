@@ -640,7 +640,8 @@ Streams API
 		s.<T>mapToObj() to provide custom conversion to Stream<T>
 		cannot collect() [use boxed() or mapToObj first]
 			the method is there but it doesn't work, probably because of generics
-
+		can assume most Stream stuff is there (eg. of(), concat(), etc.)
+		
 	tips for readability:
 		use static imports (eg. toList())
 		use method references instead oflambdas (eg. Integer::valueOf)
@@ -707,10 +708,9 @@ Streams API
 		does not interact badly with using map() etc. inside the try {}
 
 	Fibonacci Example (mine)
-		Stream.iterate(new int[] {0, 1}, a -> new int[] {a[1], a[0] + a[1]}).mapToInt(a[1])
-			but then need IntStream.concat(Stream.of(0), fibStream) to get the final stream
+		Stream.iterate(new int[] {0, 1}, a -> new int[] {a[1], a[0] + a[1]}).mapToInt(a[0])
 			then just limit() and toArray() to get final result
-			
+
 Exceptions
 	lambdas can't have throws specifications, but interface members and methods can
 	basically when you assign a lambda to a functional interface, it is assumed to match the throws
