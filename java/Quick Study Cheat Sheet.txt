@@ -497,6 +497,12 @@ some useful built-in exceptions:
 	java.io.IOException
 		java.io.FileNotFoundException
 
+key exception members
+	getMessage()
+	getCause() [an exception]
+	getStackTrace() [an array of stack trace info elements]
+	printStackTrace() [overrides for streams or just prints to System.err]
+
 [Functions]
 just like TypeScript, C#, etc. (access, modifiers, etc. all together)
 	except all functions are methods of a class (no top-level)
@@ -652,17 +658,35 @@ Streams API
 	Other uses of Streams
 		Random.ints(), Random.longs(), etc. [infinite random sequences]
 		optional.stream() [0 or 1 elements]
+		java.nio.file.Files.lines(Paths.get(path))
+			use with try-with-resources
 
 	Parallel Streams
 		collection.parallelStream()
 		stream.parallel()
-		lose order guarantee, gain performance on map() and stuff like that
-		sort() and similar will have no benefit
-		need to benchmark for specific problem to see if worth it
 		uses ForkJoin framework under the hood
+
+		terminal operations like collect(), findFirst(), etc. put the order back
+		intermediate operations like map() don't respect the order (for parallelism)
+			some operations like sort() will still have order dependence and not benefit
+		need to benchmark for specific problem to see if worth it
+		forEach vs. forEachOrdered behaves differently in this case
+
+		can turn back into sequential stream with stream.sequential()
+		
+	Unordered Streams
+		stream.unordered()
+		intermediate and terminal operations lose order dependency
+		may have performance benefits in some cases
+		unordered collections like HashSet<T> will already use this out of the box
 
 	Stream Builder
 		Stream.builder().add(val1).add(val2).build()
+
+	AutoCloseable
+		streams are autocloseable so that you can use them with file I/O etc.
+			then the try-with-resources will close the file
+		does not interact badly with using map() etc. inside the try {}
 
 Exceptions
 	lambdas can't have throws specifications, but interface members and methods can
@@ -981,6 +1005,7 @@ pass System.in to InputStreamReader and that to BufferedReader in try-resources 
 	IOException thrown
 	use Stream.of(str.split()).map(Integer::parseInt).collect(toList()) to get list of integers from user
 console = System.console();  console.readLine("Enter a value: "); console.readPassword is same but without echo
+System.out, System.in, System.err
 
 System.gc()
 
