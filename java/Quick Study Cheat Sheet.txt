@@ -11,8 +11,10 @@ boolean [true, false]
 char, byte, short, int, long
 float (32-bit), double (64-bit)
 no unsigned
-L for long literal
-f for float literal
+L for long literal (instead of int)
+f for float literal (instead of double)
+	d for double literal also
+exponential notation: 1E9, 0.79E-7, 1.0E+9f, etc.
 C++ style quoting for strings and chars
 
 interning for numbers and strings
@@ -34,6 +36,7 @@ Double.NaN, Double.POSITIVE_INFINITY, Double.isNaN(), Double.isInfinite()
 'var' keyword for type inference
 no typedef
 variable scoping like C++ instead of Python
+no local inline statics (only class members)
 
 Enums
 	enum MyEnum { VALUE1, VALUE2 }
@@ -136,6 +139,9 @@ numbers.length
 Arrays.sort(numbers)
 int[] [] numbers = {{1, 2}, {3, 4}}
 for (var x : numbers) {} // This is the only thing here that matches other collections
+no way to take subarray without making copy
+	pass indices or make your own ArraySlice wrapper
+
 Arrays class
 	static methods to do collection operations on arrays
 		in-place mutability
@@ -151,10 +157,16 @@ Arrays class
 
 	hashCode() to get hash code of an array of Object
 
+	equals()
+	copyOf(original, length) and copyOfRange(original, from, to)
+	parallelSort()
+	members overloaded for primitive types
+
 java.util.* for collection interfaces and implementations
 
 List<T> interface
 	ArrayList<T> implementation (like c++ vector)
+		c'tor overloads to take collection or initial capacity
 	LinkedList<T> implementation
 list.add(item)
 list.add(index, item)	// insert operation
@@ -180,6 +192,11 @@ Collections.reverseOrder()
 list.subList(from, to)	// inclusive, exclusive bounds, gets new List<T>
 	this is how you slice, and it's a mutable window into the original
 	you can modify, append, etc.
+	changing length of source invalidates (exception thrown next time read or use)
+	if have chain of sublists, they delegate back to each other
+		changing length of most derived changes length of others
+		changing length of source invalidates more derived
+		not the most efficient of doing recursion like in Quicksort
 list.toArray()		// will give Object[]
 list.toArray(T[] a)	// to force proper runtime type
 for (var x : list) {}
@@ -191,7 +208,7 @@ Map<TKey, TValue> interface
 	java.util.concurrent.ConcurrentHashMap = recommended for multithreaded
 	LinkedHashMap<TKey, TValue> implementation (ordered by insertion)
 	TreeMap<> = ordered by key natural order
-	EnumMap<> = bitfield version
+	EnumMap<> = enum key version
 a lot like List<T> except use keys instead of indices and:
 	.put() instead of .set()/.add()
 	.containsKey() and .containsValue() instead of just contains
@@ -359,11 +376,17 @@ Sorted interfaces
 		add methods like first, last, subSet (or firstKey, lastKey, subMap)
 		implementations include TreeSet and TreeMap
 
-Bitfields
-	EnumSet and EnumMap are implementations of Set and Map
-		they take enum type in c'tor
-		then they use the least bits necessary for each entry and store compactly
-		eg. an enum with 2 values could be 1 bit per key
+Bitfields (EnumSet)
+	EnumSet is built for an enum type and maps 1 enum value per bit as a bitmask
+	you use static methods of EnumSet to create them and then treat like any other set
+	EnumSet.of(val1, val2)
+	EnumSet.allOf(MyEnum.class)
+	EnumSet.noneOf(MyEnum.class)
+	EnumSet.complementOf(otherSet)
+EnumMap
+	built around an enum type - uses fixed size array based on knowledge of total keys
+	new EnumMap(MyEnum.class)
+	new EnumMap(otherEnumMap)
 
 Implementing Objects for Collections
 	to put into a collection that uses hashes, you will need hashCode() and equals()
@@ -371,6 +394,10 @@ Implementing Objects for Collections
 		utilize Objects.hash(...) to make this easy
 	to support sorting and operations like that, you will need to implement Comparable<T>
 	to support writing the collection to a string, implement toString()
+
+Swapping
+	Collections.swap(list, i1, i2) for lists only
+	none provided for array or in general due to no ref parameters
 
 [Strings]
 c++style comments (// and /* */)
@@ -641,7 +668,7 @@ Streams API
 		cannot collect() [use boxed() or mapToObj first]
 			the method is there but it doesn't work, probably because of generics
 		can assume most Stream stuff is there (eg. of(), concat(), etc.)
-		
+
 	tips for readability:
 		use static imports (eg. toList())
 		use method references instead oflambdas (eg. Integer::valueOf)
@@ -1032,7 +1059,8 @@ System.out, System.in, System.err
 
 System.gc()
 
-Math.floor(), Math.abs(), Math.max(), Math.round(), Math.cos()
+Math.floor(), Math.abs(), Math.max(), Math.round(), Math.cos(radians), etc.
+	Math.PI and Math.E constants
 java.util.Random
 	new Random().nextInt(100) or nextFloat(), etc.
 	nextGaussian() for gaussian distribution, etc.
