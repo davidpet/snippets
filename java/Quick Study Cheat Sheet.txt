@@ -122,9 +122,11 @@ uninitialized values have sensible defaults inc. null for reference and numeric 
 in general, ranges are inclusive lower bound and exclusive upper bound
 sizes in Java are int, which is signed, so collections have a 2 giga-element limit
 
-literal, concat, indexer, etc. only available for arrays, which are a weird type in general
+literal, indexer, etc. only available for arrays, which are a weird type in general
 	others only use methods
 array can take primitive types but the others must take boxed types
+arrays cannot be concated directly (either with + or with a method)
+	you could use streams or something else to do so
 
 int[] numbers = {1, 2, 3, 4, 5}; // fixed size, mutable contents
 f(new int[] {1, 2, 3});		// only way to pass an array literal
@@ -159,6 +161,7 @@ list.add(index, item)	// insert operation
 list.addAll(iterable)
 list.get(index)
 list.set(index, item)
+	you cannot reify the list by setting past the end
 list.remove(index)
 list.remove(item)
 	depends on item.equals() [or both being null] to find FIRST MATCh
@@ -264,6 +267,9 @@ Casting
 	you cannot cast a whole array between boxed vs. unboxed in one cast
 	you can cast an array from Object[] to Integer[] for instance though
 		you can't do this (directly) with generics though
+		caveat: this only works if the array is created as Integer[] and not Object[]
+			so for an API such as stream.toArray(), this won't work
+			it's a whole array cast and not an element-by-element one
 
 	to cast elements for collections/generics, the syntax is weird:
 		List<Object> objList = (List<Object>)(List<?>)list;
@@ -583,6 +589,12 @@ Method References
 		the 'this' is stored internally where you don't need to see it
 		just call it like it's a static method or lambda
 	you are not allowed to treat a static method as an instance method by just binding its first arg
+	if the method is overloaded, the compiler can usually deduce which one from the context
+	constructors as methods are special
+		use 'new' as the name and treat as static
+		input = c'tor args, output = instance of the type
+		eg. MyClass::new taking c'tor args
+		eg. int[]::new taking length of array
 
 Streams API
 	this is the way you do functional operations on collections in Java (but it's also used other places)
@@ -594,6 +606,10 @@ Streams API
 	various collectors like getting max value, converting to string, groupBy (returns a Map), etc.
 	do the above fluently (eg. List<int> newList = list.stream().map().collect())
 	custom collectors can be implemented via Collector<> interface (which is complicated)
+	Collectors doesn't deal with arrays
+		stream.toArray() returns Object[] (which can't be cast)
+		stream.toArray(Integer[]::new) returns Integer[] // no primitives allowed
+		primitive arrays like IntStream have their own toArray() with primitive return array types
 
 	forEach(x -> System.out.println(x))
 		does not return another stream
@@ -617,11 +633,13 @@ Streams API
 	IntStream = primitive int stream (not Stream<>) for perf.
 		IntStream.range(0, 10) for a stream of 0..9
 		IntStream.of(1, 2, 3) for variadic args(or single array) giving values
+		stream.mapToInt(n -> n) // boxed to primitive (could use Integer::intValue too)
 		s.max(), s.asDoubleStream(), s.forEach()
 		s.toArray() to collect as an array of int
 		s.boxed() to make a Stream<Integer>
 		s.<T>mapToObj() to provide custom conversion to Stream<T>
 		cannot collect() [use boxed() or mapToObj first]
+			the method is there but it doesn't work, probably because of generics
 
 	tips for readability:
 		use static imports (eg. toList())
@@ -688,6 +706,11 @@ Streams API
 			then the try-with-resources will close the file
 		does not interact badly with using map() etc. inside the try {}
 
+	Fibonacci Example (mine)
+		Stream.iterate(new int[] {0, 1}, a -> new int[] {a[1], a[0] + a[1]}).mapToInt(a[1])
+			but then need IntStream.concat(Stream.of(0), fibStream) to get the final stream
+			then just limit() and toArray() to get final result
+			
 Exceptions
 	lambdas can't have throws specifications, but interface members and methods can
 	basically when you assign a lambda to a functional interface, it is assumed to match the throws
