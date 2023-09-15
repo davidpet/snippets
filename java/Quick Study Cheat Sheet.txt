@@ -142,7 +142,13 @@ you cannot skip items or leave off the end like in C++
 numbers[0]
 numbers.length
 Arrays.sort(numbers)
-int[] [] numbers = {{1, 2}, {3, 4}}
+int[][] numbers = {{1, 2}, {3, 4}}
+	multidimensional array, but actually array of arrays
+	numbers.length is 2 here
+	new int[10][] allowed (get 10 nulls)
+	new int[][10] not allowed (meaningless)
+	new int[10][10] allowed (100 0s)
+
 for (var x : numbers) {} // This is the only thing here that matches other collections
 no way to take subarray without making copy
 	pass indices or make your own ArraySlice wrapper
@@ -166,6 +172,10 @@ Arrays class
 	copyOf(original, length) and copyOfRange(original, from, to)
 	parallelSort()
 	members overloaded for primitive types
+
+	if arrays might be members of the array, you should use:
+		deepToString, deepEquals, deepHashCode
+		these will recursively expand the next level down
 
 java.util.* for collection interfaces and implementations
 
@@ -222,6 +232,15 @@ iterate values with .values() which gets a Collection<TValue>
 	iterable collection in case order matters, but for HashMap it doesn't
 .getOrDefault(key, defaultValue)
 .remove() can take just key or key and value
+.entrySet() gets a set of Map.Entry<TKey, TValue>
+	you can use getValue() and getKey() to see the members
+	you can use setValue() to modify the value (which affects the map!)
+	Map.Entry is an interface
+		concrete ones are in java.util.AbstractMap
+			SimpleEntry - normal one
+			SimpleImmutableEntry - for thread-safe maps
+			both have c'tors that can take an entry or a key and value
+		also some static members like comparables
 
 Set<T> interface
 	HashSet<T> implementation
@@ -417,11 +436,20 @@ Empty Constants
 	Collections.EMPTY_SET, EMPTY_LIST, EMPTY_MAP
 	immutable
 
-hashCode() implementation
-	collections already implement a hash code based on their items
+hashCode(), equals(), and toString() implementations
+	collections already implement based on their items
 	the abstraction is lower level than the container, so it doesn't depend on other state
 	eg. immutable list vs. mutable list have same hash if same items
 	this makes collections suitable to be composed into higher collections (eg. use List as tuple)
+	this also makes multidimensional lists and such just work without any special handling or deep* methods
+
+Deep copies
+	using arr.clone() or a collection constructor gives you a 1-level (shallow) copy
+	there are 2 approaches to make a deep copy:
+		1. manually via iteration
+		2. using streams
+			the outer collection becomes a stream which is collected back again
+			the inner colleciton can be copied with a copy constructor, eg. in a map()
 
 [Strings]
 c++style comments (// and /* */)
@@ -717,6 +745,10 @@ Streams API
 		stream.toArray() returns Object[] (which can't be cast)
 		stream.toArray(Integer[]::new) returns Integer[] // no primitives allowed
 		primitive arrays like IntStream have their own toArray() with primitive return array types
+	the toMap() collector requires a method reference/lambda for key and value
+		it will take whatever object it has, which can, for instance, be a Map.Entry<>
+		then apply the methods you give it (such as unbound getKey and getValue methods)
+	Map doesn't support stream(), but keySet(), values(), and entrySet() of course do
 
 	forEach(x -> System.out.println(x))
 		does not return another stream
@@ -1605,7 +1637,7 @@ Patterns
 		there may be some element of pruning but it's not a synonym for it
 		the "generating combinations" pattern above can be thought of as backtracking
 			you back out a change that makes a digit too high and move to next cell, for instance
-		
+
 HackerRank-specific tips
 	if you exceed the time limit, make sure you aren't updating the wrong variable or something
 		sometimes you think it's because it's pick and you used n^2, but a lot of time it's a bug
