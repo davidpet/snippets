@@ -5,6 +5,11 @@ Going forward, I should review the actual notebooks, but this is so I can study 
 Also, the interview tips section is only in here (not elsewhere).
 *************************************************************************************
 
+[Online Documentation]
+searching for Java Stream, for instance, gives you a Java 8 result
+add 17 to the search string to get Java 17 results
+as a result of this, a lot of the info in here may be limited to 8 unnecessarily
+
 [Variables]
 String
 boolean [true, false]
@@ -323,6 +328,9 @@ Simulating Literals in non-arrays
 	Arrays.asList(item1, item2, item3) to make an array list that can't be resized (but is mutable)
 	{{ }} anonymous class with initializer block (caution!)
 	List.of(), Set.of(), etc. in addition to taking mutable versions of the collections, can take varargs to specify items inline
+		explicitly disallow nulls for philosophical reasons
+		this restriction doesn't apply to Arrays.asList() or Stream.of()
+		also doesn't apply if wrap existing list with unmodificableList() call
 
 Filling with Values
 	new int[5] gets 5 0s
@@ -399,6 +407,22 @@ Swapping
 	Collections.swap(list, i1, i2) for lists only
 	none provided for array or in general due to no ref parameters
 
+Iterators/Iterables
+	collections implement Iterable<T> interface in java.lang
+		has an iterator() member to get an Iterator<T> (java.util)
+	Iterator<T> has hasNext() and next() and some default methods
+	the interface is compatible with laziness for things like streams
+
+Empty Constants
+	Collections.EMPTY_SET, EMPTY_LIST, EMPTY_MAP
+	immutable
+
+hashCode() implementation
+	collections already implement a hash code based on their items
+	the abstraction is lower level than the container, so it doesn't depend on other state
+	eg. immutable list vs. mutable list have same hash if same items
+	this makes collections suitable to be composed into higher collections (eg. use List as tuple)
+
 [Strings]
 c++style comments (// and /* */)
 
@@ -471,6 +495,10 @@ line endings
 	file readers are resilient
 	writing with \n usuaully ok
 	System.lineSeparator() if need to get for system
+
+case insensitivity
+	static comparator String.CASE_INSENSITIVE_ORDER
+	method s.compareToIgnoreCase()
 
 [Operators]
 math & bit & boolean & comparison & assignment operators are exactly like C++
@@ -693,6 +721,8 @@ Streams API
 	forEach(x -> System.out.println(x))
 		does not return another stream
 		if the stream has no guarnateed order (eg. parallel), use forEachOrdered() instead if needed
+	forEach(System.out::println)
+		clearer style
 
 	findFirst()/findAny()
 		terminal operations that get 1 single value (first or non-guranteed order)
@@ -737,11 +767,14 @@ Streams API
 	other interesting stream methods
 		allMatch(pred), anyMatch(pred), noneMatch(pred)
 		count(), max(), min()
+			note that count() is a long instead of int
+			implies that streams can be more than 2 GB elements
 		distinct()
 		mapToDouble(fn), etc. (to get DoubleStream for instance)
 		flatMap(fn) (map elements to streams and then concat them lazily)
 		flatMapToDouble(fn), etc.
 		generate(supplier) to generate based on a generator function
+			infinite only - no way to signal stop
 		limit(n) and skip(n)
 		toArray()
 		sorted() and sorted(comparator)
@@ -790,12 +823,66 @@ Streams API
 		Stream.iterate(new int[] {0, 1}, a -> new int[] {a[1], a[0] + a[1]}).mapToInt(a[0])
 			then just limit() and toArray() to get final result
 
+	Newer (9+) Methods
+		`dropWhile(predicate)`
+			- skips elements as long as predicate keeps matching
+			- for ordered stream only
+		`takeWhile(predicate)`
+			- takes elements as long as predicate keeps matching
+			- for ordered stream only
+		`ofNullable(e)`
+			- similar to Optional.stream()
+			- 1 element if non-null, otherwise 0
+		`mapMulti*`
+			- methods for mapping multiple elements onto each element
+		`iterate(seed, predicate, operator)`
+    		- new overload of iterate() to allow for stopping when a condition stops being met (non-infinite)
+			- functions like a for loop where the index variable is the thing being generated
+
+	Method References
+		don't forget to try to use method references instead of lambdas when you can
+		eg. System.out::println for forEach() or peek()
+		eg. Objects::nonNull for predicates
+
+	Iterator
+		stream.iterator() gets an Iterator<T>
+			closes the stream (terminal)
+			still lazy
+		stream doesn't implement Iterable technically, so can't do range-for
+
+	Zip
+		not available, but you can simulate it yourself with iterator() and generate()
+		save 2 (effectively final) iterators and call generate with a lambda
+		use sentinal values for hasNext() being false and then use takeWhile() to cut off the end
+
+	Infinite Repeated Value Stream
+		Stream.generate(() -> 100)
+
+	Chess Queen Attacks
+		to avoid writing 8 nasty for loops
+		create one-liner methods to do upward, downward, and repeated infinite sequences from a number
+		then make a zip method to make chess squares sequence from two of those (infinite)
+			use a Square class instead of a List for clarity
+		then make a predicate to check for valid squares based on boundaries and criteria of the problem
+		then make a countAttacks method that does takeWhile() on that predicate on the zipped squence and count()
+		the final result is the sum of 8 calls to countAttacks(zip()) with all the combos of the methods
+
+		the iterative alternative is 8 for loops, each with either nesting or hardcoding one of the variables
+		then each for loop has to check other criteria (like if hits obstacles) and bail
+		then just increment count each non-bailed iteration
+		conceptually the same but uglier, more repetitive, and have to craft each loop w/ copy/paste
+
 Exceptions
 	lambdas can't have throws specifications, but interface members and methods can
 	basically when you assign a lambda to a functional interface, it is assumed to match the throws
 	you can throw less than what is specified, but not more (in terms of checked exceptions)
 	this means that for instance, if you use Thread with Runnable, you can't throw any checked exceptions
 		have to rewrap to unchecked or silently deal with it internally somehow
+
+IIFE
+	((Runnable) () -> System.out.println("Hi!")).run();
+	Predicate<Integer> p = ((Predicate<Integer>) x -> x > 0).and(x -> x % 2 == 0);
+		don't forget to specify the type args instead of using the raw type or it won't work
 
 [Classes]
 overall syntax looks like a lot of other languages
@@ -900,6 +987,8 @@ Objects static class
 		variadic method to hash multiple objects into 1 hash
 		useful to call for hashCode() implementation of class with its members
 		hashes the varargs array using Arrays.hashCode()
+	Objects.isNull(o) and Objects.nonNull(o)
+		useful for predicates
 
 Useful Built-in Interfaces
 	Cloneable
@@ -924,6 +1013,8 @@ Boxing/Unboxing
 		MAX_VALUE
 	boxed types are still interned unless you used 'new' to create them
 	boxed types are IMMUTABLE (value can't be reset for an instance)
+	a lot of operations like <, +, etc. implicitly unbox and rebox and work as expected
+		even in generic methods that use the boxed types
 
 Anonymous Class
 	MyInterface obj = new MyInterface() {
@@ -1492,7 +1583,29 @@ Patterns
 		don't implement interface unless you're prepareed to do the whole thing
 		to add your own interface, just add your own as a mixin
 	don't forget to subract '0' from char if it's a digit and doing math
-
+	don't forget that % can be used to check if a number evenly divides another
+		that should be obvious but I had a brain fart about it in a practice problem
+		did some unnecessary float division with epsilon check
+	use infinite lazy streams combined and with takeWhile() and such to make iteration less tedious
+	generating all combinations of values of a data structure:
+		take a version of the data structure in initial state
+		take a parameter saying which thing to vary (eg. cell by row and column)
+		call a recursive function that iterates the posisble values of the cell
+			then calls itself with next cell
+			define it such that the recursive calls will chain all the way to the last cell
+	recursion into iteration (eg. if not enough stack)
+		this will only work if it looks like TCO (single call)
+		wrap recursive part in a while loop that terminates on base condition
+		modify the variables at the end of each loop iteration to simulate TCO
+		make sure the base case is handled properly (eg. after the while loop)
+	backtracking
+		problem solving approach where you try out solutions and then undo the last part if fails
+		can be recursive but doesn't have to be
+		eg. try out different placements of queen on chess board and undo placements that don't succeed
+		there may be some element of pruning but it's not a synonym for it
+		the "generating combinations" pattern above can be thought of as backtracking
+			you back out a change that makes a digit too high and move to next cell, for instance
+		
 HackerRank-specific tips
 	if you exceed the time limit, make sure you aren't updating the wrong variable or something
 		sometimes you think it's because it's pick and you used n^2, but a lot of time it's a bug
