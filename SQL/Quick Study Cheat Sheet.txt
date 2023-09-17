@@ -67,7 +67,10 @@ IFNULL(column1, 0) = same thing as COALESCE
 [Select Statement]
 overall order of clauses: [SELECT [DISTINCT]] [FROM] [JOIN] [WHERE] [ORDER BY] [LIMIT] [OFFSET] [GROUP BY] [HAVING]
 actual execution order is: [FROM] [JOIN] [WHERE] [GROUP BY] [HAVING] [SELECT] [DISTINCT] [ORDER BY] [LIMIT/OFFSET]
-
+	part of SELECT comes before GROUP BY though
+	this is evidenced by the fact that you can use column aliases in a GROUP BY
+	but GROUP BY also makes aggregates
+	
 [SELECT] = for defining what columns will be present in result
 	SELECT *
 		all columns
