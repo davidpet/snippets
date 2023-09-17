@@ -658,6 +658,9 @@ java.util.function.Predicate<T> = takes val and returns boolean
 		.negate()
 	static methods for creating:
 		.isEqual(otherObj)
+java.util.function.BiPredicate<T1, T2> = 2 input arg version of Predicate
+	.test(T1 t1, T2 t2)
+	same methods as Predicate<> besides that
 java.util.function.Consumer<T> = takes val and return void
 	.accept(T val)
 	default methods:
