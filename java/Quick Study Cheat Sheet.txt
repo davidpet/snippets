@@ -606,8 +606,13 @@ no default args directly (simulate with Optional and/or overloading)
 	Optional.of() [no value]
 	Optional.of(value) [populated, assumed not null]
 	Optional.ofNullable(value) [populated if not null]
-	val.isPresent(), val.get(), val.orElse(default)
+	val.isPresent(), val.get(), val.orElse(default), value.orElseThrow(), value.orElseGet(supplier)
 	Optional.stream() to get 0 or 1 element stream
+	optional.map(), filter(), etc. to do functional operations on the value if present
+		return another Optional with result
+	optional.ifPresent(consumer) to act on value
+	optional.ifPresentOrElse(consumer, runnable) is like ternary operator
+	java.util.OptionalInt, etc. for primitive values
 variadic functions
 	int... numbers
 		this param becomes an array
@@ -929,6 +934,7 @@ overall syntax looks like a lot of other languages
 always use new() [no stack variables like in C++ or ommitting entirely like in Python]
 finalize() for destructor on garbage collection
 Cloneable interface clone() method for copy
+	actually a marker interface - clone() is on Object and throws by default
 default constructor (just 1) if no constructor, otherwise only the one(s) you specify
 not supported: operator overloading, partial classes, custom value types, properties (as other languages use them)[setValue, getValue pattern], call operator
 	a key effect of not supporting properties is that there can't be read-only fields (except by methods)
@@ -1026,8 +1032,9 @@ Objects static class
 		useful for predicates
 
 Useful Built-in Interfaces
-	Cloneable
+	Cloneable (marker)
 	AutoCloseable
+	java.io.Serializable (old-fashioned, often better to use a library)
 
 Nested Classes (a weirdness of Java)
 	to provide a nested class like you would in another language (just namespaced under the parent),
@@ -1075,6 +1082,34 @@ Construction Order
 		{} can only access variables declared before it physically
 		can call methods in both {} and = statements but beware of construction order
 	4. rest of c'tor body is run
+
+Serializable
+	java.io.Serializable is a marker interface only
+	it applies to a class and its subclasses automatically (due to inheritence)
+		base c'tor should have no args
+	member variables are automatically included in serialization unless marked as "transient" (special language keyword)
+	security risk because data can be crafted to blow up the stack or something (invalid object)
+	instead of methods on the class, you use java.io.ObjectOutputStream and java.io.ObjectInputStream
+		try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream("person.ser"))) {
+            Person person = new Person("John", 25);
+            out.writeObject(person);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+		try (ObjectInputStream in = new ObjectInputStream(new FileInputStream("person.ser"))) {
+            Person deserializedPerson = (Person) in.readObject();
+            System.out.println(deserializedPerson.getName());  // Outputs: John
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+	to customize the process instead of taking the automatic behavior:
+		implement a private writeObject() and readObject() method in the class
+			not part of Object or Serializable - just understood by Java
+			they take streams and then you serialize/deserialize yourself
+		readResolve() can also be used to return specific reference such as singleton
+			but enum is often better for that Pattern
+	the most important built-in stuff, including Enum, ArrayList, etc. implement Serializable
 
 [Generics]
 type parameters can only be reference types (no primitives)(but arrays are allowed, even arrays of primitives!)
@@ -1251,6 +1286,14 @@ File I/O
 	Files.newBufferedReader(Paths.get("myfile.txt"))
 	you can write directly, and read either one line at a time, one thing at a time, or via a stream
 	new BufferedWriter(new FileWriter(path)) [and read equivs]
+		reader.read() for char
+		reader.lines() for stream of lines
+		reader.readLine() for single line
+		reader.skip(n) to skip chars
+		writer.write(arr) or writer.write(str)
+	binary-based version = java.io.FileOutputStream and java.io.FileInputStream
+			eg. stream.write(byte) or stream.write(byte[])
+			eg. stream.read(arr) to read into array (maxed to its length)
 Paths
 	java.nio.file.Path and java.nio.file.Paths
 	Path path = Paths.get("C:/Users/John/Documents/file.txt");
@@ -1275,6 +1318,8 @@ java.lang.Thread
 		the lambda version is more recommended now
 
 	Thread.currentThread() gets current executing thread's instance
+
+	thread.getPriority(), thread.setPriority(), Thread.MIN_PRIORITY (1), Thread.MAX_PRIORITY (10), Thread.NORM_PRIORITY (5)
 Interrupting threads
 	each thread has an interrupted flag (thread.isInterrupted() or Thread.interrupted() for current thread)
 	each thread also has thread.isAlive() which is separate from that
@@ -1462,6 +1507,10 @@ Fork/Join Framework
 	instead of methods like join() throwing exceptions, you can kind of ignore it in the task
 		unchecked exceptions will propagate up (rethrown) to the top level invoke()
 		no InterruptedException here
+	you can avoid making subclasses for tasks/actions by using ForkJoinTask.adapt() static methods
+		adapt(callable) gets a recursive task equivalent that translates checked to unchecked exceptions
+		adapt(runnable) gets a recursive action equivalent
+		adapt(runnable, value) gets a recursive task equivalent from a runnable with a hardcoded return
 
 Parallel Streams
 	you can use a parallel stream (see Streams API way above) to do parallel computations too
@@ -1640,6 +1689,9 @@ Patterns
 		there may be some element of pruning but it's not a synonym for it
 		the "generating combinations" pattern above can be thought of as backtracking
 			you back out a change that makes a digit too high and move to next cell, for instance
+	building string right to left
+		build the reverse string left to right and then reverse it at end
+		StringBuilder does not use a deque or anything like that
 
 HackerRank-specific tips
 	if you exceed the time limit, make sure you aren't updating the wrong variable or something
