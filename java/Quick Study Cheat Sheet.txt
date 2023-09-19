@@ -154,6 +154,7 @@ no way to take subarray without making copy
 	pass indices or make your own ArraySlice wrapper
 
 Arrays class
+	java.util.Arrays
 	static methods to do collection operations on arrays
 		in-place mutability
 	searching, sorting, conversion to string, equality, filling, etc.
@@ -1360,6 +1361,8 @@ java.util.concurrent.CompletableFuture
 	to cancel the future from the outside, you can call cancel(true)
 		this will throw CancellationException on the call to get()
 		it is an unchecked exception
+	if you have a Future<T> and you want a CompletableFuture<T>, just block on future.get() in supplyAsync() body
+	there are a lot of static and instance methods you can use in CompletableFuture to do even more interesting things
 
 no async/await keywords
 synchronized keyword for critical sections (java.util.concurrent for more specialized lock types)
@@ -1479,18 +1482,26 @@ Executors
 		uses ScheduledFuture<T>
 		for periodic, the value is meaningless (future is just for management)
 			if you want to collect results, do it with a concurrent collection yourself
-		schedule() is a bit like setTimeout() in JavaScript
+		schedule() is a bit like setTimeout() in JavaScript, but no empty version
+			schedule(callableOrRunnable, duration, unit)
+		scheduleAtFixedRate(runnable, initialDelay, duration, unit)
+		scheduleWithFixedDelay(runnable, initialDelay, delay, unit)
+			times from end of previous instead of start of previous
+		
 Thread Pools
 	implementations of Executors
 	left side is executor interface, right side is a static call to java.util.concurrent.Executors
 	newFixedThreadPool(n)
 		n worker threads
+		if CPU-bound threads, might use Runtime.getRuntime().availableProcessors() to get this number
 	newCachedThreadPool()
 		dynamically sized worker thread pool
 	newSingleThreadExecutor()
 		one single worker thread
 	newScheduled*()
 		scheduled versions of the above
+		eg. newScheduledThreadPool(n)
+		eg. newScheduled*ThreadPool(*)
 Fork/Join Framework
 	you use a special thread pool (both as interface and implementation)
 		ForkJoinPool
