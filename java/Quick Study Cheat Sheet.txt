@@ -807,7 +807,7 @@ Streams API
 
 	other interesting stream methods
 		allMatch(pred), anyMatch(pred), noneMatch(pred)
-		count(), max(), min()
+		count(), max(comparator), min(comparator)
 			note that count() is a long instead of int
 			implies that streams can be more than 2 GB elements
 		distinct()
@@ -826,6 +826,18 @@ Streams API
 			lazily do stream1 elements then stream2 Elements
 		empty()
 			to get an empty stream
+
+	Other Interesting Collectors members
+		- `<Map<TKey, List<TValue>> groupingBy(Function<TValue, TKey> classifier)`
+			- create a dictionary of lists of values from the stream matching a classifier (the keys)
+		- `<Map<TKey, TTransformed> groupingBy(Function<TValue, TKey> classifier, Collector<TValue>)`
+			- a way to further transform the lists into single values using collectors
+		- `partitioningBy` is like `groupingBy` but the key is a `Boolean` and it takes a `Predicate`
+		- `joining(delim)`, `joining(delim, prefix, suffix)`, `joining()`
+			- for making string
+		- `maxBy(comparator)` and `minBy(comparator)` to get max and min values
+		- `summingInt(toIntFunction)` and similar
+			- you provide mapping to primitives and then it sums for you
 
 	Other uses of Streams
 		Random.ints(), Random.longs(), etc. [infinite random sequences]
@@ -1205,6 +1217,8 @@ Comparable<T>
 	this defines the "natural ordering" used by collections if no comparator passed in
 	a way to do comparisons in generics without having to rely on a type or even Number
 	the numeric boxed types implement this
+	note that a - b is a valid integer comparator of a and b
+		a < b won't work directly because boolean instead of tri-valued int
 Comparator<T>
 	functional interface with compare(T o1, T o2) method
 	also static methods like reverseOrder()
@@ -1703,7 +1717,31 @@ Patterns
 	building string right to left
 		build the reverse string left to right and then reverse it at end
 		StringBuilder does not use a deque or anything like that
-
+	detecting sortedness
+		iterate through and add boolean for each element that is sorted in proper order relative to previous
+			first always true, can use a sentinel value to make that work like Integer.MIN_VALUE
+		ranges of false values show ranges of the array that are reverse sorted
+		don't forget to check both endpoints if do something like reverse a range
+	adding items to beginning of stream
+		Stream.concat(Stream.of(), theStream)
+	skyline/merging train tracks
+		all you can do is go through segment by segment and keep the state however is needed for the problem
+		there is no clever stream reduction or something that will get you out of it
+Caveats
+	don't forget to check both sides if do something like reverse a range in-place to sort
+		or both ends of row in a train track within a row
+	don't forget to make it generic if you can (eg. T extends Comparable<? super T> instead of Integer)
+	if given a List-based tuple or something confusing, don't hesitate to make your own class and transform the collection first
+		the payoff can be huge when you have complicated nested iteration logic later
+	don't forget to count empty rows (eg. rows with no train tracks where all cells can be lamps)
+	certain stream operations are missing from Java that you'd have to do yourself with iteration
+		zipping of multiple sequences together
+		any operation involving adjacent elements (eg. overlapping line segments)
+Process
+	make and use your own test cases to catch issues instead of being passive
+	use theirs, but also make your own
+	also write assumptions, inputs, outputs, etc. in comments to help think through problem
+		use /* */ instead of // to make it slightly faster to type multiple lines
 HackerRank-specific tips
 	if you exceed the time limit, make sure you aren't updating the wrong variable or something
 		sometimes you think it's because it's pick and you used n^2, but a lot of time it's a bug
