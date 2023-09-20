@@ -117,6 +117,9 @@ Enums
 		you can make multiple enums that inherit the same interface
 		then code to the interface (eg. Operation) instead of the enum
 		in the future people can make more enums and add more constants, but the callee doesn't care
+	Static Imports
+		import static java.lang.annotation.ElementType.*;
+			now you can use METHOD, etc. as if top-level constants
 
 uninitialized values have sensible defaults inc. null for reference and numeric 0s for numbers
 	however, local variables are still required to be initialized before use or compile error
@@ -1572,6 +1575,22 @@ System.nanoTime()
 	if need to get timestamp before and after algorithm
 	then subtract and convert as needed
 
+[Javax]
+"Java x"
+part of java installation but not quite part of stdlib
+used to be where new things would go first - now being used less for that purpose
+
+javax.swing
+	GUI applications
+	components like JFrame, JLabel, JButton
+javax.tools
+	compile tools
+javax.sql, javax.xml, etc.
+javax.imageio
+	image editing
+javax.servlet
+javax.crypto
+
 [JUnit]
 @Test test* methods in class
 assertTrue() etc.
@@ -1590,16 +1609,65 @@ mockito
 put before method, class, or package declaration
 
 [Annotations]
-@interface DecoratorName {} // may need @Retention and @Target annotations on it
-can then apply @DecoratorName before targets (such as methods)
-retrievable via reflection on the annotated symbol (used by linters, compiler, etc.)
-more syntax for adding params and defaults
+@interface DecoratorName {}
+	special @ syntax because annotations have some special syntactic sugar
+	you would import the name DecoratorName to use @DecoratorName
+can then apply @DecoratorName before targets (such as classes, methods, parameters, etc.)
+	eg. @DecoratorName class MyClass {}
+	eg. public static void f(@DecoratorName int n, String s) {}
+they can even be applied to other annotations (meta-annotations), like @Target and @Retention
+the symbols you need are in java.lang.annotation.* (import them)
 
-java.lang has some useful built-in ones
+@Target({FIELD, PARAMETER, METHOD}) // ElementType enum members (imported statically above)
+@Retention(RetentionPolicy.RUNTIME)
+@interface MyAnnotation {}
+	note that @Target takes an array but we are allowed to ommit the new ElementType[] for annotations
+	this annotation targets member variables, function parameters, and methods
+		the default (if not provided) is to allow EVERYTHING
+	this annotation is retained at runtime
+		it can be seen via reflection (eg. by frameworks like Guice and Spring Boot)
+		you could use RetentionPolicy.CLASS to have it only available during compilation (in the .class file)
+			this is the default if you don't provide it
+annotations can take parameters as methods of the interface
+	special "default" keyword for default value
+	only compile-time constants allowed as default values and parameter values
+	annotations use keyword args (unlike functions), but if only 1 called 'value', can ommit the keyword
+
+public @interface DemoAnnotation {
+    // #1: Default Values
+    int number() default 5;
+    
+    String text() default "defaultText";
+
+    // Array attribute with default value
+    int[] numberArray() default {2, 3};
+
+    // Array attribute without default value
+    String[] textArray();
+
+    // #3: Array Syntax Simplification (shown in usage below)
+    // When providing more than one value, you can omit the new TypeName[] syntax.
+
+    // #4: Single-Value Annotations
+    // If this was the only element and named `value`, we could omit the name when using it.
+    String value();
+}
+@DemoAnnotation(value = "singleValue", textArray = {"arrayItem1", "arrayItem2"})
+public class AnnotatedClass {
+    //...
+}
+	could have left out the value keyword if that was the only arg (since called 'value')
+
+in general, annotations can't do anything fancy like classes can
+	no inheritance, no generics, no exceptions, no custom types
+	no circular references in meta-annotations
+
+java.lang has some useful built-in annotations already
 	@Override
 	@Deprecated
 	@FunctionalInterface
 	@SuppressWarnings("name")
+in addition, frameworks like Guice and Spring provide their own
 
 [Records]
 *not supported by ijava*
@@ -1648,6 +1716,123 @@ note that before this feature,
 [AutoValue]
 google library with annotations to make value classes and builders
 you provide an abstract class and it can fill in the data for you during the build phase
+
+[Spring Boot]
+for defining REST server
+
+@RestController
+@RequestMapping("/api/books")
+public class BookController {
+
+    @Autowired
+    private BookService bookService;  // Assuming a service layer handling the logic
+    
+    // GET all books
+    @GetMapping
+    public List<Book> getAllBooks() {
+        return bookService.findAll();
+    }
+
+    // GET a specific book by ID
+    @GetMapping("/{id}")
+    public Book getBookById(@PathVariable Long id) {
+        return bookService.findById(id);
+    }
+
+    // POST a new book
+    @PostMapping
+    public Book createBook(@RequestBody Book book) {
+        return bookService.save(book);
+    }
+
+    // PUT (update) a specific book by ID
+    @PutMapping("/{id}")
+    public Book updateBook(@PathVariable Long id, @RequestBody Book book) {
+        // Here, you'd typically ensure the book's ID matches the path variable
+        return bookService.update(id, book);
+    }
+
+    // DELETE a book by ID
+    @DeleteMapping("/{id}")
+    public void deleteBook(@PathVariable Long id) {
+        bookService.delete(id);
+    }
+}
+// assumes BookService is marked as @Service annotation elsewhere for @AutoWired to work
+
+things like @Service, @RestController, etc. define "beans" that @AutoWired can inject
+
+[Guice]
+import com.google.inject.*;
+public class BillingModule extends AbstractModule {
+    @Override
+    protected void configure() {
+        bind(TransactionLog.class).to(DatabaseTransactionLog.class);
+		// TransactionLog could be interface or class
+    }
+}
+mark things as @Inject in BillingService
+	marking constructor = constructor params filled in (recommended)
+	marking method = method called on instance creation
+	marking method param = that param filled by injection as specified
+		overrides any default behavior from the @Inject above
+	marking instance variable = filled on instance creation
+
+Injector injector = Guice.createInjector(new BillingModule());
+BillingService billingService = injector.getInstance(BillingService.class);
+	all @Inject members filled in based on the module's config
+	didn't need to add BillingService itself to module
+
+to differentiate instances for an interface, make an annotation and do this in module:
+	bind(TransactionLog.class).annotatedWith(PayPal.class)
+                                  .to(PayPalDatabaseTransactionLog.class);
+
+to do a factory method in the module:
+	@Provides
+    TransactionLog provideTransactionLog() {
+        // construct and return the transaction log
+        return new DatabaseTransactionLog();
+    }
+	// instead of the .bind() part
+
+to do a singleton:
+	either mark the interface as @Singleton
+	or add .in(Singleton.class) to the end of the .bind()
+
+[Big Data]
+Apache Hadoop
+	MapReduce (map tasks and reducer tasks)
+Apache Spark
+Apache Beam
+Apache Kafka
+
+[Protobuf]
+// Constructing and Serializing a Message
+        SimpleMessage message = SimpleMessage.newBuilder()
+            .setId(123)
+            .setContent("Hello Protocol Buffers!")
+            .build();
+
+        try {
+            // Write the message to a file
+            FileOutputStream outputStream = new FileOutputStream("simple_message.bin");
+            message.writeTo(outputStream);
+            outputStream.close();
+
+            // Read the message from a file
+            FileInputStream inputStream = new FileInputStream("simple_message.bin");
+            SimpleMessage readMessage = SimpleMessage.parseFrom(inputStream);
+            System.out.println(readMessage);
+        } catch (IOException e) {
+            e.print
+		}
+
+[gRPC]
+uses protoc and protos as well
+but more complex syntax (just use templates)
+client uses generated stub for communication and passes protos
+service starts and listens on a port
+gRPC-gateway is a way to do REST clients from gRPC definitions
 
 [Effective Java Tips]
 ** see the Effective Java notebook **
