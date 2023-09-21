@@ -19,7 +19,7 @@ no unsigned
 L for long literal (instead of int)
 f for float literal (instead of double)
 	d for double literal also
-exponential notation: 1E9, 0.79E-7, 1.0E+9f, etc.
+exponential notation: 1E9, 0.79E-7, 1.0E+9f, 1.0e9, etc.
 C++ style quoting for strings and chars
 
 interning for numbers and strings
