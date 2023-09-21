@@ -748,6 +748,7 @@ Streams API
 	java.util.stream.*
 	someCollection.stream() will give you a Stream<T> object
 	then call methods on that Stream<T>, such as .map(), .filter(), .reduce() // which doens't need a collector
+		1st arg of reduce should be "identity" object, not the first sequence thing
 	when you're ready to make it back into a collection, call the .collect() method
 		eg. .collect(Collectors.toList()) or toSet, whatever
 	various collectors like getting max value, converting to string, groupBy (returns a Map), etc.
@@ -1431,6 +1432,25 @@ volatile
 atomiticity
 	all primitive numerics are atomic for read/write (but not stuff like ++)
 	long and double used to not be but are now (for a very long time now)
+java.util.concurrent.atomic
+	AtomicInteger, AtomicDouble, AtomicBoolean
+	Atomic*Array
+	AtomicReference<V>
+	LongAccumulator and LongAdder
+
+	AtomicInteger as example
+		new AtomicInteger() or new AtomicInteger(10)
+			defaults to 0
+		get(), set()
+		getAndIncrement(), incrementAndGet()
+			common pattern, get before or after an update
+		addAndGet(), etc.
+		getAndSet()
+
+		floatValue() and such for atomic conversions
+
+		getAndUpdate() or updateAndGet() to update value with a function
+			eg. to apply an equation or more complex logic atomically
 wait()/notify()/notifyAll()
 	Object methods (called on lock object)
 	must be called from a critical section
@@ -1762,6 +1782,9 @@ public class BookController {
 
 things like @Service, @RestController, etc. define "beans" that @AutoWired can inject
 
+NOTE: PUT is idempotent (updating some object multiply w/ same state = same effect as doing once)
+	  POST is not idempotent (posting new objects one at a time)
+
 [Guice]
 import com.google.inject.*;
 public class BillingModule extends AbstractModule {
@@ -1798,6 +1821,12 @@ to do a factory method in the module:
 to do a singleton:
 	either mark the interface as @Singleton
 	or add .in(Singleton.class) to the end of the .bind()
+
+to do a primitive type:
+	use a factory method that returns the primitive with @Provides
+	also use an annotation (eg. @Provides @Unique)
+	then use that same annotation on the parameter or member on the other side
+	eg. an AtomicInteger in the module that gives out unique IDs
 
 [Big Data]
 Apache Hadoop
