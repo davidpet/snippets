@@ -13,7 +13,9 @@ as a result of this, a lot of the info in here may be limited to 8 unnecessarily
 [Variables]
 String
 boolean [true, false]
-char, byte, short, int, long
+byte, short, int, long
+char is 16-bit (like short)
+	most characters are same as ascii because using utf-8
 float (32-bit), double (64-bit)
 no unsigned
 L for long literal (instead of int)
