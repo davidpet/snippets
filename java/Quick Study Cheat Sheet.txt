@@ -436,6 +436,8 @@ Iterators/Iterables
 		has an iterator() member to get an Iterator<T> (java.util)
 	Iterator<T> has hasNext() and next() and some default methods
 	the interface is compatible with laziness for things like streams
+	Iterable<T> always has a .forEach(consumer) method just like streams do
+		which means you can use .forEach(System.out::println) on any java.util collection!
 
 Empty Constants
 	Collections.EMPTY_SET, EMPTY_LIST, EMPTY_MAP
