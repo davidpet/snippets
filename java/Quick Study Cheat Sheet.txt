@@ -245,6 +245,7 @@ iterate values with .values() which gets a Collection<TValue>
 			SimpleImmutableEntry - for thread-safe maps
 			both have c'tors that can take an entry or a key and value
 		also some static members like comparables
+.size() tells you how many entries
 
 Set<T> interface
 	HashSet<T> implementation
