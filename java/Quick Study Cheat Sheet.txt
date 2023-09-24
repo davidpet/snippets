@@ -265,6 +265,7 @@ more or less looks like List<T> but with no indices
 
 StringBuilder
 	append() // instead of add()
+		overloaded for a lot of types
 	length() // instead of size()
 	capacity()
 	toString()/substring()
@@ -272,6 +273,9 @@ StringBuilder
 	delete(index1, index2) // instead of remove()
 	reverse() // instead of reverseOrder()
 	replace() // instead of using SubList() and changing
+
+	methods that mutate the data return the object itself
+		this allows you to chain fluently
 StringBuffer
 	thread-safe version of StringBuilder
 
@@ -379,7 +383,7 @@ Filling with Values
 		the type of arr must be int[], long[], double[], or T[]
 		only the 3 main primitives supported by java.util.function are overloaded here
 		note that this is not lazy, unlike something like Stream.iterate or Stream.generate
-		
+
 Cloning
 	arr.clone()
 	copy constructor for the rest
@@ -781,7 +785,19 @@ Method References
 		input = c'tor args, output = instance of the type
 		eg. MyClass::new taking c'tor args
 		eg. int[]::new taking length of array
-
+	methods of generic methods (eg. ArrayList::add) are special yet again
+		use the unbound one on the RH side (no diamond) and the bound one on the LH side
+		the LH side protects inappropriate usage
+		type is erased at runtime which is why method reference acts that way
+		BiConsumer<ArrayList<Integer>, Integer> adder = ArrayList::add;
+			note that you had to use ArrayList on both sides in this case, not List
+		leaving out <Integer> on the LH side would trigger unchecked warning
+			in the case of a method like stream.collect(), the overall context tells it how to bind T and figure it out
+	return type of a lambda/reference doesn't have to be exact match for the functional interface
+		eg. void can take any return type and just ignore it
+		eg. functional interface can take base class of what method returns
+		eg. autoboxing can happen
+		except for the void case, it's mostly about "assignability"
 Streams API
 	this is the way you do functional operations on collections in Java (but it's also used other places)
 	java.util.stream.*
@@ -793,6 +809,20 @@ Streams API
 	various collectors like getting max value, converting to string, groupBy (returns a Map), etc.
 	do the above fluently (eg. List<int> newList = list.stream().map().collect())
 	custom collectors can be implemented via Collector<> interface (which is complicated)
+		alternatively, you can use the overload of collect() that lets you pass 3 functions
+		collect(mutableCollectionSupplier, biConsumerToAddItem, biConsumerToAddOtherCollection)
+		the 3rd function is used for parallel streams to do merging
+		in addition to your own lambdas, these are common usages/examples:
+			.collect(ArrayList::new, ArrayList::add, ArrayList::addAll)
+			.collect(StringBuilder::new, StringBuilder::append, StringBuilder::append)
+	reduce() is similar to collect() but has some other signatures
+		reduce(supplier, adder, combiner) much like collect()
+			but expects fluently returned values
+			some collections (StringBuilder) do this already, and some (List) don't
+		reduce(identity, accumulator) is like the sum() case
+			but the restriction is that accumulator is a BinaryOperator<T> (all 3 types match)
+		reduce(accumulator) returns Optional in case not enough elements of sequence
+		in general, reduce can be used mutably or immutably
 	Collectors doesn't deal with arrays
 		stream.toArray() returns Object[] (which can't be cast)
 		stream.toArray(Integer[]::new) returns Integer[] // no primitives allowed
@@ -1364,6 +1394,7 @@ in theory, if a static member is not final, you can change it without qualifying
 
 portions of the path are both subfolders in the path (relative to the classpath java is invoked with) and also the package name
 no renaming of symbols like in other languages
+subpackages are not automatically imported by importing their parent, those are separate concerns
 
 package com.example;	// to specify the package (which should match the path of the folder relative to classpath)
 a package is a folder containing class files
