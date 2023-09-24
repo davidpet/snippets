@@ -1352,6 +1352,8 @@ import static java.lang.Math.PI;	// importing a static variable into the file by
 import static java.lang.Math.Square;	// importing static method to be called unqualified by name (simulated top-level function)
 import static java.lang.Math.*;	// importing all static members of class
 
+in theory, if a static member is not final, you can change it without qualifying the class if it's static imported
+
 portions of the path are both subfolders in the path (relative to the classpath java is invoked with) and also the package name
 no renaming of symbols like in other languages
 
