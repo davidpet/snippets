@@ -590,6 +590,12 @@ switches also work on non-numeric types and for enum values, you don't have to s
 for/while/do while work just like C++ (plus the range-based for which c++ now also has)
 	remember middle condition is dynamic and variable can be messesd with
 try/catch/finally/throw just like in C++
+	throwing in a handler rethrows (after passing through finally first)
+	catch(ExceptionType1 | ExceptionType2 e) {}
+		special syntax for allowing multiple exception types
+		then you can use the same code for all of them
+		if you rethrow e here, it will be the correct type (not the base)
+
 try-with-resources
 	try (BufferedReader reader1 = new BufferedReader(new FileReader("file1.txt"));
              BufferedReader reader2 = new BufferedReader(new FileReader("file2.txt"))) {}
