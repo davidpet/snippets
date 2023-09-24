@@ -368,10 +368,18 @@ Simulating Literals in non-arrays
 Filling with Values
 	new int[5] gets 5 0s
 	Arrays.fill(arr, 100) fills the array with 100 afterward
+	Arrays.fill(arr, start, stop, value) for a subrange
 	Collections.nCopies(n, val) gets a new immutable list
 		pass into ArrayList<> c'tor to get mutable one from it
 	Collections.fill(list) to fill existing
-	
+		use subList() to fill a subrange
+	Arrays.setAll(arr, generator)
+		fill all the elements of an array using a function
+		the function takes an int index and returns an int, long, double, or T
+		the type of arr must be int[], long[], double[], or T[]
+		only the 3 main primitives supported by java.util.function are overloaded here
+		note that this is not lazy, unlike something like Stream.iterate or Stream.generate
+		
 Cloning
 	arr.clone()
 	copy constructor for the rest
