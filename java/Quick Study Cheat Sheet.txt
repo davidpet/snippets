@@ -10,6 +10,9 @@ searching for Java Stream, for instance, gives you a Java 8 result
 add 17 to the search string to get Java 17 results
 as a result of this, a lot of the info in here may be limited to 8 unnecessarily
 
+also, sometimes methods aren't listed in the main list but are listed as being included by other things
+	be careful!
+
 [Variables]
 String
 boolean [true, false]
@@ -159,6 +162,9 @@ no way to take subarray without making copy
 	pass indices or make your own ArraySlice wrapper
 
 Arrays class
+	lots of these methods are overloaded for all the primitive types
+		in many cases where generic things like streams are hard to use with primitives, this is helpful
+
 	java.util.Arrays
 	static methods to do collection operations on arrays
 		in-place mutability
@@ -175,7 +181,9 @@ Arrays class
 	hashCode() to get hash code of an array of Object
 
 	equals()
-	copyOf(original, length) and copyOfRange(original, from, to)
+	copyOf(original, length)
+		truncates or pads with zeros
+	copyOfRange(original, from, to)
 	parallelSort()
 	members overloaded for primitive types
 
@@ -199,6 +207,7 @@ list.remove(index)
 list.remove(item)
 	depends on item.equals() [or both being null] to find FIRST MATCh
 list.removeAll(iterable)
+list.removeIf(predicate)
 list.contains(item)
 list.containsAll(iterable)
 list.indexOf(item)
@@ -299,16 +308,14 @@ Missing from Java: tuple, struct/value type, tree, graph
 Immutability
 	Collections.unmodifiableList(existingList)
 		gets a List<T> that will throw if you try to modify the list
-	List.of(existingList)
-		shorthand for the same thing
-	these are both available for sets and maps too
+	available for sets and maps too
 
 Conversions
 	collection constructors take collections as args where appropriate
 		but not arrays, because arrays are not collections (use asList if needed)
 	Arrays.asList()
 		should be efficient since just a view on the array
-	List.of() for getting immutable from mutable
+	Collections.unmodificable* for getting immutable from mutable
 
 Casting
 	the issue of boxing only comes up in arrays because they can take primitives
@@ -353,7 +360,7 @@ Searching
 Simulating Literals in non-arrays
 	Arrays.asList(item1, item2, item3) to make an array list that can't be resized (but is mutable)
 	{{ }} anonymous class with initializer block (caution!)
-	List.of(), Set.of(), etc. in addition to taking mutable versions of the collections, can take varargs to specify items inline
+	List.of(), Set.of(), etc. take varargs to specify items inline
 		explicitly disallow nulls for philosophical reasons
 		this restriction doesn't apply to Arrays.asList() or Stream.of()
 		also doesn't apply if wrap existing list with unmodificableList() call
@@ -368,6 +375,8 @@ Filling with Values
 Cloning
 	arr.clone()
 	copy constructor for the rest
+	Arrays.copyOf() and Arrays.copyOfRange() for portions of arrays
+	new ArrayList<>(list.subList()) for portions of lists
 
 Extending
 	collection types in java.util not marked final, so you can extend
@@ -498,6 +507,10 @@ to sort a string, convert to char array, use Arrays.sort(), and new String(arr)
 
 String.join(delimStr, collection)
 
+String has a lot of constructors
+	eg. all or part of a char[], copy another String, a StringBuilder, StringBuffer, etc.
+		not Character[] though
+
 most built-ins and collections have a proper toString() except for arrays (use Arrays.toString())
 
 C++ style single and double quotes (strict separation of string vs. char literals)
@@ -536,6 +549,12 @@ line endings
 case insensitivity
 	static comparator String.CASE_INSENSITIVE_ORDER
 	method s.compareToIgnoreCase()
+
+extra copies
+	note that in general, methods that get a string from another string make a true copy
+	this is so that new smaller strings won't keep large older strings loaded in memory
+	as a result, you have to be careful about extra copies in your algorithms
+	this applies to stringBuilder.substring() as well, which returns a String
 
 [Operators]
 math & bit & boolean & comparison & assignment operators are exactly like C++
@@ -725,6 +744,7 @@ java.util.function has versions of the above with various combinations of primit
 	eg. ToLongBiFunction<T1, T2>
 		.applyAsLong(T1 t1, T2 t2)
 	
+	note that the 3 primitives considered are int, long, and double (just like with streams)
 
 "effectively final rule" - closures (and other code) must treat enclosed variable as final
 	but they can change members, so that's how you can use a lambda to modify state
@@ -784,6 +804,20 @@ Streams API
 		variadic (args or array)
 		don't use a primitive array - that will get interpretted as Stream<int[]> instead
 			Integer[] works though
+	Arrays.stream() is a workaround for primitives
+		has 3 overloads for int[], long[], double[]
+			you're out of luck for other primitives than those 3
+			have to do it less directly somehow (eg. for loop)
+		returns IntStream, LongStream, DoubleStream
+		also has generic version that does what Stream.of() already does
+		all the overloads can also take optional range start and end
+		Arrays.asList() has no overloads because no such thing as IntList
+
+	s.chars() gives you an IntStream for a string
+		a way to avoid using toCharArray() to make a copy
+		has to use IntStream because no CharStream available
+		once you have the IntStream, you can do any lazy transformations
+			you can be confident all the values will fit in char
 
 	any operation on stream closes it
 		different from Observables in JS
@@ -800,6 +834,9 @@ Streams API
 		cannot collect() [use boxed() or mapToObj first]
 			the method is there but it doesn't work, probably because of generics
 		can assume most Stream stuff is there (eg. of(), concat(), etc.)
+	DoubleStream and LongStream also
+		only these 3 types
+		smaller values must upsize to the next one
 
 	tips for readability:
 		use static imports (eg. toList())
@@ -822,7 +859,8 @@ Streams API
 		distinct()
 		mapToDouble(fn), etc. (to get DoubleStream for instance)
 		flatMap(fn) (map elements to streams and then concat them lazily)
-		flatMapToDouble(fn), etc.
+		flatMapToDouble(fn), flatMapToLong(fn), flatMapToInt(fn)
+			like flat map but produces a primitive stream from primitive streams
 		generate(supplier) to generate based on a generator function
 			infinite only - no way to signal stop
 		limit(n) and skip(n)
@@ -933,6 +971,53 @@ Streams API
 		then each for loop has to check other criteria (like if hits obstacles) and bail
 		then just increment count each non-bailed iteration
 		conceptually the same but uglier, more repetitive, and have to craft each loop w/ copy/paste
+
+	Matrix Slicing
+		List<List<>>
+			subList().stream().map(sublist).collect()
+				rows are independent copies but cells are pointing into original rows
+				avoids copying all the elements
+				but slice is vulnerable to changes in the original, including cells & row sizes
+				do another map(new ArrayList<>()) or similar to make it a true deep copy
+		List<String>
+			subList().stream().map(substring).collect()
+				deep copy already from the beginning (which may be less efficient)
+		[][]
+			because you can't treat these like in C++, better to pass a wrapper instead
+
+	Array Conversion Patterns
+		Upcast from supported
+			long[] a = Arrays.stream(intArr).asLongStream().toArray()
+		Upcast from unsupported
+			long[] a = IntStream.range(0, shortArr.length).mapToLong(i -> shortArr[i]).toArray();
+		Downcast to supported
+			int[] a = Arrays.stream(longArr).mapToInt(n -> (int)n).toArray();
+			// the asLongStream() type methods only upconvert, no downconversions
+		Downcast to unsupported
+			short[] a = new short[intArr.length]; for (int i = 0; i < intArr.length) {a[i] = intArr[i];}
+
+		Boxing
+			Integer[] a = Arrays.stream(intArr).boxed().toArray(Integer[]::new);
+			Integer[] a = Arrays.stream(intArr).map(n -> n).toArray(Integer[]::new);
+		Unboxing
+			int[] a = Arrays.stream(integerArr).mapToInt(Integer::intValue).toArray();
+		Boxed Type to Boxed Type
+			Long[] a = Stream.of(integerArr).map(Integer::longValue).toArray(Long[]::new);
+
+		int[] to Character[]
+			Character[] a = intArr.mapToObj(n -> (char)n).toArray(Character[]::new);
+				// relies on auto-boxing
+        	Character[] a = (new String(charArr)).chars().mapToObj(n -> (char)n).toArray(Character[]::new);
+				//inefficient because extra string
+		char[] to Character[]
+			upcast from unsupported to get IntStream, then mapToObj as in int[] to Character[]
+	Stream Conversion Patterns
+		follow the array patterns but leave off the beginning or end as appropriate
+		note that generics won't have primitives no matter what
+	Stream Equality (3 ways)
+		1. zip and do allMatch(p -> p[0] == p[1])
+		2. use iterators and use the same logic as comparing two linked lists
+		3. collect to lists and use .equals()
 
 Exceptions
 	lambdas can't have throws specifications, but interface members and methods can
@@ -1956,6 +2041,11 @@ Caveats
 	certain stream operations are missing from Java that you'd have to do yourself with iteration
 		zipping of multiple sequences together
 		any operation involving adjacent elements (eg. overlapping line segments)
+	be careful of going down a stream based rabbithole or making extra copies to make a stream approach work
+		be prepared to do a for loop instead at any time
+		eg. if checking a grid instead of transforming it, maybe for loop is better
+		eg. if feel stream should work but not seeing how to do it, just do for loop
+		eg. if using streams for part of it, ok to do iterative for part of it (since java incomplete)
 Process
 	make and use your own test cases to catch issues instead of being passive
 	use theirs, but also make your own
