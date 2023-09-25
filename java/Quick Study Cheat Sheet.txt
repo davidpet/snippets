@@ -231,6 +231,35 @@ list.toArray()		// will give Object[]
 list.toArray(T[] a)	// to force proper runtime type
 for (var x : list) {}
 
+Set<T> interface
+	HashSet<T> implementation
+	EnumSet<T> implementation (for bitfield)
+	more or less looks like List<T> but with no indices
+		by default you can assume most generic collection stuff in List is here too
+	normally, a Set will be O(1) lookup
+		TreeSet is an exception (covered later)
+
+	a lot of methods that change the set return a boolean
+		this indicates if it was actually changed
+			even if only 1 piece changed (such as set union where 1 value is added out of 100)
+		eg. s.add(10) would return false if 10 was already in the set
+		eg. s.remove(10) would return false if 10 was not in the set
+		the set will not throw in these cases, unlike a list out of index situation
+		methods that mutate and return boolean are idempotent on the set
+			the set will be the same no matter how many times you call in a row
+		these methods take collections (not varargs)
+			List.of() or Set.of() is equally fine
+	
+	contains()/containsAll() return boolean but don't mutate
+
+	add*, remove*, and retainAll are operations that take another set and mutate
+		add() and addAll() return boolean indicating if anything was added (not there before)
+			this is a SET UNION
+		remove() and removeAll() return boolean indicating if anything was removed (there before)
+			this is a SET DIFFERENCE
+		retainAll() returns boolean indicating if any items were removed that were not in the input set
+			this is a SET INTERSECTION
+
 Map<TKey, TValue> interface
 	Hashtable<TKey, TValue> implementation (order not guaranteed)
 		old and not performant, but is thread-safe
@@ -240,13 +269,38 @@ Map<TKey, TValue> interface
 	TreeMap<> = ordered by key natural order
 	EnumMap<> = enum key version
 a lot like List<T> except use keys instead of indices and:
+	.get() returns null if not present (instead of throwing)
+		can be ambiguous with a true null value (check containsKey if that matters)
 	.put() instead of .set()/.add()
+		returns previous value (null if new key)
 	.containsKey() and .containsValue() instead of just contains
+		work properly in case of value being null
+.putIfAbsent()
+	returns existing value if present (without changing it)
+	returns null if absent (and sets it)
+	can be tricked by null values
+.putAll()
+	put all values from another map
 iterate keys with .keySet() which gets a Set<TKey>
 iterate values with .values() which gets a Collection<TValue>
 	iterable collection in case order matters, but for HashMap it doesn't
 .getOrDefault(key, defaultValue)
-.remove() can take just key or key and value
+.remove(key)
+	returns null if not there or if value is null
+	returns value key had otherwise
+	doesn't throw
+.remove(key, value)
+	same but only if value matches
+	returns boolean indicating if removed
+.replace(key, newValue)
+	returns old value if present
+	null if absent (and doesn't modify)
+	also has overloads to include old value, and to do bifunctions of k,v to v
+.merge(key, defaultValue, binaryOperatorToCombineValues)
+	if key is absent, gets set to defaultValue
+	if key is present, gets set to defaultValue combined with existing value by operator
+	if operator returns null, key is removed
+	returns new value (or null on removal)
 .entrySet() gets a set of Map.Entry<TKey, TValue>
 	you can use getValue() and getKey() to see the members
 	you can use setValue() to modify the value (which affects the map!)
@@ -257,11 +311,81 @@ iterate values with .values() which gets a Collection<TValue>
 			both have c'tors that can take an entry or a key and value
 		also some static members like comparables
 .size() tells you how many entries
+.compute*() variants used to update and get atomically
+	.compute(key, (k,v) -> newValue)
+		returns newValue
+		if key is not present, value comes into the lambda null
+	.computeIfAbsent(key, k -> newValue)
+		returns newValue if added
+			existing value if not added
+	.computeIfPresent(key, (k,v) -> newValue)
+		returns newValue if absent, old value if present
+	can be tricked by null values into thinking not present
+.forEach((k,v) -> ) instead of entries or keys or something
+one-liner patterns
+	not always worth it, esp. if O(1) map [but maybe more for TreeMap]
+	not as clear to read and may have performance drawback due to extra indirection
+	probably want to use helper methods for readability if use these
 
-Set<T> interface
-	HashSet<T> implementation
-	EnumSet<T> implementation (for bitfield)
-more or less looks like List<T> but with no indices
+	map of list entries
+		map.computeIfAbsent(key, k -> new ArrayList<>()).add(100);
+	count value
+		map.merge(key, 1, Integer::sum);
+	dissappearing key on count reaching zero
+		map.merge(key, -1, (a, b) -> a + b == 0 ? null : a + b);
+
+TreeSet
+	TreeSet<T> is a Set<T> implementation
+	it also implements NavigableSet<T> which extends SortedSet<T>
+	because it uses a self-balancing binary search tree (based on natural order or constructor comparator)
+		lookup is O(logN) instead of O(1)
+		thus, the more specialized set operations and idempotency may be more important
+	you can construct based on another SortedSet or any collection as well
+
+	Set<T> members all implemented but backed by binary search tree
+	SortedSet<T> members
+		first(), last() which throw like List would
+		headSet(exclusiveItem), tailSet(inclusiveItem), subSet(inclusiveItem, exclusiveItem)
+	NavigableSet<T> members
+		treat the set like a numeric sequence and return null for non-existing things
+		pollFirst(), pollLast() are like first() and last() but get null instead of throwing if not there
+		ceiling() and floor() to get value past or just before (or equal to) given value
+		higher() and lower() are similar but treat the value exclusively
+		descendingSet() gives you a view of the sorted set with all relationships reversed
+			so higher() would give you a smaller value for instance
+
+TreeMap
+	TreeMap<T> is a Map<T> implementation
+	it also implements NavigableMap<T> which extends SortedMap<T>
+	like TreeSet, it uses a self-balancing binary tree for the keys
+		natural order or comparator passed to constructor
+		lookup O(logN) instead of O(1)
+		might make it more useful to use the crazy one-liners
+	
+	the interface is very similar to TreeSet
+	most operations in TreeSet (eg. ceiling, floor, etc.) have an Entry vs. Key variants
+		eg. floorKey
+		eg. ceilingEntry
+		the entry versions can be used to modify the map in-place just like with entrySet()
+	in addition, you have firstKey(), lastKey(), firstEntry(), lastEntry()
+	instead of that for tail, sub, and head, it's the whole map (because multiple things)
+		tailMap(), headMap(), subMap()
+	pollFirstEntry() and pollLastEntry() but not pollFirstKey() or pollLastKey() for some reason
+	descendingMap() gives you reversed view
+	navigableKeySet() gives you keys as sorted set
+		keySet() also maintains the order though
+
+Bitfields (EnumSet)
+	EnumSet is built for an enum type and maps 1 enum value per bit as a bitmask
+	you use static methods of EnumSet to create them and then treat like any other set
+	EnumSet.of(val1, val2)
+	EnumSet.allOf(MyEnum.class)
+	EnumSet.noneOf(MyEnum.class)
+	EnumSet.complementOf(otherSet)
+EnumMap
+	built around an enum type - uses fixed size array based on knowledge of total keys
+	new EnumMap(MyEnum.class)
+	new EnumMap(otherEnumMap)
 
 StringBuilder
 	append() // instead of add()
@@ -424,24 +548,6 @@ Thread Safety of Collections (and other types)
 		Vector implements List<> and is thread-safe
 			but is much older and retrofitted to support List
 			so don't use unless you have to
-
-Sorted interfaces
-	SortedSet and SortedMap interfaces
-		inherited from Set and Map
-		add methods like first, last, subSet (or firstKey, lastKey, subMap)
-		implementations include TreeSet and TreeMap
-
-Bitfields (EnumSet)
-	EnumSet is built for an enum type and maps 1 enum value per bit as a bitmask
-	you use static methods of EnumSet to create them and then treat like any other set
-	EnumSet.of(val1, val2)
-	EnumSet.allOf(MyEnum.class)
-	EnumSet.noneOf(MyEnum.class)
-	EnumSet.complementOf(otherSet)
-EnumMap
-	built around an enum type - uses fixed size array based on knowledge of total keys
-	new EnumMap(MyEnum.class)
-	new EnumMap(otherEnumMap)
 
 Implementing Objects for Collections
 	to put into a collection that uses hashes, you will need hashCode() and equals()
@@ -1208,6 +1314,7 @@ Boxing/Unboxing
 	boxed types are IMMUTABLE (value can't be reset for an instance)
 	a lot of operations like <, +, etc. implicitly unbox and rebox and work as expected
 		even in generic methods that use the boxed types
+	Integer::sum
 
 Anonymous Class
 	MyInterface obj = new MyInterface() {
