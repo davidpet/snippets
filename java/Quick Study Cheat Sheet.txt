@@ -1380,10 +1380,14 @@ generic classes are more normal (<T> after class)
 	type can be inferred or specified as normal
 	use the diamond operator on constructors to avoid unchecked warning from compiler
 	unchecked warning is triggered when you use raw types and should never be suppressed
+	BUT the constructor does not have the type argument on it
+		other usages inside use the typed version
 <T extends Number> type constraints (Number of a subclass of Number)
 	<T extends MyClass & MyOtherInterface>
 type inference boxes for you when it can
 nested <> are fine
+REMEMBER that "T extends" must go in the 1 place for the thing (left in function, right in class)
+	wildcards go other places
 
 not supported: metaprogramming, void as type arg, overloading by # type args
 	there is a workaround for void as type arg (java.lang.Void type)
@@ -2185,6 +2189,8 @@ Patterns
 	skyline/merging train tracks
 		all you can do is go through segment by segment and keep the state however is needed for the problem
 		there is no clever stream reduction or something that will get you out of it
+	permutation indices
+		wrap list in data structure with original index, then sort.  now you know how to get back
 Caveats
 	don't forget to check both sides if do something like reverse a range in-place to sort
 		or both ends of row in a train track within a row
@@ -2204,6 +2210,7 @@ Caveats
 			then think hard about whether really want to use streams in Java
 		Additional Rule of Thumb: for 2D matrix element comparison, consider for loop for readability
 			and also for performance
+		Additional Rule of Thumb: if you need the index, you need a for loop
 Process
 	make and use your own test cases to catch issues instead of being passive
 	use theirs, but also make your own
