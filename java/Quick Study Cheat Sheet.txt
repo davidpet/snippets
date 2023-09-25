@@ -2200,6 +2200,10 @@ Caveats
 		eg. if checking a grid instead of transforming it, maybe for loop is better
 		eg. if feel stream should work but not seeing how to do it, just do for loop
 		eg. if using streams for part of it, ok to do iterative for part of it (since java incomplete)
+		Rule of Thumb: if need to use multiple sequences and/or have relationships between elements in the sequence
+			then think hard about whether really want to use streams in Java
+		Additional Rule of Thumb: for 2D matrix element comparison, consider for loop for readability
+			and also for performance
 Process
 	make and use your own test cases to catch issues instead of being passive
 	use theirs, but also make your own
