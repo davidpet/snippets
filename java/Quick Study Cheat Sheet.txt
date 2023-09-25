@@ -1444,6 +1444,27 @@ Wildcards
 		Collections.sort() looks like this
 			but Collections.swap() is not generic and takes List<?> because it doesn't need that interface
 		this idiom means we'll take a Dog that is a subclass of Animal even if only Animal implements Comparable
+	things can get confusing when you nest generics and use wildcards
+		ILLEGAL
+			List<List<?>> l = new ArrayList<List<Integer>>();
+				because List<?> isn't literally List<Integer> and you went an extra level inward
+				this would also apply to List<Set<?>>, etc. or your own stuff
+			List<List<? extends Comparable<? super ?>>> l4 = new ArrayList<>();
+				because ? can't refer to ? as nother type
+				would need to make the method <T> and use T in place of the 2nd ? to do it
+		LEGAL
+			List<? extends List<?>> l = new ArrayList<List<Integer>>();
+				because you've got 2 levels of wildcards each referring to a different type
+			List<List<?>> l4 = new ArrayList<>();
+				because of diamond operator (this case protects you a lot)
+			List<? extends List<? extends Comparable<?>>> l4b = new ArrayList<List<Integer>>();
+				because there are technically 3 types at play here
+			List<List<?>> l8 = new ArrayList<List<?>>();
+				because List<?> is literally List<?>
+				when you instantiate the inner lists (eg. to add with .add()) you need to be more concrete
+				basically the outer list is holding variables (LH sides) that have wildcards
+					but you have to fill them with something conrete
+				
 Covariance/Contravariance
 	<? extends Number> is Covariance [read-only]
 		don't know the type but know it's AT LEAST a Number
@@ -1482,6 +1503,8 @@ Math Operators on Generic Types
 Subclass as Type Arguments
 	class MyClass implements Comparable<MyClass>
 	<T extends Comparable<T>>
+	<? extends Comparable<?>> works too
+		but in that case it's technically two independent types which might happen to be the same
 Static Methods
 	treat as standalone methods (put <T> in front)
 	call on unbound class (eg. MyClass.<Integer>create())
