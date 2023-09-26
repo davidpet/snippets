@@ -759,7 +759,8 @@ overloading allowed
 	if overloading between static and non-static, the signature can't match
 no default args directly (simulate with Optional and/or overloading)
 	java.util.Optional
-	Optional.of() [no value]
+	Optional.empty() [no value]
+		NOTE: Optional.of() is not empty
 	Optional.of(value) [populated, assumed not null]
 	Optional.ofNullable(value) [populated if not null]
 	val.isPresent(), val.get(), val.orElse(default), value.orElseThrow(), value.orElseGet(supplier)
@@ -770,6 +771,7 @@ no default args directly (simulate with Optional and/or overloading)
 	optional.ifPresentOrElse(consumer, runnable) is like ternary operator
 	java.util.OptionalInt, etc. for primitive values
 		.getAsInt() instead of .get()
+		still .of() and others same though
 variadic functions
 	int... numbers
 		this param becomes an array
