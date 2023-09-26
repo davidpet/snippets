@@ -2273,6 +2273,9 @@ Caveats
 	make sure you use very simple examples to check logic
 		eg. to see you needed > instead of >= in partitioned range indexing pattern
 			all you neeed to see was item 0 has a count of 1
+	ALWAYS REMEMBER: negatives, zeroes, nulls/empties
+		these things come up naturally in day to day coding because of unit tests, etc.
+		but in interview it's super easy to let it slip
 Process
 	make and use your own test cases to catch issues instead of being passive
 	use theirs, but also make your own
