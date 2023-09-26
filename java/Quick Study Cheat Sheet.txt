@@ -375,6 +375,10 @@ TreeMap
 	navigableKeySet() gives you keys as sorted set
 		keySet() also maintains the order though
 
+	if you need a sorted map of integers to counts, and the number of integers is small,
+		you can consider using an array instead
+		that will make lookup faster (no need to sort) and the code simpler
+
 Bitfields (EnumSet)
 	EnumSet is built for an enum type and maps 1 enum value per bit as a bitmask
 	you use static methods of EnumSet to create them and then treat like any other set
@@ -2214,6 +2218,34 @@ Patterns
 		there is no clever stream reduction or something that will get you out of it
 	permutation indices
 		wrap list in data structure with original index, then sort.  now you know how to get back
+	index vs. count
+		an index can be seen as representing the count of what came before it
+		thus why exclusive indices are also counts
+		conversly, a count can be seen as how many indices came before (subtract 1 to get last one)
+		this seems elementary, but in patterns like the partitioned one below it comes in handy to think explicitly about it
+	index in partitioned range
+		eg. ranges in a distribution or ith item in a sorted map/array of values to counts
+		iterate through the keys in the proper order (by sort, by insertion, however you arranged it)
+		keep a running total count (inc. the current item's count)
+		the first item where the count becomes greater than (not equal to) the index is the value for that index
+			it's off by one because we include the current item in the count
+			so we have to look for when count becomes index + 1 indirectly
+	median of sequence
+		don't forget to use float so you don't lose the 0.5 if applicable!
+		odd sequence: middle item -> n / 2
+		even sequence: average of 2 middle items
+			n / 2, n / 2 - 1
+		general version: take two items at n / 2 and (n - 1) / 2
+			if even, it works out the same with floor division
+			if odd, it's the same # twice
+			in either case, averaging works out to the correct result
+			don't even need to do a % 2 == 0 type check!
+	median of partitioned range (count map)
+		the key insight here was to simplify it to think of getting the two indices we want from the range
+		then to get them both at the same time as we iterate through
+		so you calculate what indices you need and then go through and accumulate counts
+		when a count becomes greater than one of the 2 indices, set it
+		when both have been set, you're done - take the average
 Caveats
 	don't forget to check both sides if do something like reverse a range in-place to sort
 		or both ends of row in a train track within a row
@@ -2234,6 +2266,9 @@ Caveats
 		Additional Rule of Thumb: for 2D matrix element comparison, consider for loop for readability
 			and also for performance
 		Additional Rule of Thumb: if you need the index, you need a for loop
+	make sure you use very simple examples to check logic
+		eg. to see you needed > instead of >= in partitioned range indexing pattern
+			all you neeed to see was item 0 has a count of 1
 Process
 	make and use your own test cases to catch issues instead of being passive
 	use theirs, but also make your own
