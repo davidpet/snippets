@@ -769,6 +769,7 @@ no default args directly (simulate with Optional and/or overloading)
 	optional.ifPresent(consumer) to act on value
 	optional.ifPresentOrElse(consumer, runnable) is like ternary operator
 	java.util.OptionalInt, etc. for primitive values
+		.getAsInt() instead of .get()
 variadic functions
 	int... numbers
 		this param becomes an array
@@ -982,6 +983,7 @@ Streams API
 		IntStream.of(1, 2, 3) for variadic args(or single array) giving values
 		stream.mapToInt(n -> n) // boxed to primitive (could use Integer::intValue too)
 		s.max(), s.asDoubleStream(), s.forEach()
+			values that could be bad if on empty stream (eg. max) are returned as OptionalInt
 		s.toArray() to collect as an array of int
 		s.boxed() to make a Stream<Integer>
 		s.<T>mapToObj() to provide custom conversion to Stream<T>
