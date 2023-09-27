@@ -2289,6 +2289,18 @@ Caveats
 		but in interview it's super easy to let it slip
 	ALWAYS REMEMBER: if get hung up on indices or conditions, test with data
 		you can lose a lot of time and make a lot of mistakes trying to theory it out too much
+	ALWAYS REMEMBER: if give you a strange/unusual guarantee/limitation, always check if that helps you somehow
+		eg. if say no duplicates, then you can assume all values unique and that might simplify some algorithms a lot
+	OPTIMIZATION:
+		besides the usual things, like avoiding copies and using iteration instead of recursion to save memory
+		you can also optimize based on limitations/requirements they give you
+		and also based on the problem itself
+			eg. if asked to find the count for a prefix in a trie, then the trie only has to have prefixes and counts
+				so add() can build the full tree, but count() just needs to find the prefix node and return a count
+				all paths through a prefix on add() increment count
+		in other words, don't blindly implement a full data structure from memoroy - think about what you actually need
+		also, in the trie example, you could store a boolean saying if it's terminal instead of a whole key
+			then the whole key need not stay loaded in memory
 Process
 	make and use your own test cases to catch issues instead of being passive
 	use theirs, but also make your own
