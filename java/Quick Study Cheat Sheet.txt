@@ -2250,6 +2250,17 @@ Patterns
 		so you calculate what indices you need and then go through and accumulate counts
 		when a count becomes greater than one of the 2 indices, set it
 		when both have been set, you're done - take the average
+	sliding window
+		keep the outside loop variables minimal
+		eg. for reversing linked list, you need prev and cur, but not next
+			because cur already knows what next is
+			but nobody knows what prev is
+		you can calcualte variables inside as needed
+			eg. next as a cache for when you rotate the variables for the next window
+			that lets you guard by the current without having to protect null dereference
+		standardize your way of thinking of the variables, don't be wishy washy
+			eg. prev = the node already updated and cur = the node I'm about to update
+				then you can tell that when cur is null, the loop is over, and prev has the last head
 Caveats
 	don't forget to check both sides if do something like reverse a range in-place to sort
 		or both ends of row in a train track within a row
@@ -2276,6 +2287,8 @@ Caveats
 	ALWAYS REMEMBER: negatives, zeroes, nulls/empties
 		these things come up naturally in day to day coding because of unit tests, etc.
 		but in interview it's super easy to let it slip
+	ALWAYS REMEMBER: if get hung up on indices or conditions, test with data
+		you can lose a lot of time and make a lot of mistakes trying to theory it out too much
 Process
 	make and use your own test cases to catch issues instead of being passive
 	use theirs, but also make your own
