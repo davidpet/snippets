@@ -136,6 +136,7 @@ uninitialized values have sensible defaults inc. null for reference and numeric 
 
 [Collections]
 in general, ranges are inclusive lower bound and exclusive upper bound
+	you cannot reverse ranges like in Python
 sizes in Java are int, which is signed, so collections have a 2 giga-element limit
 
 literal, indexer, etc. only available for arrays, which are a weird type in general
@@ -267,6 +268,7 @@ Map<TKey, TValue> interface
 	java.util.concurrent.ConcurrentHashMap = recommended for multithreaded
 	LinkedHashMap<TKey, TValue> implementation (ordered by insertion)
 	TreeMap<> = ordered by key natural order
+		if enumerate keys, values, or entries, all will be in same order
 	EnumMap<> = enum key version
 a lot like List<T> except use keys instead of indices and:
 	.get() returns null if not present (instead of throwing)
@@ -404,6 +406,8 @@ StringBuilder
 
 	methods that mutate the data return the object itself
 		this allows you to chain fluently
+
+	need to convert to a String with toString() before using .equals() with a String
 StringBuffer
 	thread-safe version of StringBuilder
 
@@ -571,6 +575,20 @@ Iterators/Iterables
 	the interface is compatible with laziness for things like streams
 	Iterable<T> always has a .forEach(consumer) method just like streams do
 		which means you can use .forEach(System.out::println) on any java.util collection!
+	different usages of iterators:
+		forEach looping
+		lazy sequences
+		pass around for on-demand consumption (eg. Huffman Decoding consuming bits of stream)
+
+Iterating String
+	s.chars().mapToObj(c -> (char)c).iterator()
+	or use java.text.StringCharacterIterator (implements CharacterIterator)
+		DONE constant (-1) to say when out of range (no throw or hasNext())
+		construct with a string, an offset in a string, or a range in a string
+		current() gets current char without moving index
+		next() and previous() move index and then get new char
+		first() and last() also move index before retrieving
+		getIndex(), getBeginIndex(), getEndIndex()
 
 Empty Constants
 	Collections.EMPTY_SET, EMPTY_LIST, EMPTY_MAP
@@ -649,6 +667,8 @@ System.out.printf(formatString, ...) like in C++
 	%02d [2 digits padded with 0]
 	%.2f [2 places after decimal]
 	%2$d [2nd arg after format string used for the %d, instead of natural order]
+	%15s [right justified, padded on left with spaces to get up to 15 total]
+	%-15s [same but left justified instead][no center or override of padding]
 String.format() is like sprintf
 do not pass a float when int is expected or vice versa
 	but passing short or long instead of int for instance is fine
@@ -739,6 +759,7 @@ some useful built-in exceptions:
 	UnsupportedOperationException (unchecked)
 	IllegalArgumentException (unchecked)
 	ClassCastException (unchecked)
+	IndexOutOfBoundsException (unchecked)
 	java.io.IOException
 		java.io.FileNotFoundException
 
@@ -757,6 +778,8 @@ throws keyword to specify exceptions (checked required, unchecked optional)
 positional args only, no keyword args
 overloading allowed
 	if overloading between static and non-static, the signature can't match
+	if you pass a primitive, Java would prefer an overload that takes a boxed type rather than a generic
+	if you pass a boxed type, Java would prefer an overload that takes a generic instead of a primitive
 no default args directly (simulate with Optional and/or overloading)
 	java.util.Optional
 	Optional.empty() [no value]
@@ -970,6 +993,8 @@ Streams API
 		all the overloads can also take optional range start and end
 		Arrays.asList() has no overloads because no such thing as IntList
 
+		use Arrays.stream(arr).iterator() and Arrays.stream(arr).forEach() if need those
+			arrays don't have those methods by default like generic collections do
 	s.chars() gives you an IntStream for a string
 		a way to avoid using toCharArray() to make a copy
 		has to use IntStream because no CharStream available
@@ -992,6 +1017,8 @@ Streams API
 		cannot collect() [use boxed() or mapToObj first]
 			the method is there but it doesn't work, probably because of generics
 		can assume most Stream stuff is there (eg. of(), concat(), etc.)
+		iterator() returns a special type of iterator that has next() for Integer and nextInt() for int
+			PrimitiveIterator
 	DoubleStream and LongStream also
 		only these 3 types
 		smaller values must upsize to the next one
@@ -1276,6 +1303,8 @@ Interfaces
 	interface can inherit one or more other interfaces via 'extends'
 
 	interfaces can be generic (as many of the built-in collection ones are)
+
+	default methods can call abstract methods (eg. Iterable.forEach)
 Object
 	root of all reference types (implicitly inherited if no inheritance specified)
 	@Override methods to provide systemic behavior
@@ -1482,6 +1511,14 @@ Covariance/Contravariance
 		don't know the type but know it's AT MOST a Number
 		that means we can write Number (pass as parameter)
 			but we can't read values from it (return values)
+
+	f(List<?> a, List<?> b) {a.add(b.get(0));}
+		doesn't work because ? implicitly means <? extends Object> and thus cannot be written
+	f(List<? super T> a, List<? extends T> b) makes it work flexibly
+	f(List<T> a, List<T> b) is also fine
+
+	you can also always write null even without contravariance
+
 Casting
 	you can cast to T inside a generic as long as the thing being casted is a reference type
 		it won't be autoboxed, but if you need to box, you can use something like Integer.valueOf()
@@ -1568,6 +1605,14 @@ pass System.in to InputStreamReader and that to BufferedReader in try-resources 
 console = System.console();  console.readLine("Enter a value: "); console.readPassword is same but without echo
 System.out, System.in, System.err
 
+java.util.Scanner
+	try (Scanner scanner = new Scanner(System.in)) {}
+	reads token by token, skipping past leading whitespace (inc. newlines)
+	nextInt(), next() [for string], nextDouble(), etc. [throws InputMismatchException if wrong]
+	nextLine() gets rest of current line from current position as string
+	has ways to configure the delimitters and find/skip things via regex Pattern objects
+	less flexible but sometimes more convenient and more performant than the buffered reader way
+
 System.gc()
 
 Math.floor(), Math.abs(), Math.max(), Math.round(), Math.cos(radians), etc.
@@ -1578,6 +1623,20 @@ java.util.Random
 	ints(), longs(), etc. for infinite streams
 java.math.BigInteger
 	for numbers larger than long (eg. unsigned long since no unsigned)
+
+java.util.BitSet
+	doesn't inherit any interfaces but acts somewhat like a Set<Integer> or boolean[]
+	b.set(index)
+		expands storage of bit field as needed
+	b.set(index, start, stop)
+		setting a whole range
+	b.get(index)
+		boolean
+	b.flip(index), b.clear(index)
+	b1.and(b2)
+		mutates b1 by bulk operation with b2
+		lots of others
+	also ways to iterate bits, count set bits, etc. via internal bitwise math
 
 File I/O
 	many different ways

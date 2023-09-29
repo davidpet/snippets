@@ -70,7 +70,7 @@ actual execution order is: [FROM] [JOIN] [WHERE] [GROUP BY] [HAVING] [SELECT] [D
 	part of SELECT comes before GROUP BY though
 	this is evidenced by the fact that you can use column aliases in a GROUP BY
 	but GROUP BY also makes aggregates
-	
+
 [SELECT] = for defining what columns will be present in result
 	SELECT *
 		all columns
@@ -131,6 +131,8 @@ actual execution order is: [FROM] [JOIN] [WHERE] [GROUP BY] [HAVING] [SELECT] [D
 
 	for json, use ->> operator to dereference column as a field from the JSON
 		for inserting a new row, need to use a json string
+
+	NOTE: you can leave off table name if not ambiguous
 ORDER BY column ASC
 	or DESC
 	default is ASC
