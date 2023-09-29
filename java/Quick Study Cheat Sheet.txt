@@ -1368,6 +1368,10 @@ Anonymous Class
 
 	can provide c'tor args for base class in the ()
 
+	an anonymous class is very similar to a lambda and used to be the way to do lambda-like things
+		it is a closure around data from the surrounding code just like lambdas
+		eg. you can implement Iterable<T> by returning new Iterator<T>() inline
+
 Construction Order
 	1. super() call [which must be first or not present in c'tor] kicks off base construction
 		super() cannot be called with any instance members of derived class because not constructed
