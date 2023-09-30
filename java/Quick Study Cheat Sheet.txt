@@ -17,6 +17,7 @@ also, sometimes methods aren't listed in the main list but are listed as being i
 String
 boolean [true, false]
 byte, short, int, long
+	inc. decimal, hex (0x), octal (0), or binary (0b)
 char is 16-bit (like short)
 	most characters are same as ascii because using utf-8
 float (32-bit), double (64-bit)
