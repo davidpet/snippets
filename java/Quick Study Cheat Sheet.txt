@@ -30,12 +30,22 @@ C++ style quoting for strings and chars
 interning for numbers and strings
 all reference types are nullable
 primitive value types are not Object and have boxed equivalents (which have static things too)
-
 == reference or primitive value, .equals() contents, .compareTo() lex, Object.equals() null safe
+
 implicit widening, c-style narrowing (truncates)
 	numeric conversions via cast operator only work for primitives
 	to do it for boxed types, use methods like intValue()
 		these come from the superclass, Number
+for upcast, value is sign-extended
+	values that fit in the smaller range will still be the same value
+for downcast, value is truncated from left
+	if value fit to begin with, it will be correct
+since there is no short literal, one thing that can get you is comparing with a bitmask
+	the bitmask will be integer because there is no short literal in Java
+	so the short gets implicitly widened to integer and no longer matches the mask
+	solutions:
+		cast the bitmask to short to prevent the short from being widened
+		use the bitmask as a mask (implicitly masking out the high 0s)
 
 float near-equality just via Math.abs() on difference and < tolerance
 Double.NaN, Double.POSITIVE_INFINITY, Double.isNaN(), Double.isInfinite()
