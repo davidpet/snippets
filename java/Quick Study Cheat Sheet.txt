@@ -403,6 +403,7 @@ StringBuilder
 	delete(index1, index2) // instead of remove()
 	reverse() // instead of reverseOrder()
 	replace() // instead of using SubList() and changing
+	charAt() and setCharAt()
 
 	methods that mutate the data return the object itself
 		this allows you to chain fluently
@@ -641,6 +642,7 @@ no built-in reversal in either strings or arrays
 to modify part of a string, you need to break it (eg. with substring) and concat the result
 	even for single characters
 	or alternatively, use toCharArray(), modify the array, and use new String(arr) [incurs 2 copies]
+	eg. Character.toUpperCase(A.charAt(0)) + A.substring(1);
 
 to sort a string, convert to char array, use Arrays.sort(), and new String(arr)
 	overloads like no params, range of indices, comparators, etc.
@@ -691,6 +693,7 @@ line endings
 case insensitivity
 	static comparator String.CASE_INSENSITIVE_ORDER
 	method s.compareToIgnoreCase()
+	method s.equalsIgnoreCase()
 
 extra copies
 	note that in general, methods that get a string from another string make a true copy
@@ -2374,6 +2377,8 @@ Caveats
 	make sure you use very simple examples to check logic
 		eg. to see you needed > instead of >= in partitioned range indexing pattern
 			all you neeed to see was item 0 has a count of 1
+		eg. for off by one errors in iteration (esp. in subrows/filters)
+			make sure not to confuse inclusive and exclusive (easy to do when in a hurry)
 	ALWAYS REMEMBER: negatives, zeroes, nulls/empties
 		these things come up naturally in day to day coding because of unit tests, etc.
 		but in interview it's super easy to let it slip
@@ -2391,6 +2396,8 @@ Caveats
 		in other words, don't blindly implement a full data structure from memoroy - think about what you actually need
 		also, in the trie example, you could store a boolean saying if it's terminal instead of a whole key
 			then the whole key need not stay loaded in memory
+	do not confuse anagram w/ palindrome (anagram = rearrange, palindrome = reverse)
+		also don't confuse any of these with a crypto encoding
 Process
 	make and use your own test cases to catch issues instead of being passive
 	use theirs, but also make your own
