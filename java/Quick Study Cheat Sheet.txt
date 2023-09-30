@@ -630,13 +630,17 @@ str.replace()
 	replace all occurences of string or character
 str.replaceFirst()/str.replaceAll()
 	replace all or first occurence(s) of REGEX
+	you can use $1, $2, etc. to reference capture groups from the replaced text
+		indexed by open paren in case of nesting
 str.matches()
 	full-string REGEX match check
 str.split() -> String[]
 	REGEX used for thing to split on
 	each occurence swallowed and becomes comma in array
 	internal empties possible but empties at end are removed
+	don't forget to use "\s+" if splitting by whitespace
 compiled regex patterns have similar methods to the last few above
+remember that regex need double escaping or """ strings
 no built-in reversal in either strings or arrays
 
 to modify part of a string, you need to break it (eg. with substring) and concat the result
@@ -657,6 +661,8 @@ most built-ins and collections have a proper toString() except for arrays (use A
 
 C++ style single and double quotes (strict separation of string vs. char literals)
 """ for verbatim string (raw and multiline)
+	required to have newline though, so can't use as inline raw string
+	but the initial newline is ignored, so you could use it as raw string if don't mind the line break in code
 escaping just like in C++
 
 Character.isLetter(), Character.isDigit(), etc.
@@ -679,9 +685,49 @@ Double.parseDouble(str) to get double from string
 Double.toString(d) to convert primitive to string
 
 java.util.regex.*
+	keep in mind in Java you have to use double escaping (no raw single line strings)
+		unless you're ok going to the next line with """
 	pattern = Pattern.compile(patternString)
+		pattern = Pattern.compile(patternString, Pattern.MULTILINE) if you want multiline
+			then ^ and $ match beg and end of each line instead of whole string
 	matcher = pattern.matcher(content)
 	if (matcher.matches()) {}
+		whole string match check
+	while (matcher.find()) {}
+		find each match in string
+		then use other methods of matcher to probe further about currently found match
+	matcher.start() and matcher.end() to get range of the match (indices)
+	matcher.group() to get the matched substring
+	matcher.group(0) to do the same (even if no capture groups)
+	matcher.group(n) to get nth capture group by open paren
+		if a group has a quantifier after it, you only get the last one
+		if a group has a quantifier inside it, you get the whole sequence with repetition inside
+	matcher.group(name) to get capture group by name
+most important regex syntax
+	Keep in mind, you will have to replace all `\` with `\\` to do this for real (or use verbatim strings).
+
+	- `abd|def` means abc OR def
+	- `\s` means whitespace character
+	- `\w` means word character (alphanum and _)
+	- `\b` means word boundary
+	- `\d` means digit
+	- `\S`, `\W`, etc. are inverses of above (capitalized)
+	- `\` in front of any special operator escapes it to make it literal (eg. `\\`)
+	- `[a-zA-Z0-9]` character set
+	- `[^ \t]` negated character set
+	- `[a\\-]` escaping the dash
+	- __quantifiers__ after objects (eg. capture group or character set)
+	- `*` = 0 or more
+	- `+` = 1 or more
+	- `?` = 0 or 1
+	- `{n}` = exactly n
+	- `{n,}` = at least n
+	- `{n,m}` = n to m (inclusive)
+	- put an additional `?` after any __quantifier__ to make it __non-greedy__
+	- `^` and `$` = beginning and end of whole string
+	- or of individual lines if using `MULTILINE`
+	- `()` for capture groups (can be nested)
+	- `(?<name>)` for named capture groups
 
 math on char -> integer -> can cast back to char
 
