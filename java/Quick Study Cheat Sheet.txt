@@ -775,6 +775,8 @@ just like TypeScript, C#, etc. (access, modifiers, etc. all together)
 throws keyword to specify exceptions (checked required, unchecked optional)
 	unchecked inherit from RuntimeException
 	checked inherit from Exception (more general)
+	comma-separated if multiple
+	unchecked don't really count (compiler won't make you catch them even if declared)
 positional args only, no keyword args
 overloading allowed
 	if overloading between static and non-static, the signature can't match
@@ -1225,6 +1227,10 @@ overall syntax looks like a lot of other languages
 	constructor named after class like C++ (and overloadable)
 always use new() [no stack variables like in C++ or ommitting entirely like in Python]
 finalize() for destructor on garbage collection
+static class at the top level has no meaning
+	does not mean only static members
+	it only has meaning as a child class
+	a static class still has default c'tor if not provided, and acts totally normal
 Cloneable interface clone() method for copy
 	actually a marker interface - clone() is on Object and throws by default
 default constructor (just 1) if no constructor, otherwise only the one(s) you specify
@@ -1260,6 +1266,13 @@ Inheritance
 	you can increase access in a subclass (eg. make a protected member public)
 		but you can't go the other way
 		remember that private members aren't seen by the subclass, so you're not exposing anything
+	similarly to covariant return types, you can narrow but not widen exception scope in subclasses
+		you can throw anything the base class says it might throw, but nothing more
+		you can also ommit any of the ones the base class says
+		the requirement to catch an exception is based on the interface, not implementation
+			that's what makes Object.clone() able to throw if not implemented
+		unchecked exceptions don't apply to this - you can freely declare them mismatching on both sides
+			in fact, the compiler won't make you catch them even if in the throws spec
 	static members are not virtual and exhibit name hiding behavior
 		a subclass type or instance can access all statics from it and all bases
 			but any of the same signature in subclass will hide the base
@@ -1312,6 +1325,14 @@ Object
 	not abstract
 		new Object() is allowed
 			eg. if need opaque object reference for synchronization lock, etc.
+	default implementations
+		equals() = reference equality (useful to use opaque object as key, eg. see if node visited)
+		hashCode() = goes along with equals()
+		toString() = some representation of the class and instance reference (useless)
+		clone() = protected and throws an exception
+			if override it, you generally make public and don't throw the exception
+			then if someone uses your class they don't need the exception and can get covariant type
+			but if they use Object, then they have to catch the exception for safety
 Objects static class
 	some null-safe versions of normal Object methods
 	Objects.equals(a, b)
@@ -1338,6 +1359,7 @@ Nested Classes (a weirdness of Java)
 	methods of "inner classes" can access members of the outer class without any qualifier
 		so it's basically just a subsection of the main class rather than its own thing
 		can access private members
+		outer class can also access inner class private members
 	nested interfaces behave more like normal nested types (always static)
 
 Boxing/Unboxing
@@ -1611,6 +1633,7 @@ System.out, System.in, System.err
 
 java.util.Scanner
 	try (Scanner scanner = new Scanner(System.in)) {}
+		can also take a java.io.File, a java.nio.file.Path, a String (for text), etc.
 	reads token by token, skipping past leading whitespace (inc. newlines)
 	nextInt(), next() [for string], nextDouble(), etc. [throws InputMismatchException if wrong]
 	nextLine() gets rest of current line from current position as string
@@ -1655,6 +1678,10 @@ File I/O
 	binary-based version = java.io.FileOutputStream and java.io.FileInputStream
 			eg. stream.write(byte) or stream.write(byte[])
 			eg. stream.read(arr) to read into array (maxed to its length)
+	java.io.File
+		new File(pathString)
+		this can be passed to some places where a stream usually would
+		eg. a Scanner or a FileInputStream or a FileReader
 Paths
 	java.nio.file.Path and java.nio.file.Paths
 	Path path = Paths.get("C:/Users/John/Documents/file.txt");

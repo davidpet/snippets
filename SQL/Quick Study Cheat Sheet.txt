@@ -16,6 +16,7 @@ statements end with ;
 /* this is a multiline comment */
 
 identifiers, operators, etc. are not case sensitive but built-in stuff is usually capitalized
+	equality in strings is case sensitive by default
 
 [Data Types]
 INT
@@ -80,6 +81,12 @@ actual execution order is: [FROM] [JOIN] [WHERE] [GROUP BY] [HAVING] [SELECT] [D
 		they mostly make sense in terms of statements involving a GROUP BY (though can work standalone)
 		COUNT(*) to count # of rows
 		COUNT(col) to count # of non-null column values
+		
+		COUNT(name) can also be used to turn a whole result set into 1 row aggregated
+			if no GROUP BY and no other columns listed
+			if other non-aggregate columns, that's an error
+		COUNT(DISTINCT name) can deduplicate
+		eg. SELECT COUNT(name) - COUNT(DISTINCT name) AS duplicates FROM MyTable;
 	AS lets you alias the column names in the results
 		they are not usable in the WHERE but are in the ORDER BY and GROUP BY
 
@@ -96,6 +103,7 @@ actual execution order is: [FROM] [JOIN] [WHERE] [GROUP BY] [HAVING] [SELECT] [D
 
 	SELECT DISTINCT column1, column2
 		deduplicates whole result set rows
+		note that strings are case sensitive in this context
 [FROM] = specifying what table to use
 	can alias table names here which applies in rest of statement
 		eg. FROM employees AS e
@@ -155,6 +163,8 @@ subqueries grouped with () can be used for single values if aggregate
 	WHERE EXISTS () if a subquery returns at least 1 row
 
 Full Examples:
+	SELECT * FROM Book; /* all rows, all columns */
+
 	SELECT * FROM Book WHERE price > 100.00 ORDER BY title;
 
 	SELECT col1 AS column1, col2 AS column2, SUM(col3) AS column3_sum FROM employees
