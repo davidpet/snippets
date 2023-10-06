@@ -47,6 +47,9 @@ since there is no short literal, one thing that can get you is comparing with a 
 	solutions:
 		cast the bitmask to short to prevent the short from being widened
 		use the bitmask as a mask (implicitly masking out the high 0s)
+for integer to float, a .00000 decimal part is just added (implicitly)
+for float to integer, the fractional part is chopped off (explicitly)
+	5.2 -> 5, -5.2 -> -5
 
 float near-equality just via Math.abs() on difference and < tolerance
 Double.NaN, Double.POSITIVE_INFINITY, Double.isNaN(), Double.isInfinite()
@@ -1702,7 +1705,7 @@ java.util.Scanner
 
 System.gc()
 
-Math.floor(), Math.abs(), Math.max(), Math.round(), Math.cos(radians), etc.
+Math.floor(), Math.abs(), Math.max(), Math.round(), Math.cos(radians), Math.pow(base, exp), etc.
 	Math.PI and Math.E constants
 java.util.Random
 	new Random().nextInt(100) or nextFloat(), etc.
@@ -2411,6 +2414,7 @@ Patterns
 		standardize your way of thinking of the variables, don't be wishy washy
 			eg. prev = the node already updated and cur = the node I'm about to update
 				then you can tell that when cur is null, the loop is over, and prev has the last head
+		usually you want to calculcate the new thing as a variable, then  rotate from oldest to newest to bring forward window
 Caveats
 	don't forget to check both sides if do something like reverse a range in-place to sort
 		or both ends of row in a train track within a row
