@@ -1,0 +1,434 @@
+*** for the time being this will just be a super quick and superficial list of diffs from Java***
+*** I will do better later after the immediate need ***
+
+[Variables]
+boolean (true/false)
+number (both float and integer)
+string (lowercase)
+
+let x: number = 5;
+const x: number = 5;
+let x = 5;
+
+regular enums and string enums
+enum Direction {
+    Up = "UP",
+    Down = "DOWN",
+    Left = "LEFT",
+    Right = "RIGHT",
+  }
+let playerDirection: Direction = Direction.Up;
+
+any
+void
+null
+undefined (either explicitly or by being uninitialized)
+unknown
+never
+
+NaN
+Infinity
+-Infinity
+isNan()
+isFinite()
+
+reference types mutable but strings are immutable references (just like Java)
+
+let x! string;
+    treat as not nullable in a class even though not initialized just yet
+let x? string;
+    treat as optional in class (undefined if missing
+    same as doing let x: string | undefined
+
+scoped like Java, not Python
+
+[Collections]
+let a: number[] = [1, 2, 3, 4, 5];
+let a: Array<number> = [1, 2, 3, 4, 5];
+a.length
+a.push(val)
+a.pop()
+const [first, second, ...rest] = a;
+const a = [...firstList, ...secondList];
+filter and map (returns array)
+[][]
+
+let o: {a: number, b: string} = {a: 10, b: 'hi'};
+
+let tuple: [number, string] = [10, 'hi'];
+    tuple[0] and tuple[1]
+
+let s: Set<number> = new Set([1, 2, 3, 4, 5]);
+    add(), has(), delete(), size()
+let m: Map<string, number> = new Map([
+    ["a", 10,],
+    ["b", 20,],
+])
+    set(), get(), has(), delete(), size(), clear()
+    iterate over [key, value]
+
+
+let a: ReadonlyArray<number> = [1, 2, 3, 4, 5];
+also ReadonlyMap, etc.
+not truly readonly, just enforces the usage (like C++ const)
+
+[Strings]
+`Hello, {name}!` // should be variable in current scope
+'' and "" are both for string (char is just a single character string, not special thing)
+
+s.length
+s[0], s.charAt()
+
+console.log()
+console.error()
+console.warn()
+console.info()
+
+/regex syntax/
+regex.test(), matches(), etc.
+str.replace(regex, otherText)
+
+JSON.stringify(), JSON.parse()
+
+[Operators]
+== is value equality for number and string, reference equality otherwise
+=== is strict equality (value and type)
+!= and !== corresponding to above
+
+x as OtherType
++str (cast to number)
+n.toString()
+
+?? and ? and ! operators
+! doesn't throw (telling TS to just trust you)
+
+... spread operator
+
+!! for truthiness (or ! for not truthiness)
+    empty collections are truthy if not null|undefined
+    0 and "" are falsey
+short-circuiting and giving back last value seen
+implicit cast to boolean kind of (but gives real value back)
+
+if (x !== null) {
+    // in here, you can treat x as not nullable!
+}
+
+[Control Flow]
+try {
+}
+catch (error) {
+}
+finally {}
+
+for (let i = 0; i < 5; i++) {}
+for (const x of arr) {} // for in is discouraged because unexpected behavior
+
+function* lazyList(limit: number): IterableIterator<number> {
+    let i = 0;
+    while (i < limit) {
+      yield i++;
+    }
+  }
+
+[Functions]
+function add(x: number, y: number): number {
+    return x + y;
+}
+
+// Optional parameters
+  function greet(name?: string): void {
+    if (name) {
+      console.log(`Hello, ${name}!`);
+    } else {
+      console.log("Hello, stranger!");
+    }
+  }
+
+greet(); // Output: Hello, stranger!
+greet("John"); // Output: Hello, John!
+
+// Default parameters
+  function power(base: number, exponent: number = 2): number {
+    return Math.pow(base, exponent);
+}
+
+function sum(...numbers: number[]): number {
+    return numbers.reduce((acc, curr) => acc + curr, 0);
+  }
+
+// Named arguments via anonymous class
+function greet({ name, age }: { name: string; age: number }): void {
+    console.log(`Hello, ${name}! You are ${age} years old.`);
+  }
+
+greet({ name: "John", age: 30 }); // Output: Hello, John! You are 30 years old.
+
+// Overloading
+// to overload by # params, use optionals
+function processData(data: string): void;
+function processData(data: number): void;
+function processData(data: string | number): void {
+    if (typeof data === "string") {
+      console.log(`Processing string data: ${data}`);
+    } else if (typeof data === "number") {
+      console.log(`Processing numeric data: ${data}`);
+    }
+  }
+
+nested functions allowed but uncommon due to multiline lambdas
+    unlike Python
+
+return type can be ommited to let it be inferred
+    eg. void, esp. private method
+
+[Functional]
+const addNumbers = (a: number, b: number): number => a + b;
+let greetFunc: (name: string) => void;
+
+fat arrows
+all the usual combos
+
+closures by reference (except loop variables)
+
+_, __, etc.
+
+fn.bind(thing)
+    binds 'this' in the context of fn to point to the object thing
+    eg. in a lambda that uses 'this' but was not returned from the target class
+fn.bind(thing, a, b)
+    can also bind arguments so don't have to pass them on calls
+
+fn.apply(thing, [a, b])
+    calling fn with array of args
+fn.call(thing, a, b)
+    calling fn with positional args
+
+map, reduce, and filter available on arrays
+
+use extra () to return object from lambda
+
+[Classes]
+type Person = {
+    name: string;
+    age: number;
+};
+type BetterPerson = Person;
+
+"public" by default because of JS behavior
+need "this" to access everything (never implicit)
+    but not passed into siganture like in python
+fields can be declared in the body or in the c'tor by providing an access modifier
+    no 'let' or 'const' for fields
+    'readonly' for locking
+no function keyword for methods
+all methods virtual (or static)
+    override keyword (newer) (configurable, on for Angular by default)
+need 'new' keyword to create
+nullable declarations are kind of just on faith
+
+has interfaces, but can also "implements" a class to treat it as interface
+
+// Instance property with getter and setter
+get home(): string {
+    return this.habitat;
+}
+set home(home: string) {
+    this.setHabitat(home);
+}
+
+// breed is a 'parameter property' (declared in constructor only)
+// this is often used for services and other injected things
+constructor(name: string, age: number, private breed: string) {
+    super(name, age, "Dog");
+    // Don't need to do anything with breed here (it's assigned already)
+}
+
+[Generics]
+functions are normal instead of weird like Java
+can take primitives as well as reference types
+
+[Imports]
+export const message = 'hello';
+
+// The path is relative to this TS file,
+// not the working directory!
+// The ./ is required in this case!
+import {message} from './importable';
+
+import {message as msg} from './importable';
+
+import * as importable from './importable'
+
+console.log(importable.message);
+
+import {MyType} from './importable2';
+
+const m = new MyType();
+
+export * from './importable4';
+export * as otherThing from './importable4';
+
+Ambient Declarations ('declare')
+  // This is only here for demonstration.
+  // If you try to run the file, it will
+  // fail because there are no defintions
+  // for the ambient declarations here.
+
+  // Declare an ambient variable
+  declare const myVariable: string;
+
+  // Declare an ambient function
+  declare function myFunction(arg: number): void;
+
+  // Declare an ambient class
+  declare class MyClass {
+    constructor(arg: string);
+    method(): void;
+  }
+
+  // Use the ambient variable, function, and class
+  console.log(myVariable);
+  myFunction(42);
+  const myInstance = new MyClass('example');
+  myInstance.method();
+
+ambient declarations (eg. in a .d.ts for a library) let you compile safely
+    then the JS code produced can be patched with other JS code to call those Libraries
+
+[stdlib]
+** no imports needed **
+
+Math
+Date
+Promise<T>
+setTimeout(() => {})
+XmlHttpRequest for ajax stuff
+
+async/await keywords
+    mark function as async and have it explicitly return a Promise<T>
+    inside the function, pretend it returns T
+    can await a promise inside the function
+    other async functions can await your function
+
+[Angular]
+templates + styles (encapsulated via shadow DOM and/or extra classes/selectors)
+templates compiled into JS code to build DOM
+TS code as well
+Modules
+bootstrapping
+dependency injection
+jasmine testing
+
+[CSS]
+/* Apply to all elements */
+* {
+  box-sizing: border-box;
+}
+
+/* Tag selector */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f0f0;
+  margin: 0;
+  padding: 0;
+}
+
+/* ID selector */
+#myButton {
+  background-color: #008cba; /* Blue background */
+  color: white; /* White text */
+  border: none; /* No border */
+  padding: 15px 32px; /* Padding */
+  text-align: center; /* Centered text */
+  text-decoration: none; /* No underline */
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer; /* Pointer cursor on hover */
+}
+
+/* Class selector */
+.myClass {
+  color: red;
+}
+
+/* Descendant selector */
+nav ul {
+  list-style-type: none; /* No bullets */
+  padding: 0;
+}
+
+nav ul li {
+  display: inline; /* Display inline */
+  margin-right: 10px; /* Margin to the right */
+}
+
+/* Child selector */
+nav > ul {
+  border-bottom: 1px solid #ccc;
+}
+
+/* Adjacent sibling selector */
+h1 + p {
+  font-size: 1.2em;
+}
+
+/* General sibling selector */
+h1 ~ p {
+  color: green;
+}
+
+/* Attribute selector */
+input[type="text"] {
+  padding: 5px;
+  border-radius: 4px; /* Rounded borders */
+  border: 1px solid #ccc;
+}
+
+/* Pseudo-class selector */
+a:hover {
+  color: orange;
+}
+
+/* Pseudo-element selector */
+p::first-letter {
+  font-size: 2em;
+  color: red;
+}
+
+/* Media query */
+@media (max-width: 600px) {
+  body {
+    background-color: lightblue;
+  }
+}
+
+[HTML/DOM]
+<form id="myForm">
+        <label for="name">Name:</label><br />
+        <input type="text" id="name" name="name" required /><br />
+        <label for="email">Email:</label><br />
+        <input type="email" id="email" name="email" required /><br />
+        <label for="pwd">Password:</label><br />
+        <input type="password" id="pwd" name="pwd" required /><br />
+        <input type="submit" value="Submit" />
+      </form>
+
+<script>
+      // Prevent form from being submitted
+      document
+        .getElementById("myForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+          console.log("Form submission prevented.");
+        });
+
+      // Log a message when the button is clicked
+      document
+        .getElementById("myButton")
+        .addEventListener("click", function (event) {
+          console.log("Button clicked.");
+        });
+    </script>
+    
