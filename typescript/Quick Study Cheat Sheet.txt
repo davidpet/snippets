@@ -431,4 +431,9 @@ p::first-letter {
           console.log("Button clicked.");
         });
     </script>
-    
+
+[React]
+React = unidirectional flow, virtual DOM (always being "rebuilt")
+dynamically returning templated HTML code from functions
+Redux for state management
+    and built-in state management functions
