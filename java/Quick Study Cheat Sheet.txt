@@ -431,6 +431,8 @@ Stack<T>
 	concrete
 Queue<T>
 	add/poll/peek/isEmpty
+		poll() returns null if empty
+			whereas stack throws because that's what poll means
 	interface
 		LinkedList, ArrayDeque, PriorityQueue
 Deque<T>
@@ -1385,6 +1387,9 @@ Object
 	root of all reference types (implicitly inherited if no inheritance specified)
 	@Override methods to provide systemic behavior
 		toString(), equals(), hashCode(), etc.
+		note that for instance equals() takes Object
+			if you make an equals() that takes your own type, that is an OVERLOAD, not OVERRIDE
+				to make it work with generics you will need to make sure the override works first
 	not abstract
 		new Object() is allowed
 			eg. if need opaque object reference for synchronization lock, etc.
@@ -2464,6 +2469,8 @@ Process
 	use theirs, but also make your own
 	also write assumptions, inputs, outputs, etc. in comments to help think through problem
 		use /* */ instead of // to make it slightly faster to type multiple lines
+	don't be afraid to do brute force, at least at first
+		esp. if N is small by the constraints of the problem
 HackerRank-specific tips
 	if you exceed the time limit, make sure you aren't updating the wrong variable or something
 		sometimes you think it's because it's pick and you used n^2, but a lot of time it's a bug
