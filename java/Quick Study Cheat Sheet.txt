@@ -589,7 +589,11 @@ Iterators/Iterables
 	collections implement Iterable<T> interface in java.lang
 		has an iterator() member to get an Iterator<T> (java.util)
 	Iterator<T> has hasNext() and next() and some default methods
-	the interface is compatible with laziness for things like streams
+		be careful about off-by-one issues
+			next() should get current value first and then advance
+			hasNext() should say if getting current value would be possible, before the advancement
+				otherwise you'd be skipping element 0
+		the interface is compatible with laziness for things like streams
 	Iterable<T> always has a .forEach(consumer) method just like streams do
 		which means you can use .forEach(System.out::println) on any java.util collection!
 	different usages of iterators:
@@ -668,6 +672,7 @@ to sort a string, convert to char array, use Arrays.sort(), and new String(arr)
 	overloads like no params, range of indices, comparators, etc.
 
 String.join(delimStr, collection)
+	collection is of strings already though
 
 String has a lot of constructors
 	eg. all or part of a char[], copy another String, a StringBuilder, StringBuffer, etc.
@@ -1655,6 +1660,9 @@ Variadic Generic Functions
 		if you pass int[], T = int[] and has 1 element!
 			because generics can't be int
 		if you pass Integer[], T = Integer and has all the Elements
+new T[] // FORBIDDEN in generic method or class
+	because of covariance of arrays in java
+	but taking a T[] in a function is fine
 
 [Imports]
 import java.util.List;	// only 1 per line allowed
@@ -1825,6 +1833,7 @@ synchronized keyword for critical sections (java.util.concurrent for more specia
 	mark a static method as synchronized to lock on the class itself
 	synchonized(lockObject) {} // block to lock on arbitrary object (which can be 'this' if you want)
 	reentrant - same thread can lock multiple times and it will be refcounted
+		same thread might lock in multiple code locations, but locking on same synchronization object
 
 	another example usage is to have lock objects created with Object() in a class
 		then you can lock in small blocks within methods for fine-grained control
@@ -2483,3 +2492,6 @@ HackerRank-specific tips
 	beware of fake errors (slightly yellow/brown colored) due to thing not being used yet
 	var doesn't work in Java 8 but does in 15 (don't get confused by things like that)
 	watch out for holding down or repeated spaces causing erroneous . to be inserted
+
+[Data Structure Practice]
+***notebook with some useful practice structures***
