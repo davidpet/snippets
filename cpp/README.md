@@ -13,3 +13,4 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - regex
 - pointers to pointers, references of pointers, dereferencing, etc.
 - pointer arithmetic
+- variations allowed for 'main' function signature
