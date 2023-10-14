@@ -1,2 +1,3 @@
 # Interning
-In this code, we have an integer variable `x`, a pointer `p` pointing to `x`, and a reference `r` to `x`. When we change the value pointed by `p` or the value of `r`, the value of `x` also changes because they all refer to the same memory location. This is similar to the concept of interning, where multiple variables can refer to the same value. However, unlike true interning, the value here is mutable.
+
+C++ does not have interning.
