@@ -1,0 +1,2 @@
+# Array
+In the above code, we have demonstrated the declaration, initialization, accessing, modifying, and iterating over a C++ array. We have also shown how to work with multidimensional arrays and how to calculate the size of an array. Arrays in C++ are zero-indexed, meaning the first element is accessed with the index 0. The size of an array can be calculated by dividing the total size of the array by the size of one element.

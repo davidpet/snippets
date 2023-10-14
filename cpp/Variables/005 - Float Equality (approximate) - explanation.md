@@ -1,0 +1,6 @@
+# Float Equality (approximate)
+In this code snippet, we first declare and initialize two float variables `a` and `b`. We then print their values, which should both be `0.3`. However, due to the way floating point numbers are represented in memory, the sum `0.1 + 0.2` may not be exactly equal to `0.3`.
+
+We then perform a direct comparison of `a` and `b` using the `==` operator. This comparison is likely to fail, even though `a` and `b` should theoretically be equal, because of the aforementioned precision issues with floating point numbers.
+
+To correctly compare two floating point numbers for equality, we should instead check if the absolute difference between the two numbers is less than a small number (often called "epsilon"). In this code, we use `0.0001` as our epsilon. We use the `fabs` function from the `<cmath>` library to calculate the absolute difference between `a` and `b`, and then check if this difference is less than epsilon. If it is, we consider `a` and `b` to be approximately equal.

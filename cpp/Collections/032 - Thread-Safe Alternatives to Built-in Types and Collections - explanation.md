@@ -1,0 +1,8 @@
+# Thread-Safe Alternatives to Built-in Types and Collections
+In this code, we have a global `std::atomic<int>` variable `atomicInt` and a `std::vector<int>` `myVector`. The `std::atomic` class template provides operations on integral types that are guaranteed to be atomic, meaning they cannot be interrupted by other threads. This makes `std::atomic` a good choice for simple built-in types when you need to share them between threads.
+
+For the vector `myVector`, we use a `std::mutex` to ensure that only one thread can access the vector at a time. This is necessary because the `std::vector` class does not provide any built-in thread safety. The `std::lock_guard` is a class that provides a convenient RAII-style mechanism for owning a mutex for the duration of a scoped block.
+
+In the `safe_increment` function, we increment `atomicInt` and push a value to `myVector`. The increment operation on `atomicInt` is thread-safe, and the push operation on `myVector` is made thread-safe by protecting it with a `std::lock_guard`.
+
+In the `main` function, we launch 10 threads that each call `safe_increment`. After all threads have finished, we print the value of `atomicInt` and the size of `myVector`. Because of our thread safety measures, we expect both of these to be 10, indicating that each thread was able to increment `atomicInt` and push to `myVector` without interference from other threads.

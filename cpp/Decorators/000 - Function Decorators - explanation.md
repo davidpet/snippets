@@ -1,0 +1,4 @@
+# Function Decorators
+In this example, we have a `Component` interface with an `operation` method. The `ConcreteComponent` class implements this interface. The `Decorator` class also implements the `Component` interface and has a `Component` member that it delegates to. The `ConcreteDecorator` class extends the `Decorator` class and overrides the `operation` method to add additional behavior before and after calling the `Decorator`'s `operation` method.
+
+This is a basic example of the decorator pattern in C++. It allows us to add behavior to objects dynamically without affecting other objects of the same class. This is a form of the open/closed principle, which states that software entities should be open for extension but closed for modification.

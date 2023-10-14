@@ -1,0 +1,6 @@
+# Void as T argument
+In the above code, we have a generic function `printValue` that prints the value of its argument. However, when the argument is of type `void`, we cannot print its value because `void` is an incomplete type. To handle this, we provide a specialization of the function for `void`. In this specialization, we print "Value: void" instead of trying to print the value of the argument.
+
+Note that the argument of the specialization is `void*` instead of `void`. This is because `void` is an incomplete type and we cannot have parameters of type `void`. However, we can have parameters of type `void*`, which is a pointer to `void`. In the call to `printValue<void>`, we pass `nullptr` as the argument, which is a null pointer constant that can be converted to any pointer type.
+
+This demonstrates how to use `void` as a template argument in C++. However, keep in mind that `void` is an incomplete type and you cannot create objects of type `void` or have parameters of type `void`. Instead, you can use `void*` as a workaround.

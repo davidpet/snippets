@@ -1,0 +1,6 @@
+# Multiple Imports on One Line
+In this example, we include three libraries: `iostream` for input/output operations, `string` for string operations, and `vector` for vector operations. Each library is included on its own line with its own `#include` directive. We then use these libraries in the `main` function to create a string and a vector, and to print their contents.
+
+Note that in C++, the `#include` directive is a preprocessor directive, which means it is processed before the actual compilation of the code. The `#include` directive essentially copies and pastes the contents of the included file into the source code. This is different from import statements in languages like Python, which load the module at runtime.
+
+Also note that C++ does not have a concept of "modules" or "packages" in the same way that languages like Python do. In C++, you can create your own header files (with the `.h` or `.hpp` extension) and include them in your program in the same way that you include standard libraries. However, each header file must be included on its own line with its own `#include` directive.

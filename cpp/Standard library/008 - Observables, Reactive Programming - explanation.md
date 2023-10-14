@@ -1,0 +1,2 @@
+# Observables/Reactive Programming
+Note: RxCpp is a third-party library and is not part of the C++ standard library. It provides a set of algorithms for values-distributed-in-time, which are often used in interactive and concurrent programming. It is a C++ implementation of Reactive Extensions (Rx) library which was first implemented for .NET.

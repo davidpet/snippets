@@ -1,0 +1,2 @@
+# Save Navigation
+In this code, we first check if the `test` object is null before we try to access its `print` method. If we didn't do this check, the program would crash when trying to access a method of a null object. This is the C++ way of "safe navigation", manually checking for null before accessing an object's members.

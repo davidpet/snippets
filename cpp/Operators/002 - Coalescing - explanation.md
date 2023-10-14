@@ -1,0 +1,2 @@
+# Coalescing
+The coalescing operator in C++ is not a standalone operator like in some other languages (e.g., `??` in C# or `?:` in PHP). Instead, it is a method (`value_or`) provided by the `std::optional` class. This method returns either the contained value or a default value if the `std::optional` object does not contain a value. This is useful for providing default values for potentially non-existent values, thus avoiding null pointer exceptions or other runtime errors.

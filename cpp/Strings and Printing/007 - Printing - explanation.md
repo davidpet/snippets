@@ -1,0 +1,2 @@
+# Printing
+In the above code, we have demonstrated various ways of printing in C++. We started with a basic string, then moved on to printing variables of different types (integer, string, boolean, character, and floating point number). We also showed how to print multiple variables in a single line, and how to format the output using `std::setw` for width and `std::setprecision` for precision. The `std::boolalpha` manipulator was used to print boolean values as true/false instead of 1/0.

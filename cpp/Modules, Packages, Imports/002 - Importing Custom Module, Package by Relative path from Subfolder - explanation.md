@@ -1,0 +1,2 @@
+# Importing Custom Module/Package by Relative path from Subfolder
+Note: The `-I .` option is necessary to allow `#include "module/module.h"` to work. Without it, the compiler would not know where to look for `module/module.h`. Also, the relative path from the file where the `#include` directive is used to the header file is specified. In this case, since `main.cpp` is in the root directory, the relative path to `module.h` is `module/module.h`. If `main.cpp` were in a subdirectory, the relative path would need to be adjusted accordingly.

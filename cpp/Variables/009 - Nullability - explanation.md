@@ -1,0 +1,2 @@
+# Nullability
+In C++, only pointer variables can be null. Non-pointer variables cannot hold the value `null` or `nullptr`. The `null` value for pointers can be represented as `0`, `NULL`, or `nullptr`, but `nullptr` is more type-safe and is the recommended way to represent a null pointer in C++.
