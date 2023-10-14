@@ -18,7 +18,7 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - 'auto'
 - trailing return types
 - rvalue references
-- default included constructors
+- default included constructors & all the automatically called constructors, conversions, assignments in various scenarios
 - using namespace
 - type aliases
 - sub-namespaces, global namespace
@@ -31,4 +31,7 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - lifetime and construction of class members inc. construction order, constant expression requirements, etc.
 - enum and class require ; at the end of declarations (very unique to c++)
 - make sure to cover all the different casts (c-style, static, dynamic, const, etc.)
+- this is a pointer, not a reference
+- make sure to cover reference and pointer binding of class members in initializer list and inline, etc.
+- parameters that are references, and returning references (and scope implications/dangers of that)
 - key uniquenesses of C++: stack vs. heap allocation, allocation just by making a variable, pointers and reference variables, templates instead of generics, :: for scope resolution instead of just ., header vs. implementation, direct unmanaged access to blocks of memory, ; required at end of class and enum declarations
