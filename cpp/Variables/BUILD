@@ -1,10 +1,5 @@
 cc_binary (
-  name = "000_-_Interning_-_snippet",
-  srcs = ["000 - Interning - snippet.cc"],
-)
-
-cc_binary (
-  name = "001_-_Data_Types_-_snippet",
+  name = "001",
   srcs = ["001 - Data Types - snippet.cc"],
 )
 
