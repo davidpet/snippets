@@ -4,21 +4,6 @@ cc_binary (
 )
 
 cc_binary (
-  name = "002_-_Signed_vs._Unsigned_Numbers_-_snippet",
-  srcs = ["002 - Signed vs. Unsigned Numbers - snippet.cc"],
-)
-
-cc_binary (
-  name = "003_-_Different_Integer_Type_Sizes_-_snippet",
-  srcs = ["003 - Different Integer Type Sizes - snippet.cc"],
-)
-
-cc_binary (
-  name = "004_-_Different_Floating_Point_Type_Sizes_-_snippet",
-  srcs = ["004 - Different Floating Point Type Sizes - snippet.cc"],
-)
-
-cc_binary (
   name = "005_-_Float_Equality_(approximate)_-_snippet",
   srcs = ["005 - Float Equality (approximate) - snippet.cc"],
 )

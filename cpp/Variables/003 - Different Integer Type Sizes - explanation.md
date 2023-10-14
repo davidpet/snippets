@@ -1,2 +1,0 @@
-# Different Integer Type Sizes
-In the above code, we have demonstrated the different integer type sizes in C++. The `sizeof` operator is used to get the size of a variable in bytes. The sizes of `short`, `int`, `long`, `long long`, `unsigned short`, `unsigned int`, `unsigned long`, and `unsigned long long` are printed. The sizes of `long` and `unsigned long` can vary depending on the system (32-bit or 64-bit). The `unsigned` keyword denotes that the integer is non-negative.

@@ -15,6 +15,11 @@ public:
 // Static variable definition
 int MyClass::staticVar = 10;
 
+int f() {
+    static int x = 100;
+    return x++;
+}
+
 int main() {
     // Accessing static variable directly through class
     std::cout << MyClass::staticVar << std::endl; // Expected output: 10
@@ -34,6 +39,9 @@ int main() {
     // Modifying static variable through one object affects all instances
     obj1.staticVar = 30;
     std::cout << obj2.staticVar << std::endl; // Expected output: 30
+
+    std::cout << f() << std::endl; // Expected Output: 100
+    std::cout << f() << std::endl; // Expected Output: 101
 
     return 0;
 }

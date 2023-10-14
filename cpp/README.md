@@ -18,3 +18,13 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - 'auto'
 - rvalue references
 - default included constructors
+- using namespace
+- type aliases
+- sub-namespaces, global namespace
+- std::numeric_limits<T>
+- passing by reference, constant reference, const bool type stuff, const pointers
+- const in between pointers and references in various combos (understand the binding of the syntax)
+- const correctness
+- const class members
+- nullptr
+- shared_ptr vs. unique_ptr

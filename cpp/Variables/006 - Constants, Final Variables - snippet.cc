@@ -25,5 +25,17 @@ int main() {
     // Uncomment the following line to see the error
     // a = 20;
 
+    // Constant reference
+    const int &aref = a;
+    // aref = 10;   // illegal
+
+    // Constant pointer
+    const int *p = &a;
+    p = nullptr; // legal
+    // *p = 20; // illegal
+
+    // ILLEGAL because it knows it's const
+    // int &arefagain = a;
+
     return 0;
 }
