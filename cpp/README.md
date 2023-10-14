@@ -16,3 +16,4 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - variations allowed for 'main' function signature
 - 'auto'
 - rvalue references
+- default included constructors
