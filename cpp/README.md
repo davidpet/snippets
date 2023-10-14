@@ -31,3 +31,4 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - lifetime and construction of class members inc. construction order, constant expression requirements, etc.
 - enum and class require ; at the end of declarations (very unique to c++)
 - make sure to cover all the different casts (c-style, static, dynamic, const, etc.)
+- key uniquenesses of C++: stack vs. heap allocation, allocation just by making a variable, pointers and reference variables, templates instead of generics, :: for scope resolution instead of just ., header vs. implementation, direct unmanaged access to blocks of memory
