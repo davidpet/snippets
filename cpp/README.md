@@ -16,6 +16,7 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - pointer arithmetic
 - variations allowed for 'main' function signature
 - 'auto'
+- trailing return types
 - rvalue references
 - default included constructors
 - using namespace
@@ -26,5 +27,7 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - const in between pointers and references in various combos (understand the binding of the syntax)
 - const correctness
 - const class members
-- nullptr
 - shared_ptr vs. unique_ptr
+- lifetime and construction of class members inc. construction order, constant expression requirements, etc.
+- enum and class require ; at the end of declarations (very unique to c++)
+- make sure to cover all the different casts (c-style, static, dynamic, const, etc.)

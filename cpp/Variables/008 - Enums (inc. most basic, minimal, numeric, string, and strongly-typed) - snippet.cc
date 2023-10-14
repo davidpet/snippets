@@ -8,8 +8,14 @@ enum Color {
     BLUE    // 2
 };
 
+// Changing values
+enum Color2 {
+    YELLOW = 5,
+    BLACK = 2
+};
+
 // Enum with explicit values
-enum class Planet : int {
+enum class Planet : char {
     MERCURY = 1,
     VENUS = 2,
     EARTH = 3,
@@ -31,10 +37,17 @@ int main() {
     // Using basic enum
     Color c = BLUE;
     std::cout << c << std::endl; // Prints: 2
+    std::cout << sizeof(c) << std::endl; // Prints: 4 (because int)
+    int x = c;
+    std::cout << x << std::endl; // Prints: 2 (because implicitly integer)
+    c = (Color)(BLUE + 1); // CAST REQUIRED
+    std::cout << c << std::endl; // Prints: 3 (despite not being a Color value)
 
     // Using enum with explicit values
     Planet p = Planet::EARTH;
     std::cout << static_cast<int>(p) << std::endl; // Prints: 3
+    // p = static_cast<Planet>(Planet::NEPTUNE + 1); // ILLEGAL
+    std::cout << static_cast<int>(static_cast<Planet>(9)) << std::endl; // Prints: 9
 
     // Using strongly-typed enum
     TrafficLight t = TrafficLight::RED;
