@@ -7,6 +7,7 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - array decay in functions
 - trailing return types
 - rvalue references in functions
+- external vs. internal linkage (functions and variables), ambient declarations
 
 - guarding headers with #ifndef type macros (or #pragma once)
 - all the ways to initialize a stack object vs. heap object (inc. uniform initialization from C++ 11)
