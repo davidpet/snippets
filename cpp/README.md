@@ -4,11 +4,6 @@ To try to make it more convenient, I generated BUILD files, but it turns out the
 `clang++ thefile.cc -o output && ./output`
 
 Potentially Missing Topics That I"ll Probably Manually Do:
-- array decay in functions
-- trailing return types
-- rvalue references in functions
-- external vs. internal linkage (functions and variables), ambient declarations
-
 - guarding headers with #ifndef type macros (or #pragma once)
 - all the ways to initialize a stack object vs. heap object (inc. uniform initialization from C++ 11)
 - equivalents of all the main Java interview data structures
@@ -29,11 +24,12 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - destructors, virtual destructors
 - operator overloading (both inside the class and in friend functions)
 - std::move
-- constexpr
+- constexpr, decltype
 - std::decay
 - inline methods
 - variadic templates
 - calling conventions, interop, etc.
+- class and function forward declarations
 
 - key uniquenesses of C++: stack vs. heap allocation, allocation just by making a variable, pointers and reference variables, templates instead of generics, :: for scope resolution instead of just ., header vs. implementation, direct unmanaged access to blocks of memory, ; required at end of class and enum declarations, virtual functions not the default (have to specify), true destructors (no finalizer or disposer) called at predictable time (right when out of scope), operator overloading + destructors + templates allowing for very fluent sublanguages to be built, things like iteration rely on conventions/protocols instead of base interfaces, TCO available under right circumstances, passing by const reference (immutability of object itself instead of just variable)
 

@@ -22,6 +22,14 @@ auto makeLambda() {
     return [](int x) { return x * 2; }; // The compiler will deduce the return type to be a function that takes an int and returns an int.
 }
 
+auto trailingReturnType() -> int {
+    return 10;
+}
+
+auto trailingReturnType() -> decltype(10 * 2) {
+    return 20;
+}
+
 int main() {
     std::cout << simpleFunction() << std::endl; // Prints: 42
     std::cout << sum(3, 4) << std::endl; // Prints: 7
