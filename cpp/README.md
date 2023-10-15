@@ -6,30 +6,23 @@ To try to make it more convenient, I generated BUILD files, but it turns out the
 Potentially Missing Topics That I"ll Probably Manually Do:
 - guarding headers with #ifndef type macros (or #pragma once)
 - all the ways to initialize a stack object vs. heap object (inc. uniform initialization from C++ 11)
-- 'new' and 'delete'
 - equivalents of all the main Java interview data structures
-- array decay
-- multidimensional arrays
-- 'sizeof' operator on stack arrays, dynamic arrays, objects, etc.
+- array decay in functions
 - regex
-- pointers to pointers, references of pointers, dereferencing, etc.
-- pointer arithmetic
 - variations allowed for 'main' function signature
 - 'auto'
 - trailing return types
-- rvalue references
+- rvalue references in functions
 - default included constructors & all the automatically called constructors, conversions, assignments in various scenarios
 - using namespace
 - type aliases
 - sub-namespaces, global namespace
 - std::numeric_limits<T>
 - passing by reference, constant reference, const bool type stuff, const pointers
-- const in between pointers and references in various combos (understand the binding of the syntax)
 - const correctness
 - const class members
 - shared_ptr vs. unique_ptr
 - lifetime and construction of class members inc. construction order, constant expression requirements, etc.
-- enum and class require ; at the end of declarations (very unique to c++)
 - make sure to cover all the different casts (c-style, static, dynamic, const, reinterpret, etc.)
 - this is a pointer, not a reference
 - make sure to cover reference and pointer binding of class members in initializer list and inline, etc.
@@ -38,4 +31,5 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - strongly point out somewhere that the way we inline functions and classes in snippets is not the norm (usually separate prototype)
 - template specializations
 - placement new
-- key uniquenesses of C++: stack vs. heap allocation, allocation just by making a variable, pointers and reference variables, templates instead of generics, :: for scope resolution instead of just ., header vs. implementation, direct unmanaged access to blocks of memory, ; required at end of class and enum declarations
+- destructors
+- key uniquenesses of C++: stack vs. heap allocation, allocation just by making a variable, pointers and reference variables, templates instead of generics, :: for scope resolution instead of just ., header vs. implementation, direct unmanaged access to blocks of memory, ; required at end of class and enum declarations, virtual functions not the default (have to specify), true destructors (no finalizer or disposer)

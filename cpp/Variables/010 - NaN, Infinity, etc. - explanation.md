@@ -1,5 +1,5 @@
 # NaN, Infinity, etc.
-In the above code, we are demonstrating the use of NaN (Not a Number) and Infinity in C++. These are special floating-point values that are used to represent undefined or unrepresentable numbers (NaN) and values that are greater than any other number (Infinity).
+In the code, we are demonstrating the use of NaN (Not a Number) and Infinity in C++. These are special floating-point values that are used to represent undefined or unrepresentable numbers (NaN) and values that are greater than any other number (Infinity).
 
 We use the `std::numeric_limits<double>::quiet_NaN()` to get a NaN value and `std::numeric_limits<double>::infinity()` to get an Infinity value. We can also get a Negative Infinity value by negating the Infinity value.
 
