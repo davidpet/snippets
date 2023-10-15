@@ -13,7 +13,7 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - inline methods
 - changing access level of base member in subclass?
 - virtual method until certain subclass - makes non-virtual after that or not?
-- diamond inheritance and ambiguities between base class members in subclass
+- diamond inheritance and ambiguities between base class members in subclass (virtual inheritance)
 - in c'tor init list, can you do x(x) safely to send param to member?
 - does init list in c'tor that delegates to aother c'tor really replace instead of augmenting?  ChatGPT says so but it doesn't make sense.
 - class declared locally
