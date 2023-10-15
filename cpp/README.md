@@ -17,6 +17,7 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - in c'tor init list, can you do x(x) safely to send param to member?
 - does init list in c'tor that delegates to aother c'tor really replace instead of augmenting?  ChatGPT says so but it doesn't make sense.
 - class declared locally
+- memory layout guarantees of classes and structs in the spec
 
 - guarding headers with #ifndef type macros (or #pragma once)
 - equivalents of all the main Java interview data structures
