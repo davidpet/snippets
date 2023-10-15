@@ -1,5 +1,6 @@
-# Passing by Reference (modifying a nonlocal variable passed to a function)
-In the above code, we have a function `modifyValue` that takes an integer reference as an argument. This means that when we pass a variable to this function, it doesn't create a new copy of it. Instead, it uses the same existing variable. So, any changes made to this variable inside the function will affect the original variable.
+# Passing by Reference
+
+In the code, we have a function `modifyValue` that takes an integer reference as an argument. This means that when we pass a variable to this function, it doesn't create a new copy of it. Instead, it uses the same existing variable. So, any changes made to this variable inside the function will affect the original variable.
 
 In the `main` function, we declare an integer variable `x` and initialize it with the value `10`. We then print the value of `x`, which is `10`.
 

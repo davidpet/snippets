@@ -1,5 +1,3 @@
-Sure, here is a comprehensive example of variadic functions in C++:
-
 #include <iostream>
 #include <cstdarg> // needed to use ellipsis
 

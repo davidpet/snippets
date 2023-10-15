@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the use of const and final arguments in C++ functions.
-
 #include <iostream>
 
 // A class to demonstrate the use of const and final
@@ -33,6 +31,11 @@ public:
         std::cout << "This is a final function" << std::endl;
     }
 };
+
+// avoid copying x but avoid modifying it as well
+int f(const int &x) {
+    return x * 2;
+}
 
 int main() {
     MyClass myClass;

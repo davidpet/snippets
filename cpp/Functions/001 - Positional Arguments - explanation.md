@@ -1,5 +1,6 @@
 # Positional Arguments
-In the above code, we have demonstrated the use of positional arguments in C++ functions. 
+
+In the code, we have demonstrated the use of positional arguments in C++ functions. 
 
 The function `greet` takes two positional arguments: a string `name` and an integer `age`. When calling this function, we must provide these arguments in the same order as they are declared in the function definition.
 

@@ -1,5 +1,3 @@
-C++ does not natively support extension methods like some other languages (e.g., C#). However, you can achieve similar functionality using a combination of free functions and namespaces. Here's an example:
-
 #include <iostream>
 #include <string>
 

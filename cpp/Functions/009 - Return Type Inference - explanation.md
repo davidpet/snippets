@@ -1,5 +1,6 @@
 # Return Type Inference
-In the above code, we have demonstrated the use of return type inference in C++. The `auto` keyword is used to let the compiler deduce the return type of a function from its return statements. This feature is particularly useful when working with templates or lambda functions, where the return type might not be known in advance.
+
+In the code, we have demonstrated the use of return type inference in C++. The `auto` keyword is used to let the compiler deduce the return type of a function from its return statements. This feature is particularly useful when working with templates or lambda functions, where the return type might not be known in advance.
 
 The `simpleFunction` function returns an integer, so the compiler deduces its return type to be `int`. The `sum` function returns the sum of two numbers, so the compiler deduces its return type from the types of the numbers. The `makeLambda` function returns a lambda function, so the compiler deduces its return type to be a function that takes an `int` and returns an `int`.
 

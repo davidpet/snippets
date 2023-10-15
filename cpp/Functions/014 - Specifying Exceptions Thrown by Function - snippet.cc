@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the use of exception specifications in C++ functions:
-
 #include <iostream>
 #include <stdexcept>
 
@@ -15,10 +13,11 @@ void anyThrow() {
 }
 
 // This function is declared to throw a specific type of exception
-void specificThrow() throw(std::runtime_error) {
+// ILLEGAL in latest versions of C++
+/*void specificThrow() throw(std::runtime_error) {
     std::cout << "This function can throw a specific type of exception." << std::endl;
     throw std::runtime_error("Runtime error thrown from specificThrow()");
-}
+}*/
 
 int main() {
     try {
@@ -27,12 +26,12 @@ int main() {
     } catch (const std::exception& e) {
         std::cout << "Caught exception: " << e.what() << std::endl;
     }
-
+/*
     try {
         specificThrow();
     } catch (const std::runtime_error& e) {
         std::cout << "Caught specific exception: " << e.what() << std::endl;
-    }
+    }*/
 
     return 0;
 }

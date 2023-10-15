@@ -1,5 +1,6 @@
 # Optional/Default Arguments
-In the above code, we have two functions `greet` and `display` that demonstrate the use of default and optional arguments in C++ functions.
+
+In the code, we have two functions `greet` and `display` that demonstrate the use of default and optional arguments in C++ functions.
 
 The `greet` function has a default argument. If no argument is provided when calling the function, the default value "User" is used. This is demonstrated in the `main` function where we first call `greet` without any arguments, and then with the argument "Alice".
 

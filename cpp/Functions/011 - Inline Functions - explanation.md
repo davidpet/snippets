@@ -1,4 +1,5 @@
 # Inline Functions
+
 1. Inline functions are a useful feature in C++ that can help to increase the efficiency of your code. They are functions that are expanded in line when they are called. When the inline function is called whole code of the inline function gets inserted or substituted at the point of inline function call.
 
 2. The `inline` keyword is used before the function name to make a function inline. The syntax is `inline return-type function-name(parameters) { // function code }`.
@@ -10,3 +11,7 @@
 5. It's important to note that the compiler does not guarantee that an inline function will be inlined. The decision is made by the compiler based on various factors like the size of the function, the complexity of the function, etc. If the function is too complex, the compiler may decide not to inline it to avoid increasing the size of the binary.
 
 6. Inline functions can improve the runtime performance of your program by eliminating the overhead of function calls. However, they can also increase the size of your binary, as the code for the function is duplicated at each point where the function is called. Therefore, it's best to use inline functions judiciously, and only for small, frequently called functions.
+
+Note: if you don't use the `inline` keyword, a function that's defined in the header instead of in a separate source file could still get inlined if the compiler decides that is best.
+
+Note: class methods are __implicitly inline__ if provided in the declaration, even without the `inline` keyword.

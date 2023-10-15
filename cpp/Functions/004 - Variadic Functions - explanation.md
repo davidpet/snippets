@@ -1,5 +1,6 @@
 # Variadic Functions
-In the above code, we have demonstrated the use of variadic functions in C++. Variadic functions are functions which take a variable number of arguments. In C++, we use an ellipsis (...) to denote that a function can take any number of arguments.
+
+In the code, we have demonstrated the use of variadic functions in C++. Variadic functions are functions which take a variable number of arguments. In C++, we use an ellipsis (...) to denote that a function can take any number of arguments.
 
 The `va_list` is a type to hold the information about variable arguments. `va_start` is a macro which initializes the `va_list` to an argument list. The argument after `num` in the `va_start` macro is the last known fixed argument, meaning arguments after this are captured in ellipsis.
 
@@ -8,3 +9,5 @@ The `va_list` is a type to hold the information about variable arguments. `va_st
 `va_end` is a macro that cleans up the setup provided for the `va_list`. It is usually called at the end of the function.
 
 In the `main` function, we call the `add` function with different numbers of arguments to demonstrate the flexibility of variadic functions.
+
+Note: Instead of a container you can iterate over nicely, in C++, we use the `va_*` functions to parse the stack frame for the additional arguments, and we have to use some signal to tell us when to stop.  This is like how `sprintf` takes a format string followed by the format args.

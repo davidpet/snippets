@@ -1,5 +1,6 @@
 # Overloading
-In the above code, we have demonstrated function overloading in C++. We have defined three functions with the same name "add" but with different parameters. The first function adds two integers, the second function adds two doubles, and the third function concatenates two strings. 
+
+In the code, we have demonstrated function overloading in C++. We have defined three functions with the same name "add" but with different parameters. The first function adds two integers, the second function adds two doubles, and the third function concatenates two strings. 
 
 When we call the function "add" in the main function, the compiler automatically chooses the correct function to call based on the arguments provided. This is known as function overloading, and it is a way to achieve polymorphism in C++. 
 

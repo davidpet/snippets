@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the concept of recursion in C++.
-
 #include <iostream>
 
 // A simple recursive function to calculate factorial

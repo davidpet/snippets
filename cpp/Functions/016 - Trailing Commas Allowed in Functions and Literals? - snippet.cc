@@ -2,9 +2,9 @@
 #include <vector>
 
 // Function with trailing comma in parameter list
-void printNumbers(int a, int b, int c,) {
+/*void printNumbers(int a, int b, int c,) {
     std::cout << a << " " << b << " " << c << std::endl; // Expected to print: a b c
-}
+}*/
 
 // Function with trailing comma in initializer list
 std::vector<int> getNumbers() {
@@ -12,7 +12,7 @@ std::vector<int> getNumbers() {
 }
 
 int main() {
-    printNumbers(1, 2, 3,); // Trailing comma in function call
+    //printNumbers(1, 2, 3,); // Trailing comma in function call
 
     std::vector<int> numbers = getNumbers();
     for (int number : numbers) {
