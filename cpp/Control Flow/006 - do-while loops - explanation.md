@@ -1,4 +1,5 @@
 # do-while loops
+
 1. The first part of the code demonstrates a basic do-while loop. The loop will continue to execute as long as the condition `counter < 5` is true. The `counter` variable is incremented within the loop, so eventually the condition becomes false and the loop stops. The expected output is:
 
 ```

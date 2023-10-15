@@ -1,5 +1,6 @@
 # while loops
-The above code demonstrates the usage of while loops in C++. 
+
+The code demonstrates the usage of while loops in C++. 
 
 The first loop is a basic while loop that prints the numbers 0 to 4. The condition for the loop to continue is `i < 5`, and `i` is incremented at the end of each iteration.
 

@@ -1,6 +1,0 @@
-# Context Management with Multiple Resources at Once
-In this example, we have a `FileHandler` class that manages a file resource. The file is opened in the constructor and closed in the destructor. This ensures that the file is always properly closed, even if an exception is thrown. This is the essence of the RAII idiom: acquiring a resource in a constructor and releasing it in a destructor.
-
-The `main` function demonstrates how to use the `FileHandler` class. A `FileHandler` object is created, a message is written to the file, and then the `FileHandler` object goes out of scope, which triggers the destructor and closes the file.
-
-This is a simple example, but the same principle can be applied to manage multiple resources at once. For example, you could have a class that manages a database connection and a network socket, acquiring the resources in the constructor and releasing them in the destructor. This ensures that all resources are properly cleaned up, even in the face of exceptions.

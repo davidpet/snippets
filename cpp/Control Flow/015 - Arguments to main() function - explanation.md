@@ -1,5 +1,6 @@
 # Arguments to main() function
-In the above code, we are demonstrating the usage of arguments to the main() function in C++. The main() function can take two arguments: the number of command line arguments (argc) and an array of command line arguments (argv). 
+
+In the code, we are demonstrating the usage of arguments to the main() function in C++. The main() function can take two arguments: the number of command line arguments (argc) and an array of command line arguments (argv). 
 
 The argc is always at least 1 because the name of the program itself is considered an argument. The argv is an array of character pointers where the first element (argv[0]) is the name of the program and the last element is a null pointer (argv[argc] = NULL).
 
@@ -13,3 +14,7 @@ Argument 2: arg2
 ```
 
 This demonstrates that the program name is considered the first argument, and all subsequent arguments are those provided on the command line.
+
+Note: you can also use `int main() {}` and not provide any arguments.  But `void main() {}` is not standard and should not be relied on.
+
+Note: the return value from `main` is the error code for the OS (0 on success).

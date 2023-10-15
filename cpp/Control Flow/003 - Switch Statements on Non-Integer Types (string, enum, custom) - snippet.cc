@@ -1,9 +1,3 @@
-C++ does not support switch statements on non-integer types directly. However, there are ways to achieve similar functionality using other constructs. Here are some examples:
-
-1. Using `std::map` for string types.
-2. Using `enum` types directly.
-3. Using `std::variant` for custom types.
-
 #include <iostream>
 #include <map>
 #include <variant>

@@ -29,5 +29,8 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - destructors, virtual destructors
 - operator overloading (both inside the class and in friend functions)
 - std::move
+- constexpr
+- std::decay
+- throw specifier and noexcept
 
 - key uniquenesses of C++: stack vs. heap allocation, allocation just by making a variable, pointers and reference variables, templates instead of generics, :: for scope resolution instead of just ., header vs. implementation, direct unmanaged access to blocks of memory, ; required at end of class and enum declarations, virtual functions not the default (have to specify), true destructors (no finalizer or disposer) called at predictable time (right when out of scope), operator overloading + destructors + templates allowing for very fluent sublanguages to be built

@@ -1,4 +1,5 @@
 # break and continue
+
 The 'break' statement in C++ is used to exit the current loop or switch statement. It is often used in conjunction with conditional statements to exit a loop when a certain condition is met.
 
 The 'continue' statement in C++ is used to skip the rest of the current loop iteration and immediately start the next iteration. It is often used in conjunction with conditional statements to skip certain iterations of a loop.

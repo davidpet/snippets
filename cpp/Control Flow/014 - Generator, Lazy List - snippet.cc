@@ -1,5 +1,3 @@
-C++ does not have built-in support for generators or lazy lists like some other languages (e.g., Python or Haskell). However, we can simulate this behavior using classes and iterators. Here's an example of how you might create a simple generator for the Fibonacci sequence:
-
 #include <iostream>
 
 // Define a class to represent a Fibonacci sequence

@@ -1,4 +1,5 @@
 # switch statements
+
 The `switch` statement in C++ is a type of selection control mechanism used to allow the value of a variable or expression to change the control flow of program execution via a multiway branch.
 
 In the first `switch` statement, the `break` keyword is used to exit the switch after a case is matched. If `break` is not used, the program will continue to execute the next case or default, even if the expression does not match the case (this is known as fallthrough).

@@ -1,5 +1,6 @@
 # if/then statements
-The above code demonstrates the use of if/then statements in C++. 
+
+The code demonstrates the use of if/then statements in C++. 
 
 1. The basic `if` statement checks a condition and executes the code block if the condition is true. In this case, it checks if the number is greater than 5.
 

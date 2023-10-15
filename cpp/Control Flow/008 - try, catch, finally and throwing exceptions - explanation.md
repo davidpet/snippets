@@ -1,5 +1,6 @@
 # try/catch/finally and throwing exceptions
-In the above code, we demonstrate the use of try/catch blocks and throwing exceptions in C++. 
+
+In the code, we demonstrate the use of try/catch blocks and throwing exceptions in C++. 
 
 First, we define a custom exception class `MyException` that inherits from the standard `std::exception` class. The `what()` function is overridden to return a custom error message.
 

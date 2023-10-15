@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the concept of "Actual Value Returned by Short-Circuiting" in C++.
-
 #include <iostream>
 
 bool checkTrue() {

@@ -1,4 +1,5 @@
 # for loops
+
 1. The basic for loop in C++ has three parts: initialization, condition, and increment/decrement. It starts with the initialization, checks the condition, and if true, executes the loop body. After each iteration, the increment/decrement operation is performed.
 
 2. A for loop can have multiple initializations and increments/decrements, separated by commas.
@@ -14,3 +15,5 @@
 7. The `auto` keyword can be used in a range-based for loop to automatically deduce the type of the elements in the range.
 
 8. If you want to modify the elements in the range while iterating, you can use a reference in the range-based for loop.
+
+Note: range-fors depend on certain conventions like the existence of `begin()` and `end()` methods on the object (or being a built-in array).
