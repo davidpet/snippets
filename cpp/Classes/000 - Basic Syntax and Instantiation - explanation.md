@@ -1,5 +1,6 @@
-# Basic Syntax and Instantiation (inc. static, instance, class members, etc.)
-In the above code, we define a class `MyClass` with an instance variable `instanceVar`, a static variable `staticVar`, a constructor, an instance method `printInstanceVar()`, and a static method `printStaticVar()`.
+# Basic Syntax and Instantiation
+
+In the code, we define a class `MyClass` with an instance variable `instanceVar`, a static variable `staticVar`, a constructor, an instance method `printInstanceVar()`, and a static method `printStaticVar()`.
 
 We then instantiate two objects of `MyClass`, `obj1` and `obj2`, with `instanceVar` values of 10 and 20 respectively. Each time an object is instantiated, the constructor increments `staticVar`.
 

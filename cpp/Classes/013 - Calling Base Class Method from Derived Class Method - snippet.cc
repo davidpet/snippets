@@ -1,12 +1,10 @@
-Sure, here is a code snippet demonstrating how to call a base class method from a derived class method in C++.
-
 #include <iostream>
 
 // Base class
 class Base {
 public:
     // Base class method
-    void baseMethod() {
+    virtual void method() {
         std::cout << "Base class method called!" << std::endl;
     }
 };
@@ -15,9 +13,10 @@ public:
 class Derived : public Base {
 public:
     // Derived class method
-    void derivedMethod() {
+    void method() override {
         // Calling base class method from derived class method
-        baseMethod();
+        std::cout << "Derived class method called!" << std::endl;
+        Base::method();
     }
 };
 
@@ -26,7 +25,7 @@ int main() {
     Derived d;
 
     // Calling derived class method
-    d.derivedMethod(); // This will print: "Base class method called!"
+    d.method(); // This will print: "Derived class method called" and then "Base class method called!"
     
     return 0;
 }

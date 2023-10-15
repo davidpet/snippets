@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the use of destructors in C++.
-
 #include <iostream>
 
 // Define a class named MyClass
@@ -11,15 +9,20 @@ public:
     }
 
     // Destructor
-    ~MyClass() {
+    virtual ~MyClass() {
         std::cout << "Destructor called!" << std::endl;
     }
 };
+
+class DerivedClass : public MyClass {};
 
 int main() {
     // Create an object of MyClass
     MyClass obj;
 
+    MyClass *p = new DerivedClass();
+    delete p;
+    
     // The destructor will be called automatically when obj goes out of scope
     return 0;
 }

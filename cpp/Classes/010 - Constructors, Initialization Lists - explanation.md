@@ -1,5 +1,6 @@
 # Constructors, Initialization Lists
-In the above code, we have demonstrated the use of constructors and initialization lists in C++ classes.
+
+In the code, we have demonstrated the use of constructors and initialization lists in C++ classes.
 
 1. `SimpleClass` is a class with a default constructor. When an object of `SimpleClass` is created, the constructor is called and it prints a message.
 

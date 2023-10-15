@@ -1,7 +1,3 @@
-In C++, the concept of "indexers" does not exist as it does in some other languages like C# or Python. However, C++ provides a way to achieve similar functionality using operator overloading. Specifically, the `operator[]` can be overloaded to provide array-like access to class objects.
-
-Here is an example of how to use `operator[]` overloading in a class:
-
 #include <iostream>
 #include <vector>
 

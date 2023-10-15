@@ -1,5 +1,8 @@
 # Nullability of Class Members
-In the above code, we define a class `MyClass` with two nullable members: `nullableInt` and `nullableUniqueInt`. These members are pointers and can be assigned `nullptr`, which represents a null pointer in C++. 
+
+In C++, nullability is done via pointers (inc. maybe smart pointers so that the class's lifetime manages member lifetime).
+
+In the code, we define a class `MyClass` with two nullable members: `nullableInt` and `nullableUniqueInt`. These members are pointers and can be assigned `nullptr`, which represents a null pointer in C++. 
 
 In the `main` function, we create an instance of `MyClass` and check if the nullable members are null. Since they are initialized to `nullptr` in the constructor of `MyClass`, they are indeed null at this point.
 

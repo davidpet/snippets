@@ -1,5 +1,3 @@
-Sure, here is a comprehensive example of using the `this` keyword in C++:
-
 #include <iostream>
 
 // Define a class named MyClass

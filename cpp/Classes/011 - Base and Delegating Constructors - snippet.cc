@@ -18,7 +18,7 @@ public:
 class Derived : public Base {
 public:
     // Delegating constructor
-    Derived() : Base() {
+    Derived() : Base() { // technically unnecessary since using default c'tor anyway
         std::cout << "Derived constructor called" << std::endl;
     }
 
@@ -26,6 +26,15 @@ public:
     Derived(int x) : Base(x) {
         std::cout << "Derived constructor with parameter called: " << x << std::endl;
     }
+
+    // Delegating to another c'tor on same level
+    Derived(char c): Derived((int)c) {}
+
+    /* ILLEGAL
+    Derived(short s) {
+        Base(s);
+    }
+    */
 };
 
 int main() {

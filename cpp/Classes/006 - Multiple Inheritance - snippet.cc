@@ -1,5 +1,3 @@
-Sure, here is a comprehensive example of multiple inheritance in C++:
-
 #include <iostream>
 
 // Base class 1

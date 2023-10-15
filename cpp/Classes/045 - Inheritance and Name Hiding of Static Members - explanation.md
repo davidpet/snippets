@@ -1,4 +1,5 @@
 # Inheritance and Name Hiding of Static Members
+
 In the above code, we have a base class `Base` and a derived class `Derived`. Both classes have a static member `x` and static member functions `setX()` and `printX()`. The static member `x` in the derived class hides the static member `x` in the base class. This is known as name hiding.
 
 In the `main()` function, we first access the static members through the base class and set `x` to 30. Then we print `x` through the base class, which prints "Base x: 30".

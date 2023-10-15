@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the construction order in C++ classes.
-
 #include <iostream>
 
 // Base class

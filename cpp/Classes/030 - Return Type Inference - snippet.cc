@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the use of return type inference in C++ classes.
-
 #include <iostream>
 #include <typeinfo>
 

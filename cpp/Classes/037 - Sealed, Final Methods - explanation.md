@@ -1,5 +1,6 @@
 # Sealed/Final Methods
-In the above code, we have a base class `Base` with two methods: `func()` and `finalFunc()`. The `finalFunc()` is declared as `final`, which means it cannot be overridden in any derived class.
+
+In the code, we have a base class `Base` with two methods: `func()` and `finalFunc()`. The `finalFunc()` is declared as `final`, which means it cannot be overridden in any derived class.
 
 In the derived class `Derived`, we override `func()`. However, if we try to override `finalFunc()`, the compiler will throw an error. This is commented out in the code to prevent the error.
 

@@ -1,4 +1,0 @@
-# Useful Built-in Interfaces and Abstract Base Classes
-In the above code, `AbstractClass` is an abstract base class with a pure virtual function `myVirtualFunction()`. This function is overridden in the derived classes `SubClass1` and `SubClass2`, each providing a different implementation. The `normalFunction()` is a regular member function of the abstract base class, and it can be called directly from the objects of the derived classes. 
-
-This is how we can create and use abstract base classes in C++, which serve a similar purpose to interfaces in other languages. They provide a contract that the derived classes must follow, ensuring a certain level of uniformity in the way different classes are used.

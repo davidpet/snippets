@@ -1,2 +1,3 @@
 # Anonymous Class
-Please note that while anonymous objects can be useful in some scenarios, they are limited in their usage because they cannot be referenced after their initial use. Therefore, they are typically used for single-use scenarios or for passing temporary objects to functions.
+
+C++ does not support anonymous classes.

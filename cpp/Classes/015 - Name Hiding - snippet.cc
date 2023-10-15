@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the concept of Name Hiding in C++ classes.
-
 #include <iostream>
 
 // Base class
@@ -44,6 +42,13 @@ int main() {
     // Set x in Base class
     d.Base::setX(20);
     d.Base::print(); // Expected output: Base x: 20
+
+    // X from Derived is still intact
+    d.print();  // Expected output: Derived x: 10
+
+    // Changing interface changes which hidden name
+    Base b = d;
+    b.print();  // Expected output: Base x: 20
 
     return 0;
 }

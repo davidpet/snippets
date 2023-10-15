@@ -1,51 +1,97 @@
 #include <iostream>
 
-// Define a class named 'Demo'
-class Demo {
-    int x, y; // Declare two private member variables
-
-public:
-    // Default constructor
-    Demo() {
-        x = 0;
-        y = 0;
-    }
-
-    // Parameterized constructor
-    Demo(int a, int b) {
-        x = a;
-        y = b;
-    }
-
-    // Copy constructor
-    Demo(const Demo &d) {
-        x = d.x;
-        y = d.y;
-    }
-
-    // Destructor
-    ~Demo() {
-        // This will be called when an object goes out of scope or is deleted
-    }
-
-    // Function to display the values
-    void display() {
-        std::cout << "x: " << x << ", y: " << y << std::endl;
-    }
+class MyClass {
+    public:
+        int x, y;
 };
 
+class MyOtherClass {
+    public:
+        int x, y;
+
+        MyOtherClass(int x, int y) {
+            this->x = x;
+            this->y = y;
+        }
+};
+
+class MyClassWithRemovals {
+    private:
+        MyClassWithRemovals() {} // prevent public usage
+    public:
+        MyClassWithRemovals(const MyClassWithRemovals &other) = delete;
+
+        MyClassWithRemovals(int x, int y) {}
+};
+
+void default5() {
+    MyClass m; // default constructor
+    m.x = 100;
+    m.y = 200;
+
+    MyClass n(m); // copy constructor
+    n.x = 1000;
+    n.y = 2000;
+
+    MyClass o = m; // copy constructor (not assignment)
+    o.x = 1;
+    o.y = 2;
+
+    o = n;  // copy assignment (because object exists now)
+
+    MyClass p((MyClass()));   // move constructor
+    p = MyClass();  // move assignment
+
+    std::cout << m.x << std::endl; // 100
+    std::cout << n.x << std::endl; // 1000
+    std::cout << o.x << std::endl; // 1000
+    std::cout << std::endl;
+}
+
+void withParameterized() {
+    MyOtherClass m(100, 200); // parameterized constructor
+    // MyOtherClass n; // ILLEGAL (lost default c'tor)
+
+    MyOtherClass n(m); // copy constructor
+    n.x = 1000;
+    n.y = 2000;
+
+    MyOtherClass o = m; // copy constructor (not assignment)
+    o.x = 1;
+    o.y = 2;
+
+    o = n;  // copy assignment (because object exists now)
+
+    MyOtherClass p((MyOtherClass(0, 0)));   // move constructor
+    p = MyOtherClass(0, 0);  // move assignment
+
+    std::cout << m.x << std::endl; // 100
+    std::cout << n.x << std::endl; // 1000
+    std::cout << o.x << std::endl; // 1000
+    std::cout << std::endl;
+}
+
+void withRemovals() {
+    // MyClassWithRemovals m; // ILLEGAL (private)
+    MyClassWithRemovals m(100, 200);
+
+    // MyClassWithRemovals n(m); // ILLEGAL (removed)
+
+    // MyClassWithRemovals o = m; // ILLEGAL (removed)
+
+    MyClassWithRemovals n(1000, 2000);
+    m = n;  // copy assignment (still OK)
+
+    MyClassWithRemovals p((MyClassWithRemovals(0, 0)));   // move constructor (still OK)
+    p = MyClassWithRemovals(0, 0);  // move assignment (still OK)
+
+    std::cout << std::endl;
+}
+
 int main() {
-    // Create an object using the default constructor
-    Demo d1;
-    d1.display(); // Expected output: x: 0, y: 0
-
-    // Create an object using the parameterized constructor
-    Demo d2(5, 10);
-    d2.display(); // Expected output: x: 5, y: 10
-
-    // Create an object using the copy constructor
-    Demo d3 = d2;
-    d3.display(); // Expected output: x: 5, y: 10
+    default5();
+    withParameterized();
+    withRemovals();
 
     return 0;
 }

@@ -4,32 +4,41 @@ To try to make it more convenient, I generated BUILD files, but it turns out the
 `clang++ thefile.cc -o output && ./output`
 
 Potentially Missing Topics That I"ll Probably Manually Do:
-- guarding headers with #ifndef type macros (or #pragma once)
 - all the ways to initialize a stack object vs. heap object (inc. uniform initialization from C++ 11)
-- equivalents of all the main Java interview data structures
-- regex
-- default included constructors & all the automatically called constructors, conversions, assignments in various scenarios
-- using namespace
-- sub-namespaces, global namespace
-- const correctness
+- const correctness/const overloading
 - const class members
-- lifetime and construction of class members inc. construction order, constant expression requirements, etc.
-- this is a pointer, not a reference
 - make sure to cover reference and pointer binding of class members in initializer list and inline, etc.
-- parameters that are references, and returning references (and scope implications/dangers of that)
 - struct and how compares to class
 - strongly point out somewhere that the way we inline functions and classes in snippets is not the norm (usually separate prototype)
+- inline methods
+- changing access level of base member in subclass?
+- virtual method until certain subclass - makes non-virtual after that or not?
+- diamond inheritance and ambiguities between base class members in subclass
+- in c'tor init list, can you do x(x) safely to send param to member?
+- does init list in c'tor that delegates to aother c'tor really replace instead of augmenting?  ChatGPT says so but it doesn't make sense.
+- class declared locally
+
+- guarding headers with #ifndef type macros (or #pragma once)
+- equivalents of all the main Java interview data structures
+- regex
+- using namespace
+- sub-namespaces, global namespace
+- parameters that are references, and returning references (and scope implications/dangers of that)
 - template specializations
 - placement new
-- destructors, virtual destructors
-- operator overloading (both inside the class and in friend functions)
 - std::move
+- std::any
 - constexpr, decltype
 - std::decay
-- inline methods
 - variadic templates
 - calling conventions, interop, etc.
-- class and function forward declarations
+- construction order of statics & globals in different source files linked together
+- stdlib details: smart pointers, algorithms, stream I/O, file I/O, etc.
+- what things have to be compile-time constants?
+- most vexing parse
+- variant/dynamic type?
+- terminology: 'free functions'
+- hashing
+- new in C++ 20: automatic operator== and operator!= provided
 
-- key uniquenesses of C++: stack vs. heap allocation, allocation just by making a variable, pointers and reference variables, templates instead of generics, :: for scope resolution instead of just ., header vs. implementation, direct unmanaged access to blocks of memory, ; required at end of class and enum declarations, virtual functions not the default (have to specify), true destructors (no finalizer or disposer) called at predictable time (right when out of scope), operator overloading + destructors + templates allowing for very fluent sublanguages to be built, things like iteration rely on conventions/protocols instead of base interfaces, TCO available under right circumstances, passing by const reference (immutability of object itself instead of just variable)
-
+- key uniquenesses of C++: stack vs. heap allocation, allocation just by making a variable, pointers and reference variables, templates instead of generics, :: for scope resolution instead of just ., header vs. implementation, direct unmanaged access to blocks of memory, ; required at end of class and enum declarations, virtual functions not the default (have to specify), true destructors (no finalizer or disposer) called at predictable time (right when out of scope), operator overloading + destructors + templates allowing for very fluent sublanguages to be built, things like iteration rely on conventions/protocols instead of base interfaces, TCO available under right circumstances, passing by const reference (immutability of object itself instead of just variable), access modifiers as sections rather than modifiers on members, all classnames explicit (no super, base, or this for that purpose), no base/root object

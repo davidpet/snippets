@@ -1,4 +1,4 @@
-Sure, here is a code snippet demonstrating the importance of declaration order and forward declarations in C++ classes.
+#include <iostream>
 
 // Forward declaration of class B
 class B;

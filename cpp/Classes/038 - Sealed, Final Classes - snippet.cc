@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the concept of Sealed/Final Classes in C++.
-
 #include <iostream>
 
 // Base class
@@ -11,7 +9,7 @@ public:
 };
 
 // Derived class from Base
-class Derived : public Base {
+class Derived final : public Base {
 public:
     // Override show function
     void show() final { // Using final keyword to seal the show function
@@ -19,6 +17,7 @@ public:
     }
 };
 
+/*
 // Another class trying to derive from Derived
 class FurtherDerived : public Derived {
 public:
@@ -27,6 +26,7 @@ public:
     //     std::cout << "Further Derived class\n";
     // }
 };
+*/
 
 int main() {
     Base* base = new Base();

@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the use of sealed/final methods in C++. Note that C++ uses the keyword `final` to denote a method that cannot be overridden in a derived class.
-
 #include <iostream>
 
 // Base class

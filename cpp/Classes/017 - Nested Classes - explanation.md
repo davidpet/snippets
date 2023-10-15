@@ -1,5 +1,6 @@
 # Nested Classes
-In the above code, we have demonstrated the concept of nested classes in C++. A nested class is a class that is declared within another class, known as the enclosing class. The nested class is a member of the enclosing class, and has the same access rights as any other member.
+
+In the code, we have demonstrated the concept of nested classes in C++. A nested class is a class that is declared within another class, known as the enclosing class. The nested class is a member of the enclosing class, and has the same access rights as any other member.
 
 The nested class 'Inner' is defined within the class 'Outer'. It has a public member variable 'inner_var', and can be instantiated and used like any other class. The enclosing class 'Outer' also has a member function 'printInnerVar()' that creates an instance of 'Inner' and prints the value of 'inner_var'.
 

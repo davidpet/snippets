@@ -1,6 +1,0 @@
-# Method Name Collisions in Interfaces Implemented by Class
-In this code, we have two interfaces `Interface1` and `Interface2`, both of which declare a pure virtual method named `commonMethod()`. The class `MyClass` implements both interfaces and thus needs to provide an implementation for `commonMethod()` from both interfaces.
-
-In C++, when a class implements multiple interfaces that have methods with the same name, we can avoid name collisions by specifying the interface name when implementing the method in the class. This is done using the scope resolution operator `::`. In the above code, `MyClass` implements `commonMethod()` for `Interface1` and `Interface2` separately as `Interface1::commonMethod()` and `Interface2::commonMethod()`.
-
-In the `main()` function, we create an object of `MyClass` and call `commonMethod()` via pointers to `Interface1` and `Interface2`. The output shows that the correct method is called in each case, demonstrating that the method name collision has been successfully resolved.

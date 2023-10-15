@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating polymorphism in C++:
-
 #include <iostream>
 
 // Base class

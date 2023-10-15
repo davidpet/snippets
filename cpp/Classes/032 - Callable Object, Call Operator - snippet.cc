@@ -1,5 +1,3 @@
-Sure, here is a comprehensive example of using callable objects (also known as functors) in C++:
-
 #include <iostream>
 
 // Define a class with a call operator

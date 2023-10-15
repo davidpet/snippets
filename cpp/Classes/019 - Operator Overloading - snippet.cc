@@ -1,5 +1,3 @@
-Sure, here is a comprehensive example of operator overloading in C++:
-
 #include <iostream>
 
 // Define a simple class to demonstrate operator overloading

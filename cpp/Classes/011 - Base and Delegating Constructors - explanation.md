@@ -1,5 +1,8 @@
 # Base and Delegating Constructors
-In the above code, we have two classes: `Base` and `Derived`. `Derived` is a subclass of `Base`, meaning it inherits from `Base`.
+
+You can select which base constructor(s) to use in the __initializer list__ of a constructor of the derived class.  If you don't specify one, the __default constructor__ will be used to make the base.  In addition, you can delegate to another constructor of the __same class__ the same way, in the initializer list.  In both cases, you have to say the appropriate class name directly - there are no special keywords like in other languages.
+
+In the code, we have two classes: `Base` and `Derived`. `Derived` is a subclass of `Base`, meaning it inherits from `Base`.
 
 The `Base` class has two constructors: a default constructor that takes no parameters and a constructor that takes an integer parameter. When these constructors are called, they print a message to the console.
 

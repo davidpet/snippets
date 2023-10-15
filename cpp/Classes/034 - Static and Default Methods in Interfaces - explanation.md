@@ -1,2 +1,0 @@
-# Static and Default Methods in Interfaces
-In this code, `Interface` is an abstract class that simulates an interface. It has a pure virtual function `normalMethod()`, a default method `defaultMethod()`, and a static method `staticMethod()`. The `Derived` class inherits from `Interface` and overrides `normalMethod()` and `defaultMethod()`. In the `main()` function, we create an object of `Derived` and call these methods. We also call the static method from the `Interface`.

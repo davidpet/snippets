@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the use of covariant return types in C++.
-
 #include <iostream>
 
 // Base class
