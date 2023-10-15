@@ -1,5 +1,6 @@
 # Runtime Type/Type Equality/Type Comparison
-In the above code, we are demonstrating the use of `typeid` and `dynamic_cast` for runtime type checking and type comparison in C++. 
+
+In the code, we are demonstrating the use of `typeid` and `dynamic_cast` for runtime type checking and type comparison in C++. 
 
 The `typeid` operator is used to determine the class of an object at runtime. It returns a `type_info` object representing the type of the expression. For polymorphic types (classes with virtual functions), it returns the most derived type (the type of the complete object); for non-polymorphic types, it returns the static type.
 

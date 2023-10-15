@@ -1,5 +1,6 @@
 # Bitwise
-The above code demonstrates the use of bitwise operators in C++. Bitwise operators are used to perform manipulation of individual bits of a number. They can be used when performing low-level programming, such as writing device drivers, low-level graphics, network protocol packet decoders, etc.
+
+The code demonstrates the use of bitwise operators in C++. Bitwise operators are used to perform manipulation of individual bits of a number. They can be used when performing low-level programming, such as writing device drivers, low-level graphics, network protocol packet decoders, etc.
 
 The bitwise AND operator (&) takes two numbers as operands and does AND on every bit of two numbers. The result of AND is 1 only if both bits are 1.
 

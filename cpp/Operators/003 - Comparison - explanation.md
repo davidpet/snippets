@@ -1,5 +1,6 @@
 # Comparison
-In the above code, we have demonstrated the use of comparison operators in C++. These operators are used to compare two values and return a boolean result. The operators demonstrated are:
+
+In the code, we have demonstrated the use of comparison operators in C++. These operators are used to compare two values and return a boolean result. The operators demonstrated are:
 
 1. Equal to (==): Checks if the values of two operands are equal or not. If yes, then the condition becomes true.
 2. Not equal to (!=): Checks if the values of two operands are equal or not. If the values are not equal, then the condition becomes true.

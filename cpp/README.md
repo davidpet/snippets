@@ -10,7 +10,6 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - array decay in functions
 - regex
 - variations allowed for 'main' function signature
-- 'auto'
 - trailing return types
 - rvalue references in functions
 - default included constructors & all the automatically called constructors, conversions, assignments in various scenarios
@@ -27,7 +26,7 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - strongly point out somewhere that the way we inline functions and classes in snippets is not the norm (usually separate prototype)
 - template specializations
 - placement new
-- destructors
+- destructors, virtual destructors
 - operator overloading (both inside the class and in friend functions)
 - std::move
 

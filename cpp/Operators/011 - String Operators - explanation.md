@@ -1,5 +1,6 @@
 # String Operators
-In the above code, we have demonstrated the use of string operators in C++. 
+
+In the code, we have demonstrated the use of string operators in C++. 
 
 1. The '+' operator is used for string concatenation. It combines two strings into one. 
 2. The '+=' operator also concatenates two strings, but it modifies the original string.

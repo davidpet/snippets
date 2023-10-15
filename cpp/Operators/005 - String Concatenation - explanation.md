@@ -1,2 +1,3 @@
 # String Concatenation
+
 In C++, string concatenation can be achieved in several ways. The '+' operator is the most common way to concatenate two strings. It can also be used to concatenate a string with a character array or a single character. The '+=' operator can be used to add a string to the end of another string. The append() function is another way to concatenate strings. It adds a string to the end of another string.
