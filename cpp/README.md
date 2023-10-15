@@ -4,18 +4,17 @@ To try to make it more convenient, I generated BUILD files, but it turns out the
 `clang++ thefile.cc -o output && ./output`
 
 Potentially Missing Topics That I"ll Probably Manually Do:
+- array decay in functions
+- trailing return types
+- rvalue references in functions
+
 - guarding headers with #ifndef type macros (or #pragma once)
 - all the ways to initialize a stack object vs. heap object (inc. uniform initialization from C++ 11)
 - equivalents of all the main Java interview data structures
-- array decay in functions
 - regex
-- variations allowed for 'main' function signature
-- trailing return types
-- rvalue references in functions
 - default included constructors & all the automatically called constructors, conversions, assignments in various scenarios
 - using namespace
 - sub-namespaces, global namespace
-- passing by reference, constant reference, const bool type stuff, const pointers
 - const correctness
 - const class members
 - lifetime and construction of class members inc. construction order, constant expression requirements, etc.
@@ -31,8 +30,7 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - std::move
 - constexpr
 - std::decay
-- throw specifier and noexcept
-- inline functions and inline methods
+- inline methods
 - variadic templates
 - calling conventions, interop, etc.
 
