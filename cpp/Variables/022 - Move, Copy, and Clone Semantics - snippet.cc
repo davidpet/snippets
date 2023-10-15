@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the move, copy, and clone semantics in C++.
-
 #include <iostream>
 #include <vector>
 

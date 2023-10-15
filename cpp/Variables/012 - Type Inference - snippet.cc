@@ -22,5 +22,13 @@ int main() {
     decltype(c) f = "Goodbye, World!"; // f is of same type as c (const char*)
     std::cout << f << " is of type " << typeid(f).name() << std::endl; // prints: Goodbye, World! is of type const char*
 
+    // flexible about using of * and & along with it
+    auto *p = new int[10];
+    auto q = new int[10];
+    auto &x = *p;
+
+    delete[] p;
+    delete[] q;
+
     return 0;
 }

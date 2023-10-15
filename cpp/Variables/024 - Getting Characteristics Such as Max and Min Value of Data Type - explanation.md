@@ -1,5 +1,6 @@
 # Getting Characteristics Such as Max and Min Value of Data Type
-In the above code, we are using the `std::numeric_limits` template from the `<limits>` library to get the maximum and minimum values of different data types. This template provides a standardized way to query various properties of arithmetic types (e.g., `int`, `float`, `char`, etc.). 
+
+In the code, we are using the `std::numeric_limits` template from the `<limits>` library to get the maximum and minimum values of different data types. This template provides a standardized way to query various properties of arithmetic types (e.g., `int`, `float`, `char`, etc.). 
 
 We are using the `max()` and `min()` functions of the `std::numeric_limits` template to get the maximum and minimum values of the data types respectively. 
 

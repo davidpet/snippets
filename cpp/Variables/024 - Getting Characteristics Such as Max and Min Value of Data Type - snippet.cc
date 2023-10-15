@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating how to get characteristics such as max and min value of data types in C++.
-
 #include <iostream>
 #include <limits>
 

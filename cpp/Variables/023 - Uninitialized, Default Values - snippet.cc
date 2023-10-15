@@ -29,6 +29,7 @@ public:
 
 // Initialization of static variable in class
 int MyClass::staticClassVarInit = 40;
+int MyClass::staticClassVar; // 0
 
 int main() {
     // Local variable declaration without initialization

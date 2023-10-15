@@ -23,6 +23,7 @@ int main() {
 
     Base *base = new Derived;
     Derived *derived = dynamic_cast<Derived*>(base); // Dynamic casting from base class pointer to derived class pointer
+    std::cout << derived << std::endl; // any non-null pointer
 
     // 5. Const casting
     // It is used to add or remove constness of a variable

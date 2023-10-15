@@ -30,5 +30,9 @@ int main() {
     func f = []() { std::cout << "Hello, Function!" << std::endl; };
     f(); // This will print: Hello, Function!
 
+    // the old typedef way (note the different syntax ordering)
+    typedef int Integer;
+    typedef void (*MyFunc)();
+
     return 0;
 }

@@ -10,3 +10,5 @@ In this code snippet, we demonstrate the concept of variable scope and visibilit
 4. Trying to access a variable outside its scope, like accessing `localVar` from `testFunction` in `main` function, will cause a compile error.
 
 This demonstrates the basic rules of variable scope and visibility in C++. However, it's worth noting that C++ also supports other types of scopes like class scope, namespace scope, and function parameter scope, which are not covered in this snippet.
+
+Note: Unlike a garbage collected language like Java, when a variable goes out of scope, it is destructed right then, which is useful for things like smart pointers where you want them to be deallocated when they're done.

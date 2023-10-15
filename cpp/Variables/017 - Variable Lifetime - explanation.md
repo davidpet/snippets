@@ -1,5 +1,6 @@
 # Variable Lifetime inc. Caveats
-In the above code, we have demonstrated the lifetime of different types of variables in C++.
+
+In the code, we have demonstrated the lifetime of different types of variables in C++.
 
 1. **Global Variables**: These are declared outside all functions and are available throughout the program from the point of their declaration. In the code, `global` is a global variable. It is available in the `main` function and any other function we might have.
 

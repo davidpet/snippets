@@ -1,4 +1,5 @@
 # Local, Instance, and Class Variables
+
 In this code snippet, we are demonstrating the use of local, instance, and class variables in C++. 
 
 A local variable is a variable that is declared within a function or a block of code. It is only accessible within the function or the block where it is declared.

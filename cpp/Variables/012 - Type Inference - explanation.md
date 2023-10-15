@@ -1,5 +1,6 @@
 # Type Inference
-In the above code, we demonstrate type inference in C++ using the `auto` and `decltype` keywords.
+
+In the code, we demonstrate type inference in C++ using the `auto` and `decltype` keywords.
 
 The `auto` keyword tells the compiler to automatically deduce the type of the variable from its initializer. In the example, we see that `a` is inferred as `int`, `b` as `double`, and `c` as `const char*`.
 
