@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the use of built-in comparators for elements in C++ templates.
-
 #include <iostream>
 #include <vector>
 #include <algorithm>

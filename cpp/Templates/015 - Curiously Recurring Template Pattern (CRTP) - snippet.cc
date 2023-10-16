@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the Curiously Recurring Template Pattern (CRTP) in C++:
-
 #include <iostream>
 
 // Base class template

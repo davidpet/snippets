@@ -1,5 +1,6 @@
 # Generic Function
-In the above code, we have demonstrated the use of generic functions in C++. 
+
+In the code, we have demonstrated the use of generic functions in C++. 
 
 The `get_max` function is a simple generic function that takes two arguments of the same type and returns the maximum of the two. This function can be used with any type that supports the '>' operator.
 

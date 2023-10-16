@@ -5,13 +5,16 @@ template <typename T>
 class GenericClass {
 private:
     T data;
+    GenericClass *p;
 
 public:
     // Constructor
-    GenericClass(T d) : data(d) {}
+    GenericClass(T d) : data(d), p(this) {}
 
     // Getter
     T getData() {
+        // std::cout << p->data << std::endl; //included for illustration only
+
         return data;
     }
 
@@ -63,6 +66,10 @@ int main() {
     // Create an instance of MultiGenericClass with int and string types
     MultiGenericClass<int, std::string> multiClass(20, "World");
     std::cout << multiClass.getData1() << ", " << multiClass.getData2() << std::endl; // Expected output: 20, World
+
+    // C++ 17 type inference
+    GenericClass intClass2(10);
+    std::cout << intClass2.getData() << std::endl; // Expected output: 10
 
     return 0;
 }

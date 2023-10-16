@@ -1,5 +1,3 @@
-Sure, here is a comprehensive example of using Generic Lambdas in C++:
-
 #include <iostream>
 #include <vector>
 

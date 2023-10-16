@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating metaprogramming in C++ using templates.
-
 #include <iostream>
 
 // A simple template class

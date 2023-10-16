@@ -1,4 +1,5 @@
 # Built-in Comparators for Elements
+
 In this code, we first define a simple struct `Point` with two integer members `x` and `y`. We overload the '<' operator for our struct to compare two `Point` objects based on their `x` values.
 
 In the `main` function, we first create a vector of integers and sort it using the `std::sort` function, which uses the built-in comparator for integers. We then print the sorted vector.

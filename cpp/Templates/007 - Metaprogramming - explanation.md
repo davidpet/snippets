@@ -1,4 +1,5 @@
 # Metaprogramming
+
 1. The `SimpleTemplate` class is a basic example of a template class in C++. It can hold a value of any type and has a method to print that value.
 
 2. The `Factorial` struct is an example of template metaprogramming. It calculates the factorial of a number at compile time. This is done by recursively multiplying the number with the factorial of the number minus one. The recursion stops when the number is zero, at which point the factorial is defined to be one.

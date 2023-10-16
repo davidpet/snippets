@@ -1,6 +1,0 @@
-# Type Erasure/Runtime Type/Raw Types in Code
-In this code, we first define an interface `AnyShape` that declares a `draw` method. Then, we define a `ShapeWrapper` template that can wrap any type `T` and make it conform to the `AnyShape` interface. The `Shape` class can hold an `AnyShape` object, effectively hiding the concrete type of the object it holds.
-
-We then define two concrete shapes, `Circle` and `Square`, each with a `draw` method. In the `main` function, we create a `Shape` object from a `Circle` and a `Square`. When we call the `draw` method on these `Shape` objects, the appropriate `draw` method of the concrete shape is called, even though the `Shape` class does not know the concrete type of the shape it holds. This is the essence of type erasure.
-
-This code demonstrates type erasure in C++, but it's worth noting that this is a simplified example. In a real-world application, you would likely need to handle copying, moving, and other operations, and you would need to ensure that your type-erased objects are exception-safe.

@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the subtopic "Explicitly Calling Generic Function with Type" in C++.
-
 #include <iostream>
 
 // A generic function

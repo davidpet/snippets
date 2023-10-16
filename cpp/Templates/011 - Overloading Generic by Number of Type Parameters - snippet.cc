@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the overloading of templates by the number of type parameters in C++.
-
 #include <iostream>
 
 // A generic function to print a single value
