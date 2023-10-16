@@ -1,5 +1,3 @@
-In C++, there is no built-in support for docstrings like in Python. However, we can use comments to document our code. For variables, we can use comments to describe their purpose, type, and other relevant information. Here is an example:
-
 #include <iostream>
 
 int main() {

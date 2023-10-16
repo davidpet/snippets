@@ -1,4 +1,4 @@
-In C++, there is no built-in support for docstrings like in Python. However, we can use multi-line comments or single-line comments to document our classes, methods, and variables. Here is an example of how you might document a class in C++:
+#include <iostream>
 
 /**
  * Class: Rectangle

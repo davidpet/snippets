@@ -1,5 +1,6 @@
 # Functions
-In the above code, we have a function `add` that takes two integers as parameters and returns their sum. The function is documented using a multi-line comment that starts with `/**` and ends with `*/`. This is a common style of documentation in C++ and many other languages.
+
+In the code, we have a function `add` that takes two integers as parameters and returns their sum. The function is documented using a multi-line comment that starts with `/**` and ends with `*/`. This is a common style of documentation in C++ and many other languages.
 
 The `@param` tags are used to document the parameters of the function. Each `@param` tag is followed by the name of the parameter and a description of what it does.
 
