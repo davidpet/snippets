@@ -13,3 +13,5 @@ In all three cases, `std::transform` is a higher-order function that takes a fun
 Note: you can think of function pointer (which is callable without dereferencing like it's the function) as the type of all these things, and then functions and lambdas are both assignable to function pointers. This is only true if the lambda doesn't capture.  This will be covered more in "Functional Programming".
 
 Note: the syntax for the function pointer declaration looks like if it were the function prototype, but replace the function name with `*variableName`.
+
+Note: it is __optional__ to use a `&` before a function name to make it into a pointer.  The result is the same either way.  Similarly, (I think) you can use `*` optionally to dereference or just make the call.  It is mandatory to use `&` when the function is a class method though, but that's covered later.

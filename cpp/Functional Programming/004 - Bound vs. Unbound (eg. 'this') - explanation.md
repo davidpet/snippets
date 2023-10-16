@@ -19,3 +19,5 @@ For a __static method__, it's just a normal function pointer but with scope reso
 Note: You cannot get a bound function from an instance directly like in other languages - you have to do the stuff above with `std::bind()` unfortunately.
 
 Note: You cannot call an unbound method with a `this` pointer as an argument like you would in other languages.
+
+Note: while the `&` is optional for normal functions assinged to function pointers, they're required for instsance methods.
