@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the declaration of a variable holding a function in C++ with a focus on functional programming.
-
 #include <iostream>
 #include <functional>
 

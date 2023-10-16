@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the use of closures in C++ with both reference and value captures.
-
 #include <iostream>
 
 int main() {
@@ -25,6 +23,22 @@ int main() {
 
     value_capture(); // Prints: Value capture: 10, 20
     ref_capture(); // Prints: Reference capture: 30, 40
+
+    // Capture all mentioned variables by value, except the exceptions mentioned.
+    auto default_capture = [=, &y]() {
+        std::cout << "Default capture: " << x << ", " << y << std::endl;
+    };
+    x = 100;
+    y = 200;
+    default_capture();  // Prints: Default capture: 30, 200
+
+    // Capture all mentioned variables by reference, except the exceptions mentioned.
+    auto default_capture2 = [&, y]() {
+        std::cout << "Default capture: " << x << ", " << y << std::endl;
+    };
+    x = 1000;
+    y = 2000;
+    default_capture2();  // Prints: Default capture: 1000, 200
 
     return 0;
 }

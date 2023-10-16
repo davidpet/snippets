@@ -1,5 +1,3 @@
-In C++, IIFE stands for Immediately Invoked Function Expression. It is a function that is defined and then immediately invoked. This concept is borrowed from JavaScript and is not a common practice in C++, but it can be used in some cases. Here is an example:
-
 #include <iostream>
 
 int main() {

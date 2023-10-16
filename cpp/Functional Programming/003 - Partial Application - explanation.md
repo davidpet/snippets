@@ -1,5 +1,6 @@
 # Partial Application
-In the above code, we first define a simple function `add` that takes two integers and returns their sum. We then use `std::bind` to create a new function `addFive` that has the first argument of `add` 'pre-filled' with the value 5. The `std::placeholders::_1` is a placeholder for the second argument of `add`, which will be provided when `addFive` is called.
+
+In the code, we first define a simple function `add` that takes two integers and returns their sum. We then use `std::bind` to create a new function `addFive` that has the first argument of `add` 'pre-filled' with the value 5. The `std::placeholders::_1` is a placeholder for the second argument of `add`, which will be provided when `addFive` is called.  There are more placeholders such as `std::placeholders::_2`, etc.
 
 We then demonstrate the use of `addFive` by calling it with the argument 10. The expected output is 15, because `addFive` is essentially the same as calling `add(5, 10)`.
 

@@ -1,5 +1,3 @@
-C++ does not have a built-in `zip()` function like Python. However, we can create a similar functionality using iterators and the `std::transform()` function from the Standard Template Library (STL). Here's a simple example:
-
 #include <iostream>
 #include <vector>
 #include <algorithm>
@@ -37,11 +35,3 @@ int main() {
 
     return 0;
 }
-
-This will print:
-
-(1, 2.2)
-(2, 3.3)
-(3, 4.4)
-(4, 5.5)
-(5, 6.6)

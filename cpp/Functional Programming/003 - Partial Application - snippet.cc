@@ -1,5 +1,3 @@
-C++ does not natively support partial application like some functional programming languages do. However, we can achieve similar functionality using `std::bind` from the `<functional>` library or using lambda functions. Here's an example:
-
 #include <iostream>
 #include <functional>
 

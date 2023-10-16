@@ -1,4 +1,5 @@
 # map, reduce, and filter
+
 In this code snippet, we demonstrate the use of `map`, `reduce`, and `filter` operations in C++. 
 
 - `std::transform` is used to apply a function to each element in a collection, effectively mapping the function over the collection. In this case, we use it to square each number in a vector.

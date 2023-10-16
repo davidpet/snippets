@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the use of `map`, `reduce`, and `filter` in C++.
-
 #include <iostream>
 #include <vector>
 #include <algorithm>

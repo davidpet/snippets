@@ -10,6 +10,6 @@ In this code, we demonstrate three ways to implement higher-order functions in C
 
 In all three cases, `std::transform` is a higher-order function that takes a function as an argument and applies it to each element in a range.
 
-Note: you can think of function pointer (which is callable without dereferencing like it's the function) as the type of all these things, and then functions and lambdas are both assignable to function pointers.
+Note: you can think of function pointer (which is callable without dereferencing like it's the function) as the type of all these things, and then functions and lambdas are both assignable to function pointers. This is only true if the lambda doesn't capture.  This will be covered more in "Functional Programming".
 
 Note: the syntax for the function pointer declaration looks like if it were the function prototype, but replace the function name with `*variableName`.

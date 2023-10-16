@@ -11,6 +11,10 @@ public:
     void printX() {
         std::cout << "Value of x: " << x << std::endl; // This will print the value of x
     }
+
+    static void printStatic() {
+        std::cout << "Static" << std::endl;
+    }
 };
 
 int main() {
@@ -33,6 +37,13 @@ int main() {
 
     // Call the bound member function
     boundFn2(); // This will print "Value of x: 10"
+
+    // Getting directly from instance
+    // auto bound = &obj.printX; // ILLEGAL
+
+    // Static unbound method
+    void (*staticfPtr)() = MyClass::printStatic;  // optional &
+    staticfPtr(); // This will print "Static"
 
     return 0;
 }
