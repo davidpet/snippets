@@ -4,6 +4,7 @@ To try to make it more convenient, I generated BUILD files, but it turns out the
 `clang++ thefile.cc -o output && ./output`
 
 Potentially Missing Topics That I"ll Probably Manually Do:
+- void*
 - guarding headers with #ifndef type macros (or #pragma once)
 - equivalents of all the main Java interview data structures
 - regex
