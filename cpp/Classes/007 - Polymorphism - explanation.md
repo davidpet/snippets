@@ -12,6 +12,6 @@ The `delete` keyword is used to free the memory allocated with `new`. This is im
 
 Note: if you need to cast to a more derived class, you can use `dynamic_cast<>`, which relies on __RTTI__.
 
-Note: if you declare a function virtual in a base, it remains virtual whether you continue to declare it so in subclasses, but it's better style to indicate it with `override`.
+Note: if you declare a function virtual in a base, it remains virtual whether you continue to declare it so in subclasses, but it's better style to indicate it with `override`.  There is no such thing as virtual until hits a non-virtual version and then stops (for some reason I used to think that was the case and keep reminding myself it's not).
 
 Note: `override` was introduced in C++ 11 and is not strictly required but is more clear.  It will fail to compile if the method wasn't virtual to begin with in the base.

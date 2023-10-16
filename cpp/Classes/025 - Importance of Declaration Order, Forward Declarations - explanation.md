@@ -11,3 +11,5 @@ After the forward declaration of `B`, we can declare class `A` and then class `B
 In the `main` function, we create objects of class `A` and `B`, and then call the `doSomething` function of class `A` with the object of class `B` as a parameter. This sets the `a` member variable of the `A` object to 10, which is then printed out.
 
 Note: this works in this example because the compiler only needs to know that B is a class in order to use a reference to B in A. To access any members of B, you'd need to do it after the declaration of B (such as in a source file instead of in the header).
+
+Note: forward declarations are special - you can't usually just redefine a symbol such as a class.

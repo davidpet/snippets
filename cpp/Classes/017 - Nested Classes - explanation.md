@@ -9,3 +9,5 @@ In the function 'printVars()', we create instances of both 'Outer' and 'Inner', 
 In the 'main()' function, we call 'printVars()' to print the values of 'outer_var' and 'inner_var', and then create an instance of 'Outer' and call 'printInnerVar()' to print the value of 'inner_var' again.
 
 This demonstrates the basic usage of nested classes in C++. They can be useful for organizing related classes and for encapsulating classes within other classes to limit their scope and visibility.
+
+Note: nested class __visibility__ is subject to the visibility section which the declaration appears in.

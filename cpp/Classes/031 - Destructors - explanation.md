@@ -9,3 +9,5 @@ A destructor takes no arguments and has no return type. Its name is the same as 
 If we do not provide a destructor in a class, C++ compiler generates a default destructor for us, which does nothing.
 
 A destructor on a class that's meant to be used as a base pointer should be marked `virtual` so that if deleted via the base, the derived destructor can be called properly (before the base).
+
+Note: a destructor has no args or return type (but pretends to have an arg list by having `()`).

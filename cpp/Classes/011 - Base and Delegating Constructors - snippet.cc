@@ -17,13 +17,15 @@ public:
 // Define a derived class
 class Derived : public Base {
 public:
+    int x;
+
     // Delegating constructor
-    Derived() : Base() { // technically unnecessary since using default c'tor anyway
+    Derived() : Base(), x(1) { // technically unnecessary since using default c'tor anyway
         std::cout << "Derived constructor called" << std::endl;
     }
 
     // Delegating constructor with parameters
-    Derived(int x) : Base(x) {
+    Derived(int x) : Base(x), x(2) {
         std::cout << "Derived constructor with parameter called: " << x << std::endl;
     }
 
@@ -44,5 +46,8 @@ int main() {
     // Create an instance of Derived using the constructor with parameters
     Derived d2(10); // This will print: "Base constructor with parameter called: 10" and "Derived constructor with parameter called: 10"
 
+    Derived d3((char)10);
+    std::cout << d3.x << std::endl;
+    
     return 0;
 }

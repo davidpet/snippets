@@ -36,7 +36,7 @@ public:
     }
 
     // Constructor with two parameters
-    MultipleConstructorsClass(int value1, int value2) : x(value1), y(value2) {
+    MultipleConstructorsClass(int x, int y) : x(x), y(y) {
         std::cout << "MultipleConstructorsClass constructor called with two values: " << x << ", " << y << std::endl;
     }
 };

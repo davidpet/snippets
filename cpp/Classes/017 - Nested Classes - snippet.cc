@@ -2,6 +2,8 @@
 
 // Define a class 'Outer'
 class Outer {
+private:
+    class PrivateInner {};
 public:
     // Define a public member variable
     int outer_var = 10;
@@ -26,6 +28,7 @@ public:
 void printVars() {
     Outer outer;
     Outer::Inner inner;
+    // Outer::PrivateInner inner2; // ILLEGAL
 
     std::cout << "Outer var: " << outer.outer_var << std::endl; // Expected to print: Outer var: 10
     std::cout << "Inner var: " << inner.inner_var << std::endl; // Expected to print: Inner var: 20

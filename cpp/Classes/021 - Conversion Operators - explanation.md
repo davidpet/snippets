@@ -9,3 +9,5 @@ Conversion __to__ another type from your type is done via operators.
 Either a constructor or operator can be marked `explicit` to prevent implicit conversion.
 
 Implicit conversion will generally only go __1-level__ of user-defined conversions in order to make arguments match prototypes, separately from also widening numbers (before the user-defined conversion), etc. as needed.
+
+Note: unlike what you'd expect, conversion operators have no return type (because that's already in the operator name).
