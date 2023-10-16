@@ -4,19 +4,6 @@ To try to make it more convenient, I generated BUILD files, but it turns out the
 `clang++ thefile.cc -o output && ./output`
 
 Potentially Missing Topics That I"ll Probably Manually Do:
-- template typename vs. class in param
-- template specializations
-- template instantiation (explicit vs. implicit)
-- variadic templates
-- typename within template body
-- template function and method in separate file (and how that works with tempalte instantiation)
-    - also be sure to include template method within template class - I remember the syntax is weird
-- duck typing of templates
-- templates vs. generics
-- type erasure irrelevent because statically created and no type anyway
-- templates and dynamic_cast/polymorphism?
-- concepts (improve the "Type Constraints" snippet)(https://en.cppreference.com/w/cpp/language/constraints)
-
 - guarding headers with #ifndef type macros (or #pragma once)
 - equivalents of all the main Java interview data structures
 - regex
@@ -40,5 +27,7 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - lambda with auto parameters
 - no built-in lambda types like in java.util.function
 - how to enable C++ 20 in VSCode to avoid errors in "009 - Type Constraints" in "Templates"?
+- concepts (improve the "Type Constraints" snippet)(https://en.cppreference.com/w/cpp/language/constraints)
+- understand variadic templates better (notebook 016)
 
-- key uniquenesses of C++: stack vs. heap allocation, allocation just by making a variable, pointers and reference variables, templates instead of generics, :: for scope resolution instead of just ., header vs. implementation, direct unmanaged access to blocks of memory, ; required at end of class and enum declarations, virtual functions not the default (have to specify), true destructors (no finalizer or disposer) called at predictable time (right when out of scope), operator overloading + destructors + templates allowing for very fluent sublanguages to be built, things like iteration rely on conventions/protocols instead of base interfaces, TCO available under right circumstances, passing by const reference (immutability of object itself instead of just variable), access modifiers as sections rather than modifiers on members, all classnames explicit (no super, base, or this for that purpose), no base/root object, arbitrary access level changes in subclasses
+- key uniquenesses of C++: stack vs. heap allocation, allocation just by making a variable, pointers and reference variables, templates instead of generics (duck-typed), :: for scope resolution instead of just ., header vs. implementation, direct unmanaged access to blocks of memory, ; required at end of class and enum declarations, virtual functions not the default (have to specify), true destructors (no finalizer or disposer) called at predictable time (right when out of scope), operator overloading + destructors + templates allowing for very fluent sublanguages to be built, things like iteration rely on conventions/protocols instead of base interfaces, TCO available under right circumstances, passing by const reference (immutability of object itself instead of just variable), access modifiers as sections rather than modifiers on members, all classnames explicit (no super, base, or this for that purpose), no base/root object, arbitrary access level changes in subclasses
