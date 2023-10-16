@@ -6,7 +6,6 @@ To try to make it more convenient, I generated BUILD files, but it turns out the
 Potentially Missing Topics That I"ll Probably Manually Do:
 - MyClass() = default;
 - size_t
-- attributes like [[maybe_unused]] - what is that and are there others?
 - void*
 - #pragma
 - equivalents of all the main Java interview data structures
