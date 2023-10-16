@@ -1,4 +1,5 @@
 # Wrapping Multiple Imported Symbols
+
 In C++, you can also use namespaces to wrap imported symbols. This can be useful if you want to avoid name clashes between symbols from different files. Here is an example:
 
 ```cpp
@@ -39,3 +40,5 @@ int main() {
 ```
 
 In this example, the `my_library` namespace is used to wrap the `add` and `subtract` functions. This means that these functions can be accessed as `my_library::add` and `my_library::subtract` in `main.cpp`.
+
+Note: you could use `using namespace my_library;` in `main.cpp` but people don't typically like to pollute the global namespace like that.

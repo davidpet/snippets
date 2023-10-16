@@ -1,5 +1,3 @@
-In C++, mutual references between top-level classes can be achieved using forward declarations. A forward declaration is a declaration of an identifier (class, function, etc.) before its complete definition. It informs the compiler about the name and type of the identifier. Here is an example:
-
 // Forward declaration of class B
 class B;
 

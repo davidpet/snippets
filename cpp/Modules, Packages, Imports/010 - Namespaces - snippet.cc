@@ -5,6 +5,8 @@
 
 // Here is a simple example of a namespace declaration and usage.
 
+#include <iostream>
+
 namespace MyNamespace {
     int myVar = 10;
     void myFunction() {

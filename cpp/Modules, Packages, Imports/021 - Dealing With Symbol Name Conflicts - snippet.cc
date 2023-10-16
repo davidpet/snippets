@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating how to deal with symbol name conflicts in C++.
-
 // Include the standard library
 #include <iostream>
 

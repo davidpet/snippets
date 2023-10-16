@@ -1,5 +1,6 @@
 # Top-Level Classes Referring to Each Other Mutually
-In the above code, we have two classes A and B. Class A needs to refer to class B in its method `printB()`, but class B is not defined yet. To solve this problem, we use a forward declaration of class B. This tells the compiler that class B exists and it will be defined later. Then we define class A with a pointer to an object of class B as a member. After that, we define class B. Finally, we implement the `printB()` method of class A that uses class B. This method is implemented outside the class definition because it needs the complete definition of class B.
+
+In the code, we have two classes A and B. Class A needs to refer to class B in its method `printB()`, but class B is not defined yet. To solve this problem, we use a forward declaration of class B. This tells the compiler that class B exists and it will be defined later. Then we define class A with a pointer to an object of class B as a member. After that, we define class B. Finally, we implement the `printB()` method of class A that uses class B. This method is implemented outside the class definition because it needs the complete definition of class B.
 
 In the `main()` function, we create an object of class B with the value 10 and an object of class A that refers to the object of class B. Then we call the `printB()` method of class A to print the value of class B.
 

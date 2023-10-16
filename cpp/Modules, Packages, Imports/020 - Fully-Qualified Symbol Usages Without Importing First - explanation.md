@@ -1,6 +1,0 @@
-# Fully-Qualified Symbol Usages Without Importing First
-In this example, `MyModule.h` defines a namespace `MyModule` with a function `myFunction`. In `main.cpp`, we include `MyModule.h` but do not use a `using` directive to import the `MyModule` namespace. This means that we have to use the fully-qualified name `MyModule::myFunction` to call the function.
-
-This is a simple example, but the same principle applies to any symbols (variables, functions, classes, etc.) defined in a namespace. If you do not import the namespace with a `using` directive, you must use the fully-qualified name to access its symbols.
-
-Note that C++ does not have a built-in system for managing dependencies between files like some other languages do. If you include a file that includes another file, the second file will be included as well. This can lead to problems if you are not careful, such as multiple definitions of the same symbol. To avoid this, you can use include guards or `#pragma once` to ensure that each file is only included once.

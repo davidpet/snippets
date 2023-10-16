@@ -8,11 +8,9 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - size_t
 - attributes like [[maybe_unused]] - what is that and are there others?
 - void*
-- guarding headers with #ifndef type macros (or #pragma once)
+- #pragma
 - equivalents of all the main Java interview data structures
 - regex
-- using namespace
-- sub-namespaces, global namespace
 - parameters that are references, and returning references (and scope implications/dangers of that)
 - placement new
 - std::move
@@ -20,7 +18,6 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - constexpr, decltype
 - std::decay
 - calling conventions, interop, etc.
-- construction order of statics & globals in different source files linked together
 - stdlib details: smart pointers, algorithms, stream I/O, file I/O, etc.
 - most vexing parse
 - variant/dynamic type?
@@ -32,5 +29,6 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - understand variadic templates better (notebook 016)
 - std::back_inserter
 - std::transform and std::copy_if overloads
+- new in C++ 20: modules
 
 - key uniquenesses of C++: stack vs. heap allocation, allocation just by making a variable, pointers and reference variables, templates instead of generics (duck-typed), :: for scope resolution instead of just ., header vs. implementation, direct unmanaged access to blocks of memory, ; required at end of class and enum declarations, virtual functions not the default (have to specify), true destructors (no finalizer or disposer) called at predictable time (right when out of scope), operator overloading + destructors + templates allowing for very fluent sublanguages to be built, things like iteration rely on conventions/protocols instead of base interfaces, TCO available under right circumstances, passing by const reference (immutability of object itself instead of just variable), access modifiers as sections rather than modifiers on members, all classnames explicit (no super, base, or this for that purpose), no base/root object, arbitrary access level changes in subclasses, lambda syntax very different and type differs based on what captured (strange), lambda has to specify what's captured and how, capture by reference can get dangling reference, templates only put <> in the declaration for specializations
