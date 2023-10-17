@@ -4,44 +4,17 @@ To try to make it more convenient, I generated BUILD files, but it turns out the
 `clang++ thefile.cc -o output && ./output`
 
 Potentially Missing Topics That I"ll Probably Manually Do:
-- how to enable C++ 20 in VSCode to avoid errors in "009 - Type Constraints" in "Templates"?
-- MyClass() = default;
-- size_t
-- void*
-- #pragma
-- parameters that are references, and returning references (and scope implications/dangers of that)
-- placement new
-- std::move, swap
-- std::any
-- constexpr, decltype
-- std::decay
-- calling conventions, interop, etc.
-- stdlib details: smart pointers, algorithms, stream I/O, file I/O, etc.
-- ??? check java quick sheet & google for any missing concepts from stdlib
-- new in C++ 20: automatic operator== and operator!= provided
-- concepts (improve the "Type Constraints" snippet)(https://en.cppreference.com/w/cpp/language/constraints)
-- understand variadic templates better (notebook 016)
-- std::back_inserter
-- std::transform and std::copy_if overloads
-- new in C++ 20: modules
-- std random numbers and such
-- volatile?
-- atomic?
-- std::optional
-- std::variant
-- std::any
-- std::string_view
-- std::invoke
-- std::apply
-- std::clamp
-- std::byte
-- std::shared_mutex
-- std::scoped_lock
 - C++ 20 ranges
 - C++ 20 coroutines
 - C++ 20 spaceship operator
-- std::format
-- std::stopwatch
-- std::starts_with, std::ends_with
+- new in C++ 20: automatic operator== and operator!= provided
+- new in C++ 20: modules
+
+- concepts (improve the "Type Constraints" snippet)(https://en.cppreference.com/w/cpp/language/constraints)
+- understand variadic templates better (notebook 016)
+
+- ??? check java quick sheet & google for any missing concepts from stdlib
+- ??? check old C++ notes doc for any missing concepts
+- ??? check Anki cards for any missing concepts
 
 - key uniquenesses of C++: stack vs. heap allocation, allocation just by making a variable, pointers and reference variables, templates instead of generics (duck-typed), :: for scope resolution instead of just ., header vs. implementation, direct unmanaged access to blocks of memory, ; required at end of class and enum declarations, virtual functions not the default (have to specify), true destructors (no finalizer or disposer) called at predictable time (right when out of scope), operator overloading + destructors + templates allowing for very fluent sublanguages to be built, things like iteration rely on conventions/protocols instead of base interfaces, TCO available under right circumstances, passing by const reference (immutability of object itself instead of just variable), access modifiers as sections rather than modifiers on members, all classnames explicit (no super, base, or this for that purpose), no base/root object, arbitrary access level changes in subclasses, lambda syntax very different and type differs based on what captured (strange), lambda has to specify what's captured and how, capture by reference can get dangling reference, templates only put <> in the declaration for specializations, attributes with [[]] instead of @ and not custom or usable by others, RAII idiom, preprocessor directives and macros, most vexing parse

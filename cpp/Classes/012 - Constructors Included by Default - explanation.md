@@ -23,6 +23,12 @@ You can __provide any__ of the above 5 members yourself to __replace the automat
 
 You can also __explicitly remove__ an automatically generated member by declaring it with `= delete`.  This is similar syntax to declaring a pure virtual member but using the `delete` keyword instead of `0`.
 
+You can __explicitly include__ an automatically generated member by declaring it with `= default`.  There are a couple of reasons you might do this:
+1. Restore the __default constructor__ that you lose when you define other constructors.
+1. Signal that you're using the default for __readability__ reasons.
+1. Change the __visibility__ of a default constructor without having to redefine it.
+1. For a __destructor__ to signal that you know you're using the base (usually virtual) one.
+
 It's also worth noting that the following line will use a __copy constructor__, not a copy assignment:
 ```C++
 MyClass m = n;

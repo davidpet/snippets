@@ -24,6 +24,18 @@ class MyClassWithRemovals {
         MyClassWithRemovals(int x, int y) {}
 };
 
+class MyClassWithDefaultsRestored {
+    private:
+        MyClassWithDefaultsRestored(MyClassWithDefaultsRestored &&other) = default; // just signalling
+
+    public:
+        MyClassWithDefaultsRestored(const MyClassWithDefaultsRestored &other) {}
+
+        MyClassWithDefaultsRestored() = default;    // prevent this from being lost
+
+        ~MyClassWithDefaultsRestored() = default; // signalling
+};
+
 void default5() {
     MyClass m; // default constructor
     m.x = 100;
@@ -88,10 +100,17 @@ void withRemovals() {
     std::cout << std::endl;
 }
 
+void withDefaultsRestored() {
+    MyClassWithDefaultsRestored m;
+    MyClassWithDefaultsRestored n(m);
+    MyClassWithDefaultsRestored o(MyClassWithDefaultsRestored{}); // copy c'tor
+}
+
 int main() {
     default5();
     withParameterized();
     withRemovals();
+    withDefaultsRestored();
 
     return 0;
 }
