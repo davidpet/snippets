@@ -39,3 +39,12 @@ m = n;
 ```
 
 Note: technically you also get a __destructor__ automatically but the default doesn't do anything.
+
+## Addendum: More Nuances
+
+1. __Default Constructor__: Declared only if the class doesn't declare any constructor.
+1. __Copy Constructor__: Declared unless the class declares a move constructor or move assignment operator.
+1. __Move Constructor__: Declared only if the class doesn't declare any constructors, doesn't declare a destructor, and doesn't declare a copy assignment operator. The conditions are a bit more nuanced, but that's the essence.
+1. __Destructor__: Always implicitly declared.
+1. __Copy Assignment Operator__: Declared unless the class declares a move constructor or move assignment operator.
+1. __Move Assignment Operator__: Declared only if the class doesn't declare any constructors, doesn't declare a destructor, and doesn't declare a copy assignment operator. Again, the conditions are a bit more nuanced.
