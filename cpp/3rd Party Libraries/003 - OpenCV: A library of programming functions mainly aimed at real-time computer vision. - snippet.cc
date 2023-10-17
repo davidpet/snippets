@@ -1,5 +1,3 @@
-Sure, here is a simple example of using OpenCV in C++ to read an image, convert it to grayscale, and display it. 
-
 // Include necessary libraries
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>

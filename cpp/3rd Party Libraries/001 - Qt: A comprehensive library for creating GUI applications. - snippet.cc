@@ -1,5 +1,3 @@
-Sure, here is a basic example of a Qt application that creates a simple GUI window with a button. This example will demonstrate the usage of some of the most common Qt classes and methods.
-
 #include <QApplication> // Include QApplication which manages the GUI application's control flow and main settings
 #include <QPushButton>  // Include QPushButton which provides a command button
 

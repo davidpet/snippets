@@ -1,5 +1,3 @@
-C++ does not have a built-in testing framework like JUnit in Java. However, there are several third-party libraries available for unit testing in C++. One of the most popular ones is Google Test. Here is an example of how to set up and tear down tests in Google Test.
-
 #include <gtest/gtest.h>
 
 class MyTestSuite : public ::testing::Test {

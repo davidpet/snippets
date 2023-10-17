@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the usage of Eigen library in C++:
-
 // Include the Eigen library
 #include <Eigen/Dense>
 #include <iostream>

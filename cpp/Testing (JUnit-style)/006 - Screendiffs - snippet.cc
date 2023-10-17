@@ -1,9 +1,3 @@
-C++ does not have a built-in testing framework like JUnit in Java. However, there are several third-party libraries available for unit testing in C++. One of the most popular ones is Google Test. 
-
-For the subtopic "Screendiffs", it's not directly related to C++ or unit testing. Screendiffs are typically used in UI testing to compare the current state of a UI with a previously captured screenshot. This is more relevant to web or mobile application testing, not C++ unit testing. 
-
-However, if you want to compare two images in a C++ test, you can use OpenCV library. Here is a simple example of how you can compare two images using OpenCV and Google Test:
-
 #include <gtest/gtest.h>
 #include <opencv2/opencv.hpp>
 

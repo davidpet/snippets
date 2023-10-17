@@ -1,5 +1,6 @@
 # Asserts
-In the above code, we first include the Google Test library. Then we define a function `add` that we want to test. 
+
+In the code, we first include the Google Test library. Then we define a function `add` that we want to test. 
 
 We then define two test cases using the `TEST` macro. The first argument to `TEST` is the test case name and the second argument is the test name. Inside the test cases, we use the `EXPECT_EQ` macro to assert that two values are equal. If they are not equal, the test will fail.
 

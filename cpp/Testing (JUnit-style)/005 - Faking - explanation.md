@@ -1,5 +1,6 @@
 # Faking
-In the above code, we first include the necessary headers for Google Test and Google Mock. Then we define a class `MyClass` with a virtual method `MyMethod` that we want to fake. 
+
+In the code, we first include the necessary headers for Google Test and Google Mock. Then we define a class `MyClass` with a virtual method `MyMethod` that we want to fake. 
 
 We then define a fake class `FakeMyClass` that inherits from `MyClass`. In this class, we use the `MOCK_METHOD` macro to specify that we want to fake the `MyMethod` method. The `MOCK_METHOD` macro takes three arguments: the method name, the method signature, and the override specifier.
 

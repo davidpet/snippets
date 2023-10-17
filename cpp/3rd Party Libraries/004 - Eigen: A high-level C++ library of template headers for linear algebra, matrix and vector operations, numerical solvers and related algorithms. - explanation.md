@@ -1,4 +1,5 @@
 # Eigen: A high-level C++ library of template headers for linear algebra, matrix and vector operations, numerical solvers and related algorithms.
+
 1. The Eigen library is included at the beginning of the code. Eigen is a high-level C++ library of template headers for linear algebra, matrix and vector operations, numerical solvers and related algorithms.
 
 2. A 3x3 matrix of integers is created using the `Eigen::Matrix3i` class. The `<<` operator is used to fill the matrix with values.

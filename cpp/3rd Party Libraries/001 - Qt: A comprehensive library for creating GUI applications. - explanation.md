@@ -1,4 +1,5 @@
 # Qt: A comprehensive library for creating GUI applications.
+
 This code creates a simple GUI application with a single button. When you run this application, you will see a window with a "Hello, world!" button.
 
 1. `QApplication` is the class that manages the GUI application's control flow and main settings. It handles initialization and finalization, provides the event loop, and handles system-wide and application-wide settings.

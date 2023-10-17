@@ -1,5 +1,3 @@
-Sure, here is a simple example of using the POCO C++ Libraries to create a HTTP request and handle the response. This example will use the Poco::Net::HTTPClientSession and Poco::Net::HTTPRequest classes.
-
 #include <Poco/Net/HTTPClientSession.h>
 #include <Poco/Net/HTTPRequest.h>
 #include <Poco/Net/HTTPResponse.h>

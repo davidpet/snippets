@@ -1,5 +1,3 @@
-Sure, here is a basic example of how to use Google Test for unit testing in C++. 
-
 // Include the necessary headers for Google Test
 #include "gtest/gtest.h"
 

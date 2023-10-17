@@ -1,5 +1,6 @@
 # Setup and Teardown
-In the above code, we have a test suite `MyTestSuite` which is a subclass of `::testing::Test`. The `SetUpTestSuite` and `TearDownTestSuite` are static member functions that run once before and after all the tests in the suite respectively. The `SetUp` and `TearDown` member functions run before and after each test in the suite respectively.
+
+In the code, we have a test suite `MyTestSuite` which is a subclass of `::testing::Test`. The `SetUpTestSuite` and `TearDownTestSuite` are static member functions that run once before and after all the tests in the suite respectively. The `SetUp` and `TearDown` member functions run before and after each test in the suite respectively.
 
 The `TEST_F` macro is used to define a test function within a test suite. The first argument is the name of the test suite and the second argument is the name of the test. The body of the test function is where you write your test code.
 

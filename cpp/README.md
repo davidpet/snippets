@@ -4,7 +4,6 @@ To try to make it more convenient, I generated BUILD files, but it turns out the
 `clang++ thefile.cc -o output && ./output`
 
 Potentially Missing Topics That I"ll Probably Manually Do:
-** folders left: 3rd Party Libraries, Testing **
 - MyClass() = default;
 - size_t
 - void*

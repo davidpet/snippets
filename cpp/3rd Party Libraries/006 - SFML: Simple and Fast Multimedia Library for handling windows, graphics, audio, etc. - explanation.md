@@ -1,4 +1,5 @@
 # SFML: Simple and Fast Multimedia Library for handling windows, graphics, audio, etc.
+
 This code demonstrates the basic usage of SFML for creating a window, loading a texture from a file, creating a sprite with that texture, and drawing it to the window. The main loop runs as long as the window is open, and it handles events (like the window being closed), clears the window, draws the sprite, and updates the window each iteration.
 
 The `sf::RenderWindow` class is used to create a window that can be drawn to. The `sf::Texture` class is used to load a texture from a file, and the `sf::Sprite` class is used to create a drawable sprite with that texture.

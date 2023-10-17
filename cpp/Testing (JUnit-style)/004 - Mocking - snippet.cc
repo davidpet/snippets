@@ -1,7 +1,3 @@
-C++ does not have a built-in mocking framework like Java's Mockito. However, there are several third-party libraries available for this purpose. One of the most popular is Google Mock, which is often used in conjunction with the Google Test framework. 
-
-Here is an example of how to use Google Mock to create mock objects and set expectations on them. This example assumes that you have Google Test and Google Mock installed and set up correctly in your development environment.
-
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 

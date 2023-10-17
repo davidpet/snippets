@@ -1,5 +1,3 @@
-C++ does not have built-in testing frameworks like JUnit in Java. However, there are several third-party libraries available for unit testing in C++. One of the most popular ones is Google Test. Here is an example of how to use Google Test for assertions in C++.
-
 #include <gtest/gtest.h>
 
 // A function that we will test

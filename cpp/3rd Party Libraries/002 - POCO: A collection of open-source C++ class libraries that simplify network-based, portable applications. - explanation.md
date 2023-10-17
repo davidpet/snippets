@@ -1,4 +1,5 @@
 # POCO: A collection of open-source C++ class libraries that simplify network-based, portable applications.
+
 This code snippet demonstrates how to use the POCO C++ Libraries to create a simple HTTP client. The client sends a GET request to www.example.com and prints the response to the standard output.
 
 The Poco::Net::HTTPClientSession class is used to establish a connection to the server. The Poco::Net::HTTPRequest class is used to create the HTTP request, and the Poco::Net::HTTPResponse class is used to handle the HTTP response.

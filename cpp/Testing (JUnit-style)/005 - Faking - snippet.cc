@@ -1,7 +1,3 @@
-C++ doesn't have a built-in testing framework like JUnit in Java. However, there are several third-party libraries available for unit testing in C++. One of the most popular ones is Google Test. It provides the ability to create fake objects (also known as mocks) using Google Mock, which is included in the Google Test framework.
-
-Here is an example of how to use Google Mock to create a fake object and use it in a test. 
-
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 
