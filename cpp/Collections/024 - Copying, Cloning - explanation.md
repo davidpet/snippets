@@ -11,3 +11,5 @@ In this code, we demonstrate four different ways to copy or clone a collection i
 4. The fourth method uses the `std::copy` function from the `<algorithm>` library. This function copies the elements from the source range to the destination range. Note that the destination range must be large enough to hold the copied elements.
 
 Each of these methods has its own use cases and can be used depending on the specific requirements of your program.
+
+Note: __deep copying__ is the default behavior (usually) because C++ is not a reference-based language like Java.

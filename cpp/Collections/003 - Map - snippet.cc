@@ -3,7 +3,7 @@
 
 int main() {
     // Declare a map (dictionary) with string keys and int values
-    std::map<std::string, int> myMap;
+    std::map<std::string, int> myMap; // ordered map - use unordered_map if want O(1)
 
     // Insert key-value pairs into the map
     myMap["apple"] = 1;

@@ -13,3 +13,5 @@ We remove an element from the set using the `erase()` function, and then print t
 We check the size of the set using the `size()` function, and check if the set is empty using the `empty()` function.
 
 Finally, we clear the set using the `clear()` function, and then check if the set is empty again to confirm that all elements have been removed.
+
+Note that `std::set` is an __ordered set__ with __O(logn)__ lookup (balanced binary search tree). `std::unordered_set` exposes the same interface, but when you iterate the keys, they don't come in a guaranteed order, and lookup is __O(1)__.

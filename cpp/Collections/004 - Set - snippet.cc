@@ -3,7 +3,7 @@
 
 int main() {
     // Declare a set of integers
-    std::set<int> mySet;
+    std::set<int> mySet; // ordered set - use unordered_set if want O(1)
 
     // Insert elements into the set
     mySet.insert(10);

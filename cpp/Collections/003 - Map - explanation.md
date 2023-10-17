@@ -11,3 +11,5 @@ The `find` function is used to check if a key exists in the map. It returns an i
 Finally, the `erase` function is used to remove a key-value pair from the map using the key. After the key-value pair is removed, the `find` function confirms that the key no longer exists in the map.
 
 At the bottom, we also demonstrate uniform initialization of a map.
+
+Note that `std::map` is an __ordered map__ with __O(logn)__ lookup (balanced binary search tree). `std::unordered_map` exposes the same interface, but when you iterate the keys, they don't come in a guaranteed order, and lookup is __O(1)__.

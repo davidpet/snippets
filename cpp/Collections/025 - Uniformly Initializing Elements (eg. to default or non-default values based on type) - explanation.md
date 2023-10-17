@@ -15,3 +15,5 @@ The `const` keyword is used to prevent modification of the elements in the colle
 The `&` symbol is used to create references to the elements in the collections, to avoid copying them. 
 
 The `std::endl` manipulator is used to insert a newline and flush the output buffer.
+
+Note: see __uniform initialization__ in classes for a discussion about `std::initializer_list` and how you can support this type of inline initialization for your types.

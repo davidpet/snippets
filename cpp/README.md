@@ -4,23 +4,8 @@ To try to make it more convenient, I generated BUILD files, but it turns out the
 `clang++ thefile.cc -o output && ./output`
 
 Potentially Missing Topics That I"ll Probably Manually Do:
-- unordered_map and unordered_set
-- multimap and multiset (and unordered variants)
-- how map and set hash & order elements (default vs. custom ordering)
-    - in general how collections get info about elements (which operators, etc.)
-- equivalents of all the main Java interview data structures
-- hashing
-- std::initializer_list
-- std::pair
-- std::wstring, tstring, u*string, etc?
-- std::array
-- std::valarray
-- std::bitset
-- <algorithm> header operations to use these efficiently
-- deep copying
-- usual way to do toString() behavior and what do the collections implement already?
-
-** folders left: 3rd Party Libraries, Language-Specific Features, Recent Versions, Standard Library, Strings, Testing **
+** folders left: Strings, Language-Specific Features, Standard Library, Recent Versions, 3rd Party Libraries, Testing **
+- std::wstring, tstring, u*string, char* vs. wchar_t*, <cstring> vs. <string> vs. others (stringstream), tokenizing, sprintf, etc.
 - MyClass() = default;
 - size_t
 - void*
