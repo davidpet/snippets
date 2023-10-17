@@ -4,6 +4,7 @@ To try to make it more convenient, I generated BUILD files, but it turns out the
 `clang++ thefile.cc -o output && ./output`
 
 Potentially Missing Topics That I"ll Probably Manually Do:
+- how to enable C++ 20 in VSCode to avoid errors in "009 - Type Constraints" in "Templates"?
 - MyClass() = default;
 - size_t
 - void*
@@ -17,9 +18,7 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - calling conventions, interop, etc.
 - stdlib details: smart pointers, algorithms, stream I/O, file I/O, etc.
 - ??? check java quick sheet & google for any missing concepts from stdlib
-- variant/dynamic type?
 - new in C++ 20: automatic operator== and operator!= provided
-- how to enable C++ 20 in VSCode to avoid errors in "009 - Type Constraints" in "Templates"?
 - concepts (improve the "Type Constraints" snippet)(https://en.cppreference.com/w/cpp/language/constraints)
 - understand variadic templates better (notebook 016)
 - std::back_inserter
@@ -27,6 +26,7 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - new in C++ 20: modules
 - std random numbers and such
 - volatile?
+- atomic?
 - std::optional
 - std::variant
 - std::any
