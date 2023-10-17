@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating some of the new features introduced in C++20:
-
 #include <iostream>
 #include <concepts>
 #include <coroutine>

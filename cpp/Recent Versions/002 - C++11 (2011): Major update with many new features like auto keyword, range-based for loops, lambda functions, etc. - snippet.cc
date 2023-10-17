@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the new features introduced in C++11:
-
 #include <iostream>
 #include <vector>
 

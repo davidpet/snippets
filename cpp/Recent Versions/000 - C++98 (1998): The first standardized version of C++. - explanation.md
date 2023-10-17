@@ -1,4 +1,5 @@
 # C++98 (1998): The first standardized version of C++.
+
 This code snippet demonstrates some of the key features of C++98:
 
 1. **Class Definition**: The class `MyClass` is defined with a constructor and a member function. The constructor initializes the member variable `x_` using an initialization list, which is a feature introduced in C++98.

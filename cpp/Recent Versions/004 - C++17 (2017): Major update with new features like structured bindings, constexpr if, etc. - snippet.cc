@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating some of the new features introduced in C++17:
-
 #include <iostream>
 #include <map>
 #include <vector>

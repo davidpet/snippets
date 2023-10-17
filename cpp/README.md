@@ -4,7 +4,7 @@ To try to make it more convenient, I generated BUILD files, but it turns out the
 `clang++ thefile.cc -o output && ./output`
 
 Potentially Missing Topics That I"ll Probably Manually Do:
-** folders left: Recent Versions, 3rd Party Libraries, Testing **
+** folders left: 3rd Party Libraries, Testing **
 - MyClass() = default;
 - size_t
 - void*
@@ -28,5 +28,21 @@ Potentially Missing Topics That I"ll Probably Manually Do:
 - new in C++ 20: modules
 - std random numbers and such
 - volatile?
+- std::optional
+- std::variant
+- std::any
+- std::string_view
+- std::invoke
+- std::apply
+- std::clamp
+- std::byte
+- std::shared_mutex
+- std::scoped_lock
+- C++ 20 ranges
+- C++ 20 coroutines
+- C++ 20 spaceship operator
+- std::format
+- std::stopwatch
+- std::starts_with, std::ends_with
 
 - key uniquenesses of C++: stack vs. heap allocation, allocation just by making a variable, pointers and reference variables, templates instead of generics (duck-typed), :: for scope resolution instead of just ., header vs. implementation, direct unmanaged access to blocks of memory, ; required at end of class and enum declarations, virtual functions not the default (have to specify), true destructors (no finalizer or disposer) called at predictable time (right when out of scope), operator overloading + destructors + templates allowing for very fluent sublanguages to be built, things like iteration rely on conventions/protocols instead of base interfaces, TCO available under right circumstances, passing by const reference (immutability of object itself instead of just variable), access modifiers as sections rather than modifiers on members, all classnames explicit (no super, base, or this for that purpose), no base/root object, arbitrary access level changes in subclasses, lambda syntax very different and type differs based on what captured (strange), lambda has to specify what's captured and how, capture by reference can get dangling reference, templates only put <> in the declaration for specializations, attributes with [[]] instead of @ and not custom or usable by others, RAII idiom, preprocessor directives and macros, most vexing parse

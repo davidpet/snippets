@@ -1,5 +1,3 @@
-C++03 is a minor update to C++98, so there are no new features introduced in this version. However, it includes several bug fixes and performance improvements. Here is a simple code snippet in C++03:
-
 #include <iostream>
 #include <vector>
 
