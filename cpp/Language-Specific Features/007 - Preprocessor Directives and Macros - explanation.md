@@ -1,5 +1,6 @@
 # Preprocessor Directives and Macros
-In the above code, we have demonstrated the use of preprocessor directives and macros in C++. We have defined a constant PI and a macro AREA using the #define directive. We then used these in our main function to calculate the area of a circle.
+
+In the code, we have demonstrated the use of preprocessor directives and macros in C++. We have defined a constant PI and a macro AREA using the #define directive. We then used these in our main function to calculate the area of a circle.
 
 We also demonstrated the use of conditional compilation with the #ifdef and #ifndef directives. These directives allow us to include or exclude parts of the code based on whether a certain condition is met. In our case, we printed a message based on whether PI is defined or not.
 

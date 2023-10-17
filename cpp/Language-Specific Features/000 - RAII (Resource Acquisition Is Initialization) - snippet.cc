@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the concept of RAII in C++:
-
 #include <iostream>
 
 // A simple class to demonstrate RAII
@@ -26,7 +24,7 @@ public:
 };
 
 int main() {
-    {
+    {  // Could be done in a try {} block for instance
         MyResource r(10); // Resource is acquired here
         r.use(); // Resource is used
     } // Resource is released here when r goes out of scope
@@ -34,8 +32,10 @@ int main() {
     return 0;
 }
 
+/*
 This will print:
 
 Resource acquired
 Resource in use
 Resource released
+*/
