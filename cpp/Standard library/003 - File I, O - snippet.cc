@@ -1,5 +1,3 @@
-Sure, here is a comprehensive example of File I/O operations in C++ using the standard library.
-
 #include <iostream>
 #include <fstream>
 #include <string>

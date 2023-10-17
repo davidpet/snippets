@@ -1,10 +1,3 @@
 # HTTP
-This code demonstrates how to use libcurl to make a simple HTTP GET request. The URL is set to "http://example.com", and the response data is written to a string using a callback function. The response data is then printed to the console.
 
-Please note that to compile this code, you need to link against the libcurl library. If you're using g++, you can do this by adding `-lcurl` to your command line. For example:
-
-```bash
-g++ main.cpp -lcurl -o main
-```
-
-Also, please note that this is a very basic example. libcurl supports a lot of features, such as HTTPS, cookies, redirects, and much more. You can check the libcurl documentation for more information: https://curl.haxx.se/libcurl/c/
+C++ does not have built-in support for HTTP in its standard library. However, there are several third-party libraries available that provide HTTP functionality. One of the most popular ones is libcurl, which is a free and easy-to-use client-side URL transfer library, supporting a lot of protocols including HTTP.

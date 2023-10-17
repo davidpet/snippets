@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the usage of paths and environment variables in C++ using the standard library.
-
 #include <iostream>
 #include <cstdlib> // for getenv
 #include <filesystem> // for path manipulation

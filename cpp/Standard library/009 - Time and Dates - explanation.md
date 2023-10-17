@@ -1,4 +1,5 @@
 # Time and Dates
+
 1. The `std::chrono::system_clock::now()` function is used to get the current time point.
 2. The `std::chrono::system_clock::to_time_t()` function is used to convert a time point to `time_t` for compatibility with C functions.
 3. The `std::localtime()` function is used to convert `time_t` to `tm` struct for more detailed information.

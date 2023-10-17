@@ -1,5 +1,3 @@
-Sure, here is a comprehensive example of using threading, async, await, lock, promise, and mutex in C++.
-
 #include <iostream>
 #include <thread>
 #include <mutex>

@@ -1,4 +1,5 @@
 # Idiomatic User Input (Lines and Chunks)
+
 1. The `std::getline` function is used to read a line of input from the user. It will read input until it encounters a newline character (`'\n'`), which is typically entered by the user pressing the Enter key. The input is stored in the string `input`.
 
 2. The `std::cin.read` function is used to read input in chunks. It takes two arguments: a buffer to store the input, and the number of characters to read. In this case, we read up to 9 characters and store them in the `buffer` array.

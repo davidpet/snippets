@@ -1,4 +1,5 @@
 # File I/O
+
 1. The `ofstream` object is used to write to files, and the `ifstream` object is used to read from files. Both are part of the `<fstream>` library in C++.
 2. The `is_open()` function is used to check if the file has been successfully opened. If the file fails to open, the function will return `false`.
 3. The `<<` operator is used to write to the file, and the `getline()` function is used to read from the file.

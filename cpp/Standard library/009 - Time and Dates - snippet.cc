@@ -1,5 +1,3 @@
-Sure, here is a comprehensive code snippet demonstrating the usage of time and dates in C++ standard library:
-
 #include <iostream>
 #include <chrono>
 #include <ctime>

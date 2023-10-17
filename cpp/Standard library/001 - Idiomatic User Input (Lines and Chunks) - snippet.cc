@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating idiomatic user input in C++ using the standard library.
-
 #include <iostream>
 #include <string>
 

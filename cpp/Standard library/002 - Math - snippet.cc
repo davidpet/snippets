@@ -1,5 +1,3 @@
-Sure, here is a comprehensive code snippet demonstrating the usage of the math library in C++.
-
 #include <iostream>
 #include <cmath> // Include the math library
 

@@ -1,5 +1,6 @@
 # Console I/O
-The above code demonstrates the use of console I/O in C++. The `std::cout` object is used for output, and `std::cin` is used for input. The `std::endl` manipulator is used to insert a newline character and flush the output buffer.
+
+The code demonstrates the use of console I/O in C++. The `std::cout` object is used for output, and `std::cin` is used for input. The `std::endl` manipulator is used to insert a newline character and flush the output buffer.
 
 The `std::cin >>` operator is used to read input until a whitespace character is encountered. To read a full line of input including spaces, the `std::getline` function is used.
 
