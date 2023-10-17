@@ -1,4 +1,5 @@
 # Converting Collections to String
+
 In this code snippet, we first declare a vector of integers. We then declare an `ostringstream` object, which is a type of output stream that operates on strings. We use a range-based for loop to iterate over the vector, and the '<<' operator to append each number to the `ostringstream`. Finally, we use the `str()` member function to get the string from the `ostringstream`, and print it.
 
 This is a basic example of converting a collection to a string in C++. The same principle can be applied to other types of collections, such as lists, sets, and maps, and to collections of other types of elements, such as strings or custom objects. The key is to use an `ostringstream` to build the string, and the '<<' operator to append elements to it.

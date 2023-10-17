@@ -1,5 +1,3 @@
-Sure, here is a comprehensive code snippet demonstrating the interop between characters and numbers in C++:
-
 #include <iostream>
 
 int main() {

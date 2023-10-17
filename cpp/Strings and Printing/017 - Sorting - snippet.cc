@@ -1,5 +1,3 @@
-Sure, here is a comprehensive code snippet demonstrating sorting of strings in C++:
-
 #include <iostream> // For input/output
 #include <string>   // For string class
 #include <algorithm> // For sort function
@@ -35,6 +33,11 @@ int main() {
         std::cout << str << " ";
     }
     std::cout << std::endl; // Prints: Sorted Vector (Descending): World Programming Language Hello C++
+
+    // Sorting a single string
+    std::string s = "zabdy";
+    std::sort(s.begin(), s.end());
+    std::cout << s << std::endl;
 
     return 0;
 }

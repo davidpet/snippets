@@ -4,3 +4,5 @@ In the above code, we're using a `std::stringstream` object to concatenate strin
 This is a very flexible way to build strings, as it allows you to append any data type that has an overload for the `<<` operator, not just strings. This includes all the basic data types, like integers and floats, and even user-defined types if you provide your own overload.
 
 Note that while this method is very convenient, it may not be the most efficient way to build strings if performance is a concern. If you're building very large strings or doing a lot of string manipulation, you may want to look into other methods, like using a `std::vector<char>` and manually managing the memory.
+
+Note: string itself is also like a string builder in C++.

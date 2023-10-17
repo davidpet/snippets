@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating serialization in C++ using strings:
-
 #include <iostream>
 #include <fstream>
 #include <string>

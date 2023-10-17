@@ -29,5 +29,18 @@ int main() {
     }
     std::cout << std::endl;
 
+    // Demonstrating capture groups
+    std::string input2 = "Date: 2023-10-15";
+    std::regex pattern2(R"(Date: (\d{4})-(\d{2})-(\d{2}))");  // The raw string (R"") syntax makes it easier to write regex patterns in C++
+    std::smatch matches2;
+
+    if (std::regex_search(input2, matches2, pattern2)) {
+        std::cout << "Year: " << matches2[1].str() << std::endl; // prints separate year, month, day
+        std::cout << "Month: " << matches2[2].str() << std::endl;
+        std::cout << "Day: " << matches2[3].str() << std::endl;
+    } else {
+        std::cout << "No match found!" << std::endl;
+    }
+
     return 0;
 }

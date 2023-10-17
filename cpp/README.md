@@ -4,13 +4,11 @@ To try to make it more convenient, I generated BUILD files, but it turns out the
 `clang++ thefile.cc -o output && ./output`
 
 Potentially Missing Topics That I"ll Probably Manually Do:
-** folders left: Strings, Language-Specific Features, Standard Library, Recent Versions, 3rd Party Libraries, Testing **
-- std::wstring, tstring, u*string, char* vs. wchar_t*, <cstring> vs. <string> vs. others (stringstream), tokenizing, sprintf, etc.
+** folders left: Language-Specific Features, Standard Library, Recent Versions, 3rd Party Libraries, Testing **
 - MyClass() = default;
 - size_t
 - void*
 - #pragma
-- regex
 - parameters that are references, and returning references (and scope implications/dangers of that)
 - placement new
 - std::move, swap

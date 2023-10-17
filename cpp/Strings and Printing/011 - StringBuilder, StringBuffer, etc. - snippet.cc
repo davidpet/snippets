@@ -1,5 +1,3 @@
-In C++, there isn't a built-in class like StringBuilder or StringBuffer as in Java. However, we can achieve similar functionality using the `std::string` and `std::stringstream` classes. Here's a demonstration:
-
 #include <iostream>
 #include <sstream>
 
@@ -26,6 +24,11 @@ int main() {
     // Append a string, a float, and another string
     ss << "Pi is approximately " << 3.14159 << ".";
     std::cout << ss.str() << std::endl; // Expected output: Pi is approximately 3.14159.
+
+    // String itself is a string builder
+    std::string s = "Hello, ";
+    s.append("world!");
+    std::cout << s << std::endl; // Hello, world!
 
     return 0;
 }

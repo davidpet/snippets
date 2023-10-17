@@ -13,8 +13,5 @@ int main() {
 
     std::cout << "Block comments are also ignored by the compiler." << std::endl; /* This will print: Block comments are also ignored by the compiler. */
 
-    /* Block comments can /* be nested */ within each other */
-    std::cout << "Nested block comments are also ignored by the compiler." << std::endl; /* This will print: Nested block comments are also ignored by the compiler. */
-
     return 0;
 }

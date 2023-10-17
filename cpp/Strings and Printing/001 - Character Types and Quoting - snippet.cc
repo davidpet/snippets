@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 int main() {
     // In C++, there are several character types: char, wchar_t, char16_t, char32_t
@@ -13,8 +14,8 @@ int main() {
     // char16_t and char32_t are used to store Unicode characters
     char16_t c16 = u'A';
     char32_t c32 = U'A';
-    std::cout << c16 << std::endl; // Prints: 65
-    std::cout << c32 << std::endl; // Prints: 65
+    std::cout << static_cast<int>(c16) << std::endl; // Prints: 65
+    std::cout << static_cast<int>(c32) << std::endl; // Prints: 65
 
     // Quoting in C++ can be done with single quotes for characters and double quotes for strings
     char singleQuote = '\'';

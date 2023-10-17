@@ -1,5 +1,6 @@
 # String Concatenation
-In the above code, we demonstrate several ways to concatenate strings in C++. 
+
+In the code, we demonstrate several ways to concatenate strings in C++. 
 
 1. The '+' operator: This operator can be used to concatenate two strings. The result is a new string that is the combination of the two original strings.
 

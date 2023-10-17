@@ -42,5 +42,11 @@ int main() {
     if (str.compare(str2) == 0)
         std::cout << "Strings are equal" << std::endl; // This won't print because the strings are not equal
 
+    // Iterating strings
+    for (char c : str2) {
+        std::cout << c; // "Hello,l C++! How are you?"
+    }
+    std::cout << std::endl;
+
     return 0;
 }

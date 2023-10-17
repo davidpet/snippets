@@ -28,6 +28,5 @@ int main() {
 World!)";
     std::cout << str5 << std::endl; // Prints: Hello, 
                                     //         World!
-
     return 0;
 }
