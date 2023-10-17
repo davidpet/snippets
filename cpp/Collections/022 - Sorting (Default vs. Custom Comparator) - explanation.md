@@ -1,4 +1,5 @@
 # Sorting (Default vs. Custom Comparator)
+
 In this code, we first include the necessary headers. We then define a custom comparator function that takes two integers and returns true if the first is greater than the second. This will cause the sort function to sort in descending order when this comparator is used.
 
 In the main function, we create a vector of integers and then use the default sort function to sort it in ascending order. We then print the sorted vector.

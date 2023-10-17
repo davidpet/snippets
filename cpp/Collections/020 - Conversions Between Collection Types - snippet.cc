@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating conversions between different collection types in C++:
-
 #include <iostream>
 #include <vector>
 #include <list>
@@ -45,6 +43,27 @@ int main() {
         std::cout << pair.first << ": " << pair.second << ", ";
     }
     std::cout << std::endl; // Expected: 1: one, 2: two, 3: three,
+
+    // 5. Array to Vector
+    int arr4[] = {1, 2, 3, 4, 5};
+    std::vector<int> vec4(arr4, arr4 + sizeof(arr4) / sizeof(int));
+
+    for (int val : vec4) {
+        std::cout << val << " ";
+    }
+    std::cout << std::endl;
+    // Output: 1 2 3 4 5
+
+    // 6. Vector to Array
+    std::vector<int> vec5 = {1, 2, 3, 4, 5};
+    int arr5[vec5.size()];
+    std::copy(vec5.begin(), vec5.end(), arr5);
+
+    for (size_t i = 0; i < vec5.size(); ++i) {
+        std::cout << arr5[i] << " ";
+    }
+    std::cout << std::endl;
+    // Output: 1 2 3 4 5
 
     return 0;
 }

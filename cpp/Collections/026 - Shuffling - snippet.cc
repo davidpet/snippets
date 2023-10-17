@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the shuffling of collections in C++:
-
 #include <iostream>
 #include <vector>
 #include <algorithm>

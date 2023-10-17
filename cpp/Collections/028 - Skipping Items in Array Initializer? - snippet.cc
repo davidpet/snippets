@@ -1,5 +1,3 @@
-In C++, you cannot directly skip items in an array initializer. However, you can initialize an array with default values and then assign specific values to the elements you are interested in. Here is an example:
-
 #include <iostream>
 
 int main() {

@@ -1,5 +1,3 @@
-Sure, here is a comprehensive example of sorting collections in C++:
-
 #include <iostream> // for output
 #include <vector>   // for vector
 #include <algorithm> // for sort

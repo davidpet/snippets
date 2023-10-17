@@ -1,5 +1,3 @@
-Sure, here is a comprehensive code snippet demonstrating the subtopic "Iterating Keys vs. Values" in C++.
-
 #include <iostream>
 #include <map>
 

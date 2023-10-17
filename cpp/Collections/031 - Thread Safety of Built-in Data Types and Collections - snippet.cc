@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the thread safety of built-in data types and collections in C++.
-
 #include <iostream>
 #include <thread>
 #include <vector>

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm> // Required for min, max and other aggregate functions
+#include <numeric>
 
 int main() {
     // Declare a vector of integers

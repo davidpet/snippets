@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the use of ordered and unordered maps in C++:
-
 #include <iostream>
 #include <map>
 #include <unordered_map>

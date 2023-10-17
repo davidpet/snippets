@@ -1,7 +1,3 @@
-In C++, there isn't a built-in "StringBuilder" class like in some other languages such as Java or C#. However, the functionality of a StringBuilder can be achieved using the `std::stringstream` class from the `<sstream>` library. This class provides a high-level interface for working with string streams, which can be used to efficiently concatenate and manipulate strings.
-
-Here is a code snippet demonstrating the usage of `std::stringstream` as a StringBuilder:
-
 #include <iostream>
 #include <sstream> // Required for std::stringstream
 

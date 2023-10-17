@@ -1,4 +1,5 @@
 # Collection Literals and Inline Initialization/Passing
+
 This code demonstrates the inline initialization of various collection types in C++. 
 
 1. `std::vector<int> vec = {1, 2, 3, 4, 5};` - This line initializes a vector of integers with the values 1 through 5. The values are printed to the console in the order they were initialized.

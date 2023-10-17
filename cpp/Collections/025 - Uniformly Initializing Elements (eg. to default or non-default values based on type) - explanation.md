@@ -1,5 +1,6 @@
 # Uniformly Initializing Elements (eg. to default or non-default values based on type)
-In the above code, we demonstrate the uniform initialization of elements in C++ collections. We use the `std::vector` and `std::array` collections for this demonstration. 
+
+In the code, we demonstrate the uniform initialization of elements in C++ collections. We use the `std::vector` and `std::array` collections for this demonstration. 
 
 For both `std::vector` and `std::array`, we show how to initialize the collections with default values (in this case, 0 for the type `int`) and with non-default values. 
 

@@ -1,5 +1,8 @@
 # Zipping
-In the above code, we're simulating the "zipping" of two collections by iterating over them simultaneously. We're using the index to access corresponding elements from the two vectors. This approach works well when you know that the collections are of the same size.
+
+In C++, there isn't a built-in function to zip collections like in some other languages. However, you can achieve similar functionality using iterators and the STL library. Here's an example of how you can "zip" two vectors together:
+
+In the code, we're simulating the "zipping" of two collections by iterating over them simultaneously. We're using the index to access corresponding elements from the two vectors. This approach works well when you know that the collections are of the same size.
 
 If the vectors are of different sizes, this approach will not work correctly. You would need to add additional logic to handle this case, such as truncating the longer vector or filling in default values for the shorter one.
 

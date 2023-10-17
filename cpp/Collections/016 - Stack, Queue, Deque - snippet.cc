@@ -1,5 +1,3 @@
-Sure, here is a comprehensive code snippet demonstrating the use of Stack, Queue, and Deque in C++.
-
 #include <iostream>
 #include <stack>
 #include <queue>

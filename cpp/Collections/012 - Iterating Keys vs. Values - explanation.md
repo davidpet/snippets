@@ -1,5 +1,6 @@
 # Iterating Keys vs. Values
-In the above code, we first declare and initialize a map `myMap` with string keys and integer values. 
+
+In the code, we first declare and initialize a map `myMap` with string keys and integer values. 
 
 We then demonstrate three ways of iterating over the map:
 

@@ -1,7 +1,10 @@
 # Bitfields
-Bitfields in C++ are used to reduce the memory consumption when you know the exact width of the data. They are defined inside a structure where the number of bits are also mentioned. The syntax is `unsigned int variable_name : number_of_bits;`. 
 
-In the above code, we have a structure `BitField` with three bitfields `is_enabled`, `type`, and `id` with 1, 4, and 27 bits respectively. 
+Bitfields in C++ are used to reduce the memory consumption when you know the exact width of the data. They are defined inside a structure where the number of bits are also mentioned. The syntax is `unsigned int variable_name : number_of_bits;`.
+
+A bitfield is a set of adjacent bits within a single implementation-defined storage unit. You can use bitfields to store several objects in a compact space when you know the exact width.
+
+In the code, we have a structure `BitField` with three bitfields `is_enabled`, `type`, and `id` with 1, 4, and 27 bits respectively. 
 
 In the `main` function, we create an object `bf` of `BitField` and assign values to the bitfields. We then print the values. 
 

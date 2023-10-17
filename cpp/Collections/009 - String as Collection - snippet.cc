@@ -1,5 +1,3 @@
-Sure, here is a comprehensive code snippet demonstrating the use of strings as collections in C++:
-
 #include <iostream>
 #include <string>
 

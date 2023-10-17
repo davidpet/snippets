@@ -1,5 +1,3 @@
-Sure, here is a comprehensive example of searching in collections in C++:
-
 #include <iostream>
 #include <vector>
 #include <algorithm>

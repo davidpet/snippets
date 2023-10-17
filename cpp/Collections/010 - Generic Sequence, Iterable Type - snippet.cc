@@ -12,6 +12,44 @@
 // 4. std::forward_list: singly-linked list
 // 5. std::array: static array
 
+#include <iostream>
+
+// Custom class that can be iterated.
+class IntRange {
+public:
+    class Iterator {
+        int current;
+    public:
+        Iterator(int value) : current(value) {}
+
+        bool operator!=(const Iterator& other) const {
+            return current != other.current;
+        }
+
+        int& operator*() {
+            return current;
+        }
+
+        Iterator& operator++() {
+            ++current;
+            return *this;
+        }
+    };
+
+    IntRange(int start, int end) : start_(start), end_(end) {}
+
+    Iterator begin() const {
+        return Iterator(start_);
+    }
+
+    Iterator end() const {
+        return Iterator(end_);
+    }
+
+private:
+    int start_, end_;
+};
+
 int main() {
     // std::vector
     std::vector<int> vec = {1, 2, 3, 4, 5};
@@ -47,6 +85,16 @@ int main() {
         std::cout << i << " "; // prints: 21 22 23 24 25
     }
     std::cout << std::endl;
+
+    // custom type
+    IntRange range(2, 5);
+    for (int value : range) {
+        std::cout << value << std::endl;
+    }
+    // Output:
+    // 2
+    // 3
+    // 4
 
     return 0;
 }

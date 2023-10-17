@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the use of collection literals and inline initialization/passing in C++.
-
 #include <iostream>
 #include <vector>
 #include <map>

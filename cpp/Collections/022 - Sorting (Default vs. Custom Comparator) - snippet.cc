@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the use of sorting in C++ with both default and custom comparators.
-
 #include <iostream>
 #include <vector>
 #include <algorithm>

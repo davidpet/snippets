@@ -1,5 +1,8 @@
 # Immutable Types
-In the above code, we define a class `ImmutableType` with two `const` data members: an `int` and a `std::vector<int>`. The `const` keyword makes these data members immutable, meaning they cannot be changed after they are initialized. We provide a constructor that initializes these data members.
+
+In C++, there are no built-in immutable types like in some other languages. However, we can create our own immutable types by making the data members of a class `const` and only providing a constructor. Here is an example:
+
+In the code, we define a class `ImmutableType` with two `const` data members: an `int` and a `std::vector<int>`. The `const` keyword makes these data members immutable, meaning they cannot be changed after they are initialized. We provide a constructor that initializes these data members.
 
 In the `main` function, we create an instance of `ImmutableType` and print its data members. Since the data members are `const`, we cannot modify them after the object is created. This is how we can create our own immutable types in C++.
 

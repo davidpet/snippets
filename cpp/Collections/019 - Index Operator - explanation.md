@@ -1,4 +1,5 @@
 # Index Operator
+
 The index operator `[]` is used to access or modify elements in a collection. In C++, it can be used with arrays, vectors, and maps.
 
 1. With arrays, the index operator is used to access or modify elements at a specific index. The index is zero-based, meaning the first element is at index 0.

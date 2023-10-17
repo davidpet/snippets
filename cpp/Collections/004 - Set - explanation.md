@@ -1,4 +1,5 @@
 # Set
+
 In this code snippet, we demonstrate the usage of the `std::set` collection in C++. A set is a container that stores unique elements following a specific order. 
 
 We first declare a set of integers, then insert elements into the set using the `insert()` function. The elements are automatically sorted in ascending order.

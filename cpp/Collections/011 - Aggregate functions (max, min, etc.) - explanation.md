@@ -1,5 +1,6 @@
 # Aggregate functions (max, min, etc.)
-In the above code, we have demonstrated the use of aggregate functions in C++ using the Standard Template Library (STL). The STL provides a variety of aggregate functions that can be used with collections such as vectors, lists, sets, etc.
+
+In the code, we have demonstrated the use of aggregate functions in C++ using the Standard Template Library (STL). The STL provides a variety of aggregate functions that can be used with collections such as vectors, lists, sets, etc.
 
 We have used the `max_element` and `min_element` functions to find the maximum and minimum elements in a vector. These functions return an iterator pointing to the maximum and minimum elements respectively.
 

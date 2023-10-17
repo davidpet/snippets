@@ -1,8 +1,5 @@
 #include <iostream>
 
-// A bitfield is a set of adjacent bits within a single implementation-defined storage unit.
-// You can use bitfields to store several objects in a compact space when you know the exact width.
-
 // Here we define a struct with bitfields
 struct BitField {
     // Bitfield with 1 bit. Can hold values 0 or 1.
@@ -27,9 +24,9 @@ int main() {
     std::cout << "ID: " << bf.id << std::endl; // Expected output: 134217727
 
     // Assigning a value that exceeds the bitfield's capacity
-    // This will result in undefined behavior
-    bf.type = 16; // This value requires 5 bits, but 'type' only has 4 bits
-    std::cout << "Type: " << bf.type << std::endl; // Output is undefined
+    // This will result in undefined behavior (and compiler warning)
+    // bf.type = 16; // This value requires 5 bits, but 'type' only has 4 bits
+    // std::cout << "Type: " << bf.type << std::endl; // Output is undefined
 
     return 0;
 }

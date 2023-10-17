@@ -1,4 +1,5 @@
 # Vector
+
 In this code snippet, we are demonstrating the usage of the `std::vector` in C++. 
 
 1. We first declare an empty vector `vec1` of type `int`.

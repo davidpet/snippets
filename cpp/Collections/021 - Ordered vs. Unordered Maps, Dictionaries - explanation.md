@@ -1,5 +1,6 @@
 # Ordered vs. Unordered Maps/Dictionaries
-In the above code, we first include the necessary headers for using ordered (`<map>`) and unordered (`<unordered_map>`) maps. 
+
+In the code, we first include the necessary headers for using ordered (`<map>`) and unordered (`<unordered_map>`) maps. 
 
 In the `main` function, we first declare an ordered map `orderedMap` of type `std::map<int, std::string>`. This map will automatically order its elements based on the key (in this case, an integer). We then insert several elements into the map using the `[]` operator. 
 

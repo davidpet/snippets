@@ -1,5 +1,3 @@
-Sure, here is a comprehensive code snippet demonstrating the use of Priority Queue, Minheap, and Maxheap in C++.
-
 #include <iostream>
 #include <queue> // Required for priority_queue
 #include <vector> // Required for vector
@@ -8,10 +6,6 @@ Sure, here is a comprehensive code snippet demonstrating the use of Priority Que
 using namespace std;
 
 int main() {
-    // Priority Queue in C++ is a type of queue but unlike the traditional queue data structure, 
-    // each element of the priority queue has a priority associated with it. 
-    // The priority of the elements in a priority queue determines the deletion order.
-
     // By default, the priority queue uses max heap. The top element will be the maximum and it's in descending order.
     priority_queue<int> pq;
 

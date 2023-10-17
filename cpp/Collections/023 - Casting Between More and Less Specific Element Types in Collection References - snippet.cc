@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating casting between more and less specific element types in collection references in C++.
-
 #include <iostream>
 #include <vector>
 

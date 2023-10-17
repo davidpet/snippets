@@ -39,5 +39,8 @@ int main() {
         std::cout << "Key 'apple' not found" << std::endl; // Expected output: Key 'apple' not found
     }
 
+    // uniform initialization
+    std::map<std::string, int> myMap = {{"apple", 1}, {"banana", 2}, {"cherry", 3}};
+
     return 0;
 }

@@ -1,4 +1,5 @@
 # String as Collection
+
 In C++, strings can be treated as collections of characters. This means you can access individual characters using array-like syntax or the `.at()` method, and you can iterate over the characters in a string using a range-based for loop or iterators.
 
 The `.front()` and `.back()` methods provide access to the first and last characters of the string, respectively.

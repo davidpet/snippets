@@ -1,4 +1,7 @@
 # Priority Queue, Minheap, Maxheap
+
+Priority Queue in C++ is a type of queue but unlike the traditional queue data structure, each element of the priority queue has a priority associated with it. The priority of the elements in a priority queue determines the deletion order.
+
 In this code snippet, we first include the necessary libraries. We need `<queue>` for `priority_queue`, `<vector>` for `vector`, and `<functional>` for `greater<int>`.
 
 We then declare a `priority_queue<int>` which is a max heap by default. We insert some elements using `push()` and print the top element using `top()`. We then remove the top element using `pop()` and print the top element again.

@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the use of sorted versions of collection types in C++. The sorted collections in C++ are mainly `std::set`, `std::multiset`, `std::map`, and `std::multimap`.
-
 #include <iostream>
 #include <set>
 #include <map>

@@ -1,5 +1,3 @@
-Sure, let's demonstrate the Builder Pattern in C++. The Builder Pattern is a design pattern designed to provide a flexible solution to various object creation problems in object-oriented programming. The intent of the Builder design pattern is to separate the construction of a complex object from its representation. By doing so, the same construction process can create different representations.
-
 #include <iostream>
 #include <string>
 

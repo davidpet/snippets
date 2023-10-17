@@ -1,5 +1,3 @@
-In C++, there isn't a built-in function to zip collections like in some other languages. However, you can achieve similar functionality using iterators and the STL library. Here's an example of how you can "zip" two vectors together:
-
 #include <iostream>
 #include <vector>
 #include <algorithm>

@@ -1,5 +1,6 @@
 # Generic Sequence/Iterable Type
-In the above code, we have demonstrated the usage of various generic sequence containers provided by C++. These containers are part of the Standard Template Library (STL) and can be used to store any type of data.
+
+In the code, we have demonstrated the usage of various generic sequence containers provided by C++. These containers are part of the Standard Template Library (STL) and can be used to store any type of data.
 
 1. `std::vector`: This is a dynamic array that can grow and shrink at runtime. It provides fast access to elements using an index.
 
@@ -12,3 +13,5 @@ In the above code, we have demonstrated the usage of various generic sequence co
 5. `std::array`: This is a static array. Its size is fixed at compile time. It provides fast access to elements using an index.
 
 In each case, we initialize the container with some values, and then use a range-based for loop to iterate over the elements and print them. The `for (int i : container)` syntax is a convenient way to iterate over all elements in a container. It works with all STL containers and any other types that provide a suitable begin() and end() function.
+
+Also, at the end, we demonstrate a __custom class__ that can be iterated.  Note that there's __no interface__ for it - it is __duck typed__ via templates.

@@ -1,9 +1,3 @@
-In C++, "slicing" is a concept that is often associated with object-oriented programming, specifically when dealing with inheritance and polymorphism. It refers to the situation where an object of a derived class is assigned to an instance of a base class, causing the loss of the derived class's specific attributes or methods. 
-
-However, in the context of collections (like arrays, vectors, etc.), "slicing" can refer to the operation of extracting a subset of elements from the collection. C++ does not directly support slicing like Python or other high-level languages, but we can achieve similar functionality using iterators or the `std::copy` function from the Standard Template Library (STL).
-
-Here is a code snippet demonstrating slicing in C++ using vectors:
-
 #include <iostream>
 #include <vector>
 #include <algorithm> // for std::copy
@@ -25,6 +19,14 @@ int main() {
     // Print the elements of the slice
     for (int i : slice) {
         std::cout << i << " "; // Expected output: 3 4 5
+    }
+    std::cout << std::endl;
+
+    // Direct slicing (unique to C++)
+    int original[] = {1, 2, 3, 4, 5};
+    int *slicePtr = original+2;
+    for (int i = 0; i < 2; i++) {
+        std::cout << slicePtr[i] << std::endl; // Expected output: 3 4
     }
 
     return 0;

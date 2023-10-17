@@ -1,5 +1,3 @@
-Sure, here is a comprehensive example of copying/cloning collections in C++:
-
 #include <iostream>
 #include <vector>
 #include <algorithm>

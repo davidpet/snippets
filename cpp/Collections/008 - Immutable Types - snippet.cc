@@ -1,5 +1,3 @@
-In C++, there are no built-in immutable types like in some other languages. However, we can create our own immutable types by making the data members of a class `const` and only providing a constructor. Here is an example:
-
 #include <iostream>
 #include <vector>
 
