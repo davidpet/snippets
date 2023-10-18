@@ -1,0 +1,88 @@
+
+This is not a comprehensive list of C++ features (that would be too big).
+It is just a list of some of the key UNIQUE things about C++ worth keeping in mind, especially after not using it a while.
+
+[General]
+more complex with a lot more parsing edge cases than other languages
+    eg. most vexing parse
+this is because of a few reasons:
+    - philosophy of radical backward compatibility
+    - philosophy of providing total control over memory and execution
+    - long history with diverse needs serving embedded, desktop, etc.
+see snippet 10 of Language-Specific Features for more details
+
+[Code Layout]
+header vs. source file
+forward declarations
+directives & macros (preprocessor)
+
+[Variables]
+stack vs. heap allocation of all types
+    automatic variables for stack
+    potential memory leaks for heap (have to use smart pointers or call delete)
+just making a variable causes automatic allocation, constructor call, etc.
+just making a global variable causes code to execute before main
+    with possibly undefined order due to things like DLL loading, lack of order guarantees between modules, etc.
+operators can end up calling a lot of code secretly due to operator overloading
+= can be a constructor call or assignment operator call depending on context
+pointers and references (and nothing like the concept of reference from other languags)
+direct, unamanged access to blocks of memory
+no reference vs. value type - everything is value type and will get lots of expensive copying if not careful
+
+[Operators]
+overloading inside or outside classes
+    Koenig lookup
+spaceship operator
+
+[Functions]
+can get TCO under right circumstances
+const reference passing
+    protecting the actual object instead of the variable
+
+[Functional Programming]
+lambdas very different (not fat or skinny arrows, unless you count the trailing return type)
+function pointers can't hold lambdas that capture
+capturing has to be specified very explicitly
+capture by reference is dangerous because not a garbage collected language
+
+[Classes]
+classes (and enums) require ; after the closing brace
+    nothing else does (not functions, not control blocks, etc.)
+:: for scope resolution instead of just .
+methods are not virtual by default
+    this makes it difficult to extend things like stdlib collections like you could in others
+    also causes weird name hiding behavior for non-virtuals
+true destructor called at predictable time
+    which leads to RAII idiom
+operator overloading
+no common base class or common interfaces for things like iterables
+    instead have behaviors have to conform to in a duck-typed way when using std:: stuff
+const overloading
+    allowing you to protect objects the way you can't easily in other languages
+access modifiers are sections instead of individual item modifiers
+use class name over and over (no base, super, etc.)
+subclasses can arbitrarily change access levels of base members (not just increase)
+structs are just classes with different default access
+
+[Templates]
+compile-time templating instead of runtime generics
+duck-typed like Python instead of dynamically polymorphic
+    eg. by having a begin() and end() that returns something that implements -> and *
+        you have an iterable container
+        if you violate the contract, you'll get errors from the template calling things
+static polymorphism
+    can "virtually" call a derived method via template without that method by virtual
+    also, wrappers like std::function act polymorphic but don't do any inheritence or virtual
+metaprogramming
+arguments that aren't types
+default arguments
+template specializations
+variadic Templates
+
+[Annotations]
+none in the traditional sense
+attributes with [[]] but only certain built-in ones and only the c++ compiler uses them
+
+[stdlib]
+relies very heavily on templates, static polymorphism, and duck typing
+    no common bases/interfaces like other languages
