@@ -5,20 +5,14 @@ To try to make it more convenient, I generated BUILD files, but it turns out the
 
 Manual Research Items (w/ ChatGPT help as appropriate):
 - look at members of some of the container classes inc. the typedefs
-- private variable hack via copy of declaration changed trick (don't do though)
+
 - extern templates
-- trailing return type lets you use decltype on args after (and can do expressions in decltype like x + y)
 - template aliases
-- user-defined literals
-- static_assert
-- alignof and alignas
-- reference_wrapper, cref, std::ref
-- structured binding declarations (C++ 17)
-- switch initializers like if initializers
-- constinit
+
 - std::numeric_limits
 - char traits and checking digit, etc.
 - \<typinfo\> header
+
 - throw to rethrow
 - can catch exceptions by value or reference
 - catch(...) syntax

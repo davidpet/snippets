@@ -41,6 +41,19 @@ static_assert(std::is_same_v<decltype(a), int>);
 static_assert(std::is_same_v<decltype(b), double>);
 ```
 
+5. **`decltype` with trailing return types
+A primary purpose of trailing return types in functions is to allow you to use `decltype` to make the return type depend on an argument like this.
+```cpp
+template<typename T>
+auto f(T t) -> decltype(t) {}
+```
+
+6. **`decltype` expressions
+This kind of expression lets you evaluate the type of other symbols based on performing an operation on them, and then use that type.
+```cpp
+decltype(a + b)
+```
+
 ### Usage:
 
 `decltype` is invaluable in generic programming where the type of a variable might be dependent on template parameters or complex type manipulations. Moreover, it's essential when working with proxy objects, which need to return exact types to ensure correct behavior.
