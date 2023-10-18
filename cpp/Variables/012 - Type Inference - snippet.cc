@@ -1,6 +1,14 @@
 #include <iostream>
 #include <typeinfo>
 
+const int& fn(const int &x) {
+    return x;
+}
+
+auto fn() {
+    return 5;
+}
+
 int main() {
     // Type inference with auto keyword
     auto a = 5; // a is inferred as int
@@ -30,5 +38,28 @@ int main() {
     delete[] p;
     delete[] q;
 
+    // auto assigned a const reference
+    int x2 = 100;
+    auto y2 = fn(x2);
+    y2 = 10; // the auto did not capture either & or const
+
+    // auto assigned a const reference
+    const int x3 = 100;
+    auto y3 = x3;
+    y3 = 10;
+
+    // explicitly stating const reference
+    const int x4 = 1000;
+    const auto &y4 = x4;
+    // y4 = 10; // ILLEGAL
+
+    // auto reference to constant
+    const int x5 = 10;
+    auto &y5 = x5;
+    // y5 = 10; // ILLEGAL!
+
+    // calling function with auto return type
+    int x6 = fn();
+    
     return 0;
 }

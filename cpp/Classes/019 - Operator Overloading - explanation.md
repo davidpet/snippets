@@ -30,3 +30,5 @@ There are a ton of operators you can overload, and many can be overloaded as eit
 Typically, the ones that involve other types that might be on the left or right would require friend functions instead of member functions.
 
 Note: operators can also have __const overloading__ and stuff like that, just like any method.
+
+Note: due to __Argument Dependent Lookup__, operators are checked not just in the current namespace but in the namespaces of arguments to the operators.

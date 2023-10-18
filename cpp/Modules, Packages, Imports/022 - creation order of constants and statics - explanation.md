@@ -27,3 +27,5 @@
 - As mentioned, the order of initialization across different translation units is not specified. This can cause problems if one global/static object's constructor relies on another global/static object being already initialized.
 
 **Recommendation:** Be cautious with global and static variables, especially when their initialization order matters. If you find that you're trying to control or rely on the order of global variable initialization, it might be a sign that you should reconsider the design. In some cases, the "Construct On First Use Idiom" can help to avoid static initialization order issues.
+
+NOTE: in the case of __dynamically loaded libraries__ such as DLLs, the uncertainty over construction order is even more unpredictable, as there is a good chance of global variables being created __after main has started__.

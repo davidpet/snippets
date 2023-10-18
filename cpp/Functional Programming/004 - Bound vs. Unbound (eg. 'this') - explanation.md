@@ -4,7 +4,7 @@ In the code, we first define a simple class `MyClass` with a member variable `x`
 
 In the `main()` function, we create an object `obj` of `MyClass` and initialize `x` to `10`.
 
-We then demonstrate the concept of unbound and bound member functions. 
+We then demonstrate the concept of unbound and bound member functions. These are called __pointers to members__.
 
 An unbound member function pointer `unboundPtr` is created which points to the member function `printX()`. To call this unbound member function, we need to use an object of `MyClass` (in this case `obj`) and the `.*` operator.
 
@@ -21,3 +21,5 @@ Note: You cannot get a bound function from an instance directly like in other la
 Note: You cannot call an unbound method with a `this` pointer as an argument like you would in other languages.
 
 Note: while the `&` is optional for normal functions assinged to function pointers, they're required for instsance methods.
+
+Note: a __virtual__ method reference from a base will call the derived one, due to how vtables work in C++.

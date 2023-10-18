@@ -25,3 +25,4 @@ This output demonstrates the construction and destruction order in C++ classes.
 
 Note: initializing a variable in the initialization list __replaces the inline initialization__ rather than running after it.
 
+WARNING: __vtables are constructed incrementally__, so calling a virtual method on a base during construction may not call the most derived one as you'd expect.
