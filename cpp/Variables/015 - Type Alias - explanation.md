@@ -15,4 +15,6 @@ Hello, Function!
 
 This demonstrates that the type aliases are working as expected.
 
+Also, note that you can include `const` and `&` as part of the righthand side of the type, and it will be included transparently in uses of the lefthand side.
+
 While `using` is the newer way to do it, the older way to do it is with `typedef`.  `typedef` still works, but is less readable and less flexible.  Unlike a simple equality like with `using`, `typedef` uses the alias name as a variable placeholder in the syntax to define it.

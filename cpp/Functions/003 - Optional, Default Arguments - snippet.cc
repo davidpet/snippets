@@ -14,6 +14,16 @@ void display(std::string name, int age = 0) {
     }
 }
 
+// Function to compute at runtime
+int f(int x) {
+    return x * x;
+}
+
+// Function to use a runtime computed default
+int g(int x = f(10)) {
+    return x * x;
+}
+
 int main() {
     // Calling function with default argument
     greet(); // Prints: Hello, User!
@@ -22,5 +32,9 @@ int main() {
     // Calling function with optional argument
     display("Bob"); // Prints: Hello, Bob!
     display("Charlie", 25); // Prints: Hello, Charlie! You are 25 years old.
+
+    // Calling function with runtime computed optional argument
+    std::cout << g() << std::endl;
+
     return 0;
 }

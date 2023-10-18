@@ -10,6 +10,11 @@ using integer = int;
 // We can also create type alias for complex types like std::string as string
 using string = std::string;
 
+// Const and ref
+using cstring = const std::string;
+using cstringref = const std::string&;
+// using sstring = static std::string; // ILLEGAL (storage specifier, not data type)
+
 int main() {
     // Now we can use the type alias 'integer' to declare integer variables
     integer a = 10;
@@ -33,6 +38,10 @@ int main() {
     // the old typedef way (note the different syntax ordering)
     typedef int Integer;
     typedef void (*MyFunc)();
+
+    // const and ref
+    cstring c = "yo!";
+    // c[0] = 'z'; // ILLEGAL
 
     return 0;
 }
