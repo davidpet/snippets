@@ -13,11 +13,6 @@ Manual Research Items (w/ ChatGPT help as appropriate):
 - char traits and checking digit, etc.
 - \<typinfo\> header
 
-- throw to rethrow
-- can catch exceptions by value or reference
-- catch(...) syntax
-- try/catch around whole function body inc. c'tor with init list
-
 - key uniquenesses of C++: stack vs. heap allocation, allocation just by making a variable, pointers and reference variables, templates instead of generics (duck-typed), :: for scope resolution instead of just ., header vs. implementation, direct unmanaged access to blocks of memory, ; required at end of class and enum declarations, virtual functions not the default (have to specify), true destructors (no finalizer or disposer) called at predictable time (right when out of scope), operator overloading + destructors + templates allowing for very fluent sublanguages to be built, things like iteration rely on conventions/protocols instead of base interfaces, TCO available under right circumstances, passing by const reference (immutability of object itself instead of just variable), access modifiers as sections rather than modifiers on members, all classnames explicit (no super, base, or this for that purpose), no base/root object, arbitrary access level changes in subclasses, lambda syntax very different and type differs based on what captured (strange), lambda has to specify what's captured and how, capture by reference can get dangling reference, templates only put <> in the declaration for specializations, attributes with [[]] instead of @ and not custom or usable by others, RAII idiom, preprocessor directives and macros, most vexing parse, new spaceship operator, variadic templates, more syntax keywords and parsing edge cases and nuances than other languages (see snippet 10 of Language-Specific Features for why), a lot of code getting executed invisibly (eg. by declaring variables, by global variables executing before main, by operators, etc.)
 
 --> make plan to do regular reviews of this (and other languages) snippets, and to resume Anki on C++ (and incorporate items missing from here)

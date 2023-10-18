@@ -27,8 +27,15 @@ int main() {
     try {
         // Throw a standard exception
         throw std::runtime_error("Standard exception");
-    } catch(std::exception& e) {
+    } 
+    catch(std::exception& e) {
         std::cout << "An exception occurred: " << e.what() << '\n'; // Expected to print: An exception occurred: Standard exception
+    }
+    catch (int) {
+        // catching a type with no variable
+    }
+    catch (...) {
+        // default catch
     }
 
     try {
@@ -36,6 +43,7 @@ int main() {
         throw MyException();
     } catch(MyException& e) {
         std::cout << "An exception occurred: " << e.what() << '\n'; // Expected to print: An exception occurred: MyException occurred
+        throw;  // rethrowing (crashes program)
     }
 
     return 0;
