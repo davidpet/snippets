@@ -28,7 +28,9 @@ operators can end up calling a lot of code secretly due to operator overloading
 pointers and references (and nothing like the concept of reference from other languags)
 direct, unamanged access to blocks of memory
 no reference vs. value type - everything is value type and will get lots of expensive copying if not careful
-
+unsigned integers
+    not strictly unique, but a lot of languages don't have (Java, Python, TypeScript, etc.)
+    
 [Operators]
 overloading inside or outside classes
     Koenig lookup
