@@ -40,6 +40,10 @@ spaceship operator
 can get TCO under right circumstances
 const reference passing
     protecting the actual object instead of the variable
+returning a new object requires special considerations while in garbage collected languages it's simple
+    eg. return by value and end up with copies (RVO might help)
+    eg. return by pointer and then the caller has to manage lifetime?
+    eg. return by reference and then have to worry about lifetime
 
 [Functional Programming]
 lambdas very different (not fat or skinny arrows, unless you count the trailing return type)
