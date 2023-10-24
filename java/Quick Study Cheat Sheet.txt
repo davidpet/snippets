@@ -338,7 +338,7 @@ iterate values with .values() which gets a Collection<TValue>
 		returns newValue if absent, old value if present
 	can be tricked by null values into thinking not present
 .forEach((k,v) -> ) instead of entries or keys or something
-one-liner patterns
+optimized one-liner patterns
 	not always worth it, esp. if O(1) map [but maybe more for TreeMap]
 	not as clear to read and may have performance drawback due to extra indirection
 	probably want to use helper methods for readability if use these
@@ -349,6 +349,11 @@ one-liner patterns
 		map.merge(key, 1, Integer::sum);
 	dissappearing key on count reaching zero
 		map.merge(key, -1, (a, b) -> a + b == 0 ? null : a + b);
+other one-liner patterns
+	array to dictionary of counts
+		Map<Integer, Long> counts = Arrays.stream(arry).boxed().collect(groupingBy(n -> n, counting()));
+			keep in mind the count is a Long because it's a stream
+			the place this will bite you is when you do .getOrDefault(key, 0) -> need to do .getOrDefault(key, 0L)
 
 TreeSet
 	TreeSet<T> is a Set<T> implementation
