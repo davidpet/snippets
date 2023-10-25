@@ -2453,6 +2453,11 @@ Patterns
 				all examples online use an integer mode - I like to make an enum
 				simple next() method that does modulo on values()
 		if you do decide to make a special iterator, consider implementing Iterator<> interface from java.util
+	buffered parsing
+		eg. encoding a string aabbccd as 2a2b2c1d
+		standard for loop with current char and index being kept as state
+		the key mistake you might make is to forget to "flush the buffer" when the for loop terminates
+			this applies to a lot more things generically
 Caveats
 	don't forget to check both sides if do something like reverse a range in-place to sort
 		or both ends of row in a train track within a row
