@@ -803,6 +803,10 @@ ranged-based for (enhanced for loop)
 	[remember to use : instead of of, in, etc. like some others]
 	legal (but uncommon) to put 'final'
 if/else if/else and switch work basically just like C++ (with optional braces for single line, default fall-through in switches, etc.)
+	be careful of accidental fall-through!
+	compiler will even generate a warning about it (use a comment like // fall through if that is intention)
+	usually when code is executed in a case, fall-through afterward is not the intent
+		eg. if an 'if' condition with no 'else'
 switches also work on non-numeric types and for enum values, you don't have to specify the enum in front in the cases
 for/while/do while work just like C++ (plus the range-based for which c++ now also has)
 	remember middle condition is dynamic and variable can be messesd with
@@ -1440,7 +1444,7 @@ Nested Classes (a weirdness of Java)
 		outer class can also access inner class private members
 	nested interfaces behave more like normal nested types (always static)
 	nested enums do not need to be declared as static - they are automatically static like interfaces are
-	
+
 Boxing/Unboxing
 	implicitly works most of the time (autoboxing/autounboxing)
 		can use Integer.valueOf() and boxedInt.intValue() to do it explicitly if needed
@@ -2435,6 +2439,20 @@ Patterns
 			eg. prev = the node already updated and cur = the node I'm about to update
 				then you can tell that when cur is null, the loop is over, and prev has the last head
 		usually you want to calculcate the new thing as a variable, then  rotate from oldest to newest to bring forward window
+	piecewise iteration
+		my instinct with these types of problems is to make a special iterator
+			but every time I've done it, the code becomes very large and has a lot of off by one issues
+			even when it works, it takes a really long time to implement
+			it sounds good on paper, and very declarative, etc. but it seems to not be a good pattern in general
+		instead, think of the spiral 2D array case and go with one of the two simple ways
+			use helper methods to make it cleaner looking
+			case 1: the ugly for loops (it gets the job done if any other way wastes time)
+				tends to be more susceptible to off-by-ones because it doesn't take the data into account, only its own assumptions
+			case 2: key off of set vs. unset array members (eg. nonzero) and use modes
+				also not forgetting to check the physical boundaries of the array
+				all examples online use an integer mode - I like to make an enum
+				simple next() method that does modulo on values()
+		if you do decide to make a special iterator, consider implementing Iterator<> interface from java.util
 Caveats
 	don't forget to check both sides if do something like reverse a range in-place to sort
 		or both ends of row in a train track within a row
