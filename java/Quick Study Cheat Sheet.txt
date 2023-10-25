@@ -1439,7 +1439,8 @@ Nested Classes (a weirdness of Java)
 		can access private members
 		outer class can also access inner class private members
 	nested interfaces behave more like normal nested types (always static)
-
+	nested enums do not need to be declared as static - they are automatically static like interfaces are
+	
 Boxing/Unboxing
 	implicitly works most of the time (autoboxing/autounboxing)
 		can use Integer.valueOf() and boxedInt.intValue() to do it explicitly if needed
