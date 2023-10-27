@@ -913,6 +913,9 @@ big difference from all other languages = what the type of a lambda (or a method
 		eg. Function<T1, T2> has compose() default method for doing function composition
 		default methods are fluently chained rather than modifying any state
 
+	you can also implement a functional interface with a class and then use it just like a lambda or method reference
+		this is as close as you get to callable function object in Java
+
 Runnable = takes nothing, returns void
 	.run()
 java.util.concurrent.Callable<V> = like runnable but returns a value
@@ -1673,6 +1676,8 @@ Variadic Generic Functions
 new T[] // FORBIDDEN in generic method or class
 	because of covariance of arrays in java
 	but taking a T[] in a function is fine
+calling constructor T() of a generic type is illegal
+	have to pass class and use reflection or use a factory method pattern
 
 [Imports]
 import java.util.List;	// only 1 per line allowed
