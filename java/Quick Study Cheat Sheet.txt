@@ -473,7 +473,7 @@ Conversions
 		but not arrays, because arrays are not collections (use asList if needed)
 	Arrays.asList()
 		should be efficient since just a view on the array
-	Collections.unmodificable* for getting immutable from mutable
+	Collections.unmodifiable* for getting immutable from mutable
 
 Casting
 	the issue of boxing only comes up in arrays because they can take primitives
@@ -521,7 +521,7 @@ Simulating Literals in non-arrays
 	List.of(), Set.of(), etc. take varargs to specify items inline
 		explicitly disallow nulls for philosophical reasons
 		this restriction doesn't apply to Arrays.asList() or Stream.of()
-		also doesn't apply if wrap existing list with unmodificableList() call
+		also doesn't apply if wrap existing list with unmodifiableList() call
 
 Filling with Values
 	new int[5] gets 5 0s
@@ -780,7 +780,7 @@ string concat + with things like ints and list automatically converts with toStr
 string .concat() fluent method available too
 no coalescing (other than methods of Optional and Map) or safe navigation
 .getClass() for instances and .class for types
-A instance of B (for reference types only)[false if null]
+A instanceof B (for reference types only)[false if null]
 
 Casting Details
 	Object o = m;
