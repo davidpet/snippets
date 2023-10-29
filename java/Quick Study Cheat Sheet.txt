@@ -165,6 +165,8 @@ you cannot skip items or leave off the end like in C++
 numbers[0]
 numbers.length
 Arrays.sort(numbers)
+	Arrays.sort(number, startIndex, stopIndex)
+		Collections.sort() and list.sort() don't have this version!
 int[][] numbers = {{1, 2}, {3, 4}}
 	multidimensional array, but actually array of arrays
 	numbers.length is 2 here
@@ -242,6 +244,7 @@ list.subList(from, to)	// inclusive, exclusive bounds, gets new List<T>
 		changing length of most derived changes length of others
 		changing length of source invalidates more derived
 		not the most efficient of doing recursion like in Quicksort
+	this lets you do some cool things like subList().clear() to remove multiple entries
 list.toArray()		// will give Object[]
 list.toArray(T[] a)	// to force proper runtime type
 for (var x : list) {}
@@ -812,6 +815,8 @@ if/else if/else and switch work basically just like C++ (with optional braces fo
 switches also work on non-numeric types and for enum values, you don't have to specify the enum in front in the cases
 for/while/do while work just like C++ (plus the range-based for which c++ now also has)
 	remember middle condition is dynamic and variable can be messesd with
+remember you can have no body or leave a peace out
+	for (; x < 5; x++);	// nobody
 try/catch/finally/throw just like in C++
 	throwing in a handler rethrows (after passing through finally first)
 	catch(ExceptionType1 | ExceptionType2 e) {}
@@ -2479,6 +2484,24 @@ Patterns
 		PriorityQueue = minheap = when you just need to pick off the lowest or highest item but can keep adding whatever
 		TreeSet = when all the items are unique and you want to be able to iterate in order (and even binary search if wanted)
 		TreeMap = similar intent to TreeSet except key-value mapping (inc. list or count as value)
+	boolean simplifications (easy to forget these when nervous):
+		a < 0 == b < 0
+			gives you true if both pos or both neg, false otherwise (sign mismatch)
+		return pos ? count : -count;
+			should be obvious but I forgot it in a problem so I'm adding it to my drilling
+	Bit Shifting
+		a << b is a * 2^b
+		a << b << 1 is a * 2^b * 2 (due to left associativity of <<, same as * operator)
+			a * 2^(b+1)
+			if used exclusively in a loop, then a*2^b becomes inclusive
+	In-Place reversal
+		my instinct is usually to do i to ((j-i)/2)+j, but it's ugly and error-prone
+			easy to forget to add j for instance
+		instead, use a runner technique like version
+			int i = start, j = stop -1; //inclusive
+			while (i < j) {
+				swap(arr, i++, j--);
+			}
 	
 Caveats
 	don't forget to check both sides if do something like reverse a range in-place to sort
