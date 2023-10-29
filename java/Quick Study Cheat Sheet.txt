@@ -447,9 +447,11 @@ Deque<T>
 
 PriorityQueue<T> (concrete, implements Queue<T>)
 	smallest item (by natural sort) comes out first
-		can provide custom comparator to change how Ordered
+		can provide custom comparator to constructor to change how Ordered
 			eg. Comparator.reverseOrder() makes it use max value instead of min
 	implemented via heap that uses comparator (minheap by default, maxheap with reverseOrder)
+	eg. new PriorityQueue<>(), new PriorityQueue<>(comparator), new PriorityQueue<>(capacity, comparator)
+		new PriorityQueue<>(capacity), new PriorityQueue(collection)
 
 RandomAccess interface
 	a marker interface with no members
@@ -1652,6 +1654,7 @@ Comparator<T>
 	also default methods like thenComparing() for chaining
 		Collections.sort(people, Comparator.comparing(Person::getLastName)
                                            .thenComparing(Person::getFirstName));
+		Comparator.comparingInt(n -> n.value) to get primitive int, double, or long instead of boxed
 Math Operators on Generic Types
 	if T extends a specific type like Integer, operators like < may work
 		probably internally calling intValue()
@@ -2360,6 +2363,14 @@ Patterns
 			but may need a static wrapper to avoid hardcoded copies of logic to set if null
 	for operations like adding items one at a time, consider a wrapper class
 		eg. keeps head and last pointers even if singly-linked list
+	dummy head
+		when building a new linked list
+		you can avoid the ugly conditionals on each potential creation of the first node by using a dummy node as the head
+		Node dummy = new Node();
+		Node tail = dummy;
+		if (doTheThing) {tail.next = new Node(); tail = tail.next;}
+		// later
+		return dummy.next;	// which will be null if nothing got inserted
 	DFS = recursion or stack
 	BFS = corecusion or queue
 	to add funtionality to collection, extend class
@@ -2463,6 +2474,12 @@ Patterns
 		standard for loop with current char and index being kept as state
 		the key mistake you might make is to forget to "flush the buffer" when the for loop terminates
 			this applies to a lot more things generically
+	sorted list that you can insert into in sorted way (with logn operations)
+		3 built-in Java data structures for this depending on what you need to do
+		PriorityQueue = minheap = when you just need to pick off the lowest or highest item but can keep adding whatever
+		TreeSet = when all the items are unique and you want to be able to iterate in order (and even binary search if wanted)
+		TreeMap = similar intent to TreeSet except key-value mapping (inc. list or count as value)
+	
 Caveats
 	don't forget to check both sides if do something like reverse a range in-place to sort
 		or both ends of row in a train track within a row
