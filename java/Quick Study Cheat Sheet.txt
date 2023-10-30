@@ -691,9 +691,9 @@ String has a lot of constructors
 most built-ins and collections have a proper toString() except for arrays (use Arrays.toString())
 
 C++ style single and double quotes (strict separation of string vs. char literals)
-""" for verbatim string (raw and multiline)
+""" for verbatim string (multiline, not raw)
 	required to have newline though, so can't use as inline raw string
-	but the initial newline is ignored, so you could use it as raw string if don't mind the line break in code
+	but the initial newline is ignored
 escaping just like in C++
 
 Character.isLetter(), Character.isDigit(), etc.
@@ -716,7 +716,7 @@ Double.parseDouble(str) to get double from string
 Double.toString(d) to convert primitive to string
 
 java.util.regex.*
-	keep in mind in Java you have to use double escaping (no raw single line strings)
+	keep in mind in Java you have to use double escaping (no raw strings)
 		unless you're ok going to the next line with """
 	pattern = Pattern.compile(patternString)
 		pattern = Pattern.compile(patternString, Pattern.MULTILINE) if you want multiline
@@ -724,6 +724,7 @@ java.util.regex.*
 	matcher = pattern.matcher(content)
 	if (matcher.matches()) {}
 		whole string match check
+		no arg to matches because matcher already for content
 	while (matcher.find()) {}
 		find each match in string
 		then use other methods of matcher to probe further about currently found match
@@ -735,7 +736,9 @@ java.util.regex.*
 		if a group has a quantifier inside it, you get the whole sequence with repetition inside
 	matcher.group(name) to get capture group by name
 most important regex syntax
-	Keep in mind, you will have to replace all `\` with `\\` to do this for real (or use verbatim strings).
+	Keep in mind, you will have to replace all `\` with `\\` to do this for real
+		verbatim strings are not raw strings!
+		also remember if need to use a char like +, have to make it \\+ in the string (escape for regex and for Java)
 
 	- `abd|def` means abc OR def
 	- `\s` means whitespace character
@@ -2502,7 +2505,24 @@ Patterns
 			while (i < j) {
 				swap(arr, i++, j--);
 			}
-	
+	Clipping
+		don't forget to use Math.max() and Math.min() for Clipping
+		and don't forget Math.max(0, x) is a ReLU style clipping
+			eg. Math.max(a - b, 0) to take difference only if a > b
+				instead of an extra 'if'
+	dealing with int[][] where inner int[] is some type of tuple
+		if the input and output lengths are different by an unknown amount
+			you will have to go through a List<int[]> (or make your own data structure for the tuple)
+			then use toArray(new int[size][]) to get the final result
+		don't forget that List<int[]> and Comparator<int[]> are both fine
+			because int[] is a reference type despite the elements being primitive
+		comparator can be, for instance, (a, b) -> a[0] - b[0]
+	Summary of Common Comparator Patterns
+		Arrays.sort(arr, (a, b) -> a - b);
+		Arrays.sort(arr, (a, b) -> a[0] - b[0]);
+		Arrays.sort(arr, Comparator.comparing(a -> a[0]));
+			slight performance hit due to indirection
+
 Caveats
 	don't forget to check both sides if do something like reverse a range in-place to sort
 		or both ends of row in a train track within a row
@@ -2547,6 +2567,12 @@ Caveats
 			then the whole key need not stay loaded in memory
 	do not confuse anagram w/ palindrome (anagram = rearrange, palindrome = reverse)
 		also don't confuse any of these with a crypto encoding
+	LEETCODE OPTIMIZATION
+		LeetCode pushes you to optimize because it tells you what %-ile you're in
+		this is good, but one caveat to keep in mind:
+			sometimes the optimizations you have to do to get in the top group is not an O() type change
+				and thus it won't even come up in an interview where you're not executing the code
+				eg. using Comparator.comparing costs a like 80%-ile in Leetcode but does not change the complexity
 Process
 	make and use your own test cases to catch issues instead of being passive
 	use theirs, but also make your own
