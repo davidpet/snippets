@@ -2536,6 +2536,7 @@ Patterns
 			eg. copy from end to start if shifting to the right
 		also look out for chances to do things in-place by shifting and then being able to gaurantee not clobbering
 			such as in in-place merging from leetcode
+		watch out for chances to avoid extra shifting by just reversing the algorithm
 
 Caveats
 	don't forget to check both sides if do something like reverse a range in-place to sort
