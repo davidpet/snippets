@@ -764,6 +764,8 @@ most important regex syntax
 	- `(?<name>)` for named capture groups
 
 math on char -> integer -> can cast back to char
+	be careful of this case: buffer.append(digit + '0')
+		need to cast back to char first because digit + '0' will be an integer!
 
 line endings
 	file readers are resilient
@@ -2386,6 +2388,7 @@ Patterns
 		don't implement interface unless you're prepareed to do the whole thing
 		to add your own interface, just add your own as a mixin
 	don't forget to subract '0' from char if it's a digit and doing math
+		but also don't forget that stringBuilder.append(1) is the same thing as stringBuilder.append('1')
 	don't forget that % can be used to check if a number evenly divides another
 		that should be obvious but I had a brain fart about it in a practice problem
 		did some unnecessary float division with epsilon check
@@ -2522,6 +2525,17 @@ Patterns
 		Arrays.sort(arr, (a, b) -> a[0] - b[0]);
 		Arrays.sort(arr, Comparator.comparing(a -> a[0]));
 			slight performance hit due to indirection
+	Turning O(n^2) into O(n)
+		a lot of problems, esp. on LeetCode, are n^2 type problems that can become n by iterating on 2 indices
+		the key is to see that both indices do not need to redo any values and thus only have to iterate once
+		sometimes the code can still appear to be O(n^2)
+			but if the "inner loop" is just incrementing or decrementing an index and it never backs up
+				then it still turns out to be O(n)
+	Shifting Elements of Array
+		be careful not to accidentally copy the same element forward again and again
+			eg. copy from end to start if shifting to the right
+		also look out for chances to do things in-place by shifting and then being able to gaurantee not clobbering
+			such as in in-place merging from leetcode
 
 Caveats
 	don't forget to check both sides if do something like reverse a range in-place to sort
