@@ -624,6 +624,7 @@ Iterating String
 Empty Constants
 	Collections.EMPTY_SET, EMPTY_LIST, EMPTY_MAP
 	immutable
+	even though no type arg, works due to how raw types and type erasure work (and due to immutability)
 
 hashCode(), equals(), and toString() implementations
 	collections already implement based on their items
@@ -681,6 +682,13 @@ to modify part of a string, you need to break it (eg. with substring) and concat
 to sort a string, convert to char array, use Arrays.sort(), and new String(arr)
 	overloads like no params, range of indices, comparators, etc.
 
+when you need to treat a String as an array of characters for performance reasons (eliminate substring() calls):
+	startsWith(prefix, fromIndex)
+	indexOf(s, fromIndex)
+	lastIndexOf(s, fromIndexBackwards)
+	regionMatches(index, otherString, otherIndex, length)
+	regionMatches(ignoreCase, …)
+
 String.join(delimStr, collection)
 	collection is of strings already though
 
@@ -696,7 +704,10 @@ C++ style single and double quotes (strict separation of string vs. char literal
 	but the initial newline is ignored
 escaping just like in C++
 
-Character.isLetter(), Character.isDigit(), etc.
+Character.isLetter(), Character.isDigit(), Character.isLetterOrDigit(), Character.toLowerCase(), Character.isUpperCase(), etc.
+	toLowerCase() doesn't throw if not a letter, so safe to call it on any char
+	isUpperCase() will only return true if specifically an upperase character though
+
 
 System.out.printf(formatString, ...) like in C++
 	does NOT print a newline at end
@@ -1689,6 +1700,10 @@ Variadic Generic Functions
 new T[] // FORBIDDEN in generic method or class
 	because of covariance of arrays in java
 	but taking a T[] in a function is fine
+creating an array of any generic type even when the type arg is known is ILLEGAL
+	eg. new ArrayList<Integer>[] is not allowed even though the type is bound
+	technically you can have it on the left side and use raw type on right side, but that's kind of improper
+	ArrayList uses an Object[] inside to get around this
 calling constructor T() of a generic type is illegal
 	have to pass class and use reflection or use a factory method pattern
 
@@ -1748,6 +1763,7 @@ System.gc()
 
 Math.floor(), Math.abs(), Math.max(), Math.round(), Math.cos(radians), Math.pow(base, exp), etc.
 	Math.PI and Math.E constants
+	Math.max() and Math.min() are not variadic - only take 2 args
 java.util.Random
 	new Random().nextInt(100) or nextFloat(), etc.
 	nextGaussian() for gaussian distribution, etc.
@@ -2537,6 +2553,27 @@ Patterns
 		also look out for chances to do things in-place by shifting and then being able to gaurantee not clobbering
 			such as in in-place merging from leetcode
 		watch out for chances to avoid extra shifting by just reversing the algorithm
+	Tree Splitting Recursion
+		key is to enumerate out the cases/options so that you don't get confused/overwhelmed
+		eg. the max path sum problem
+	DFS vs. BFS
+		if find the need to make a special record type for BFS, consider if DFS will do just as well
+			then you can pass in the other fields in the method signature
+		DFS also makes the space complexity O(depth) instead of O(n)
+	DFS Using Stack instead of Recursion
+		using a stack intead of queue and otherwise following the BFS pattern
+			gives you pre-order traversal
+		to get other types of traversal, you have to simulate how recursion uses the stack
+			recursion has an instruction pointer in addition to current node (is a way to think about it)
+			so you could make a stack record class that has some state/mode and throw a node on the stack twice
+				eg. visitChildren boolean
+			you control the order by the order in which you put children and the next mode of current back on the stack
+		another caveat when using a stack is that you want to get right to left on the children if you want left to right order
+		another approach is to do some kind of (hard to understand) order trick
+			eg. for in-order, you can throw all the node.left down the left side of the tree on the stack
+				then as you visit each node in stack, do the same downward loop again on the right side
+				this has no advantage for readability or time complexity, and has a disadvantage for space complexity
+					but people seem to really like to do it on LeetCode so at least be aware it's a thing
 
 Caveats
 	don't forget to check both sides if do something like reverse a range in-place to sort
