@@ -426,6 +426,9 @@ StringBuilder
 	reverse() // instead of reverseOrder()
 	replace() // instead of using SubList() and changing
 	charAt() and setCharAt()
+	setLength() is a way to truncate efficiently
+		just change the inner length without re-copying anything
+		eg. when generating permutations of a string
 
 	methods that mutate the data return the object itself
 		this allows you to chain fluently
@@ -2427,6 +2430,7 @@ Patterns
 		there may be some element of pruning but it's not a synonym for it
 		the "generating combinations" pattern above can be thought of as backtracking
 			you back out a change that makes a digit too high and move to next cell, for instance
+		HINT: stringBuilder.setLength(previousLength) to efficiently truncate last appended thing(s)
 	building string right to left
 		build the reverse string left to right and then reverse it at end
 		StringBuilder does not use a deque or anything like that
