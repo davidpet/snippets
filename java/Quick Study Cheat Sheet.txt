@@ -446,6 +446,8 @@ Queue<T>
 			whereas stack throws because that's what poll means
 	interface
 		LinkedList, ArrayDeque, PriorityQueue
+	WARNING: ArrayDeque does not allow null elements (but LinkedList does)
+
 Deque<T>
 	queue members but also addFirst, addLast, pollFirst, etc.
 	interface
@@ -623,6 +625,8 @@ Iterating String
 		next() and previous() move index and then get new char
 		first() and last() also move index before retrieving
 		getIndex(), getBeginIndex(), getEndIndex()
+	in crazy LeetCode style recursion problems, this can really make the code cleaner
+		it also allows the recursive helper to "consume" the string without having to pass back a bunch of state
 
 Empty Constants
 	Collections.EMPTY_SET, EMPTY_LIST, EMPTY_MAP
@@ -2431,6 +2435,8 @@ Patterns
 		the "generating combinations" pattern above can be thought of as backtracking
 			you back out a change that makes a digit too high and move to next cell, for instance
 		HINT: stringBuilder.setLength(previousLength) to efficiently truncate last appended thing(s)
+		NOTE: you can backtrack without explicitly "backtracking"
+			for instance, write into positions of an array above n in the recursive helper but then go back to n at this level
 	building string right to left
 		build the reverse string left to right and then reverse it at end
 		StringBuilder does not use a deque or anything like that
@@ -2578,6 +2584,133 @@ Patterns
 				then as you visit each node in stack, do the same downward loop again on the right side
 				this has no advantage for readability or time complexity, and has a disadvantage for space complexity
 					but people seem to really like to do it on LeetCode so at least be aware it's a thing
+	String to Number parsing
+		in problems where you are looking for a bunch of operators, separators, etc.
+			you may want to get char by char instead of splitting and using Integer.parseInt
+		left-to-right
+			currentValue = 0
+			for each digit (left to right):
+				currentValue = 10 * currentValue + digit
+			this is especially nice for problems where you're considering increasing subsets of digits to use
+		right-to-left
+			for int i = 0 to n - 1:
+				digit = s[-(i+1)]
+				sum += digit << i
+			this is not really necessary unless you're adding the numbers with carry or something like that
+	Number to String parsing
+		right-to-left
+			modulo and division loop with final string reveral at the end
+	DFS/Backtracking in String Permutations
+		in problems where you need to get fill out the whole string to return any answer
+		use recursion to fill out the string and concatenate results from the deepest levels
+	Time Complexity of Permutations
+		don't jump to saying n! when permutations are involved, that's not the same kind of permutation
+		a lot of time there will be a simple answer and then a more optimized answer that you have to think harder about
+		eg. in string problem where you can insert one of 3 operators at any position
+			simple answer = O(4^n) if you just try the 3 operators or lack of operator at all positions
+			better answer = O(3^n) if you use a smarter approach where you iterate through increasing subsets of the string and try adding
+			a little bit complicated why it improves it, but basically it's about the branching factor
+			if you see 4 recursive helper calls, the branching factor is 4, but if 3, then it's 3
+				so in the simple case, you'd choose each of the 4 and recurse on each of those branches
+				but in the better case, you only see 3 recursive calls and when no operator is present, recursion is skipped
+	Silly Java Optimization Tricks
+		these are generally only useful if you're in a competition and really need to shave off every clock cycle
+		instead of using the String object passed in to get charAt() and length() in a loop:
+			copy it to a char[] and store the length as its own int variable
+			eliminates a bunch of dereferencing and function calls to make it really bare metal
+		using int instead of long when you can get away with it (via other strange checks) MIGHT slightly increase performance
+			it shouldn't because machines are 64-bit nowadays and 32-bit is just using a portion of the registers
+			but for some reason it sometimes has a performance improvement
+			possible reasons: something about caching, something about lower power consumption of the CPU, etc.
+	More Info about Search Order
+		** see "Search Order Review" notebook for more details
+		BFS (Level-Order Traversal)
+			queue - add non-null children as visit node from queue
+			O(n) time and space
+		Pre-Order DFS
+			parent before children
+				down whole left side of tree first, then back up and down to next child over at bottom, etc.
+			O(n) time and O(depth) space
+			iterative
+				same as BFS but use stack instad of queue
+				also need to add right child before left child since stack
+			recursive
+				visit given node, then recurse into left child, then right child
+		Post-Order DFS
+			children before parent
+				bottom left children of tree first, then bubble up to their parent, then next bottom children bubble up, so that can bubble up more
+				eventually bubbling all the way up to root
+			same stack structure and complexity as pre-order, but the "visitation" is different order
+			recursive
+				same as pre-order but just move the visitation line to after the children
+			iterative
+				Version 1: parallel stacks (or structure in stack)
+					boolean flag of whether adding children or actually visiting
+					you visit first and then add it back before the children with flag flipped
+					simulates how return value on stack when you recurse tells where to go back to in the caller
+				Version 2: serial stacks
+					use first stack to control visitation like in the normal pre-order version
+					but at the same time, push all "visited" nodes (but not their children) to the 2nd stack
+					also push left before right instead to make the order work out
+					then just pop off the 2nd stack in order
+					disadvantage: O(n) space instead of O(depth) [like BFS]
+						because of having to push everything onto stack 2 before doing the actual visitation
+		In-Order DFS
+			parent in between two children
+			binary search tree order
+			same stack structure and complexity as pre-order, but visitation is different order
+			recursive
+				same as pre-order but just move the visitation line to in between the children
+			iterative
+				Version 1: like post-order but rearrange the lines to control order of visitation
+				Version 2: special weird pattern
+					using a current reference and a stack at the same time
+					push nodes all the way down the left side, then pop stack to visit bottom
+					visit parent and then right, but instead of directly visiting right, do all the above again
+					Node current = root;
+
+					while (current != null || !stack.isEmpty()) {
+						// Reach the left most Node of the current Node
+						while (current != null) {
+							stack.push(current);
+							current = current.left;
+						}
+
+						// Current must be null at this point
+						current = stack.pop();
+						System.out.println(current.value);
+
+						// We have visited the node and its left subtree. Now, it's right subtree's turn
+						current = current.right;
+					}
+	Tree Serialization
+		BFS = more human readable but less optimal in time and space
+			implicitly leave out children of null nodes from previous levels though
+			serialization
+				regular queue-based BFS, but when get a null (as current parent), add # and don't add children to queue
+			deserialization
+				helper to process next # or numeric chunk from string iterator and return a node (or null) for it
+					don't forget to account for negatives!
+				another queue-based BFS where
+					process first number and make root for it, then add that to queue
+					process next 2 and add to front of queue (and to the parent)
+					don't add (or process chunks for) children of a null
+						this keeps it consistent with skipping the null children in serialization
+		DFS (pre-order) = more optimal but hard to read
+			serialization is just visiting in DFS order and writing # for nulls
+			deseralization = process chunk to make root, then process left tree, then right
+				this works best if you use a StringCharacterIterator to consume just the text the left tree needs
+	String Backtracking
+		use a char[] that is a copy, temporarily modify it and modify it back again
+			modifying back again (eg. to wildcard instead of 0 or 1) is important
+				otherwise on another recursion, you won't know to try both 0 and 1
+		helper method to search for first branch point, then recurse on each branch to add results to output (by reference)
+			if no branch occured, add the whole current string to the output (base case)
+		this is DFS, but not technically pre or post order because not a tree
+			DFS because going to end of string before adding anything to results
+		time complexity is branch factor to the N
+		backtracking could also happen implicitly if you have a problem where you're passing an array length too
+			then when the array shrinks back down, you already know what comes after it is going to be clobbered in the future
 
 Caveats
 	don't forget to check both sides if do something like reverse a range in-place to sort
