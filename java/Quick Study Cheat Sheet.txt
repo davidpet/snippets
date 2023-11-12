@@ -350,6 +350,7 @@ optimized one-liner patterns
 		map.computeIfAbsent(key, k -> new ArrayList<>()).add(100);
 	count value
 		map.merge(key, 1, Integer::sum);
+			less optimal: map.set(key, map.getOrDefault(key, 0) + 1)
 	dissappearing key on count reaching zero
 		map.merge(key, -1, (a, b) -> a + b == 0 ? null : a + b);
 other one-liner patterns
@@ -357,6 +358,8 @@ other one-liner patterns
 		Map<Integer, Long> counts = Arrays.stream(arry).boxed().collect(groupingBy(n -> n, counting()));
 			keep in mind the count is a Long because it's a stream
 			the place this will bite you is when you do .getOrDefault(key, 0) -> need to do .getOrDefault(key, 0L)
+	if you find yourself doing something like a dictionay of counts and converting that to a ditionary of counts of counts
+		you probably actually wanted a priority queue
 
 TreeSet
 	TreeSet<T> is a Set<T> implementation
@@ -457,6 +460,8 @@ PriorityQueue<T> (concrete, implements Queue<T>)
 	smallest item (by natural sort) comes out first
 		can provide custom comparator to constructor to change how Ordered
 			eg. Comparator.reverseOrder() makes it use max value instead of min
+		note that duplicate entries are allowed
+			if you need ordering within the orrdering, you have to do that in the comparator
 	implemented via heap that uses comparator (minheap by default, maxheap with reverseOrder)
 	eg. new PriorityQueue<>(), new PriorityQueue<>(comparator), new PriorityQueue<>(capacity, comparator)
 		new PriorityQueue<>(capacity), new PriorityQueue(collection)
@@ -702,6 +707,8 @@ String.join(delimStr, collection)
 String has a lot of constructors
 	eg. all or part of a char[], copy another String, a StringBuilder, StringBuffer, etc.
 		not Character[] though
+	NOTE: char[] portion is index and count, not startIndex and stopIndex like usual
+		Arrays.copyOf() takes a length as well while copyOfRange() takes start and stop indices
 
 most built-ins and collections have a proper toString() except for arrays (use Arrays.toString())
 
@@ -2505,6 +2512,7 @@ Patterns
 				also not forgetting to check the physical boundaries of the array
 				all examples online use an integer mode - I like to make an enum
 				simple next() method that does modulo on values()
+				this way tends to avoid a lot more bugs (RECOMMENDED)
 		if you do decide to make a special iterator, consider implementing Iterator<> interface from java.util
 	buffered parsing
 		eg. encoding a string aabbccd as 2a2b2c1d
@@ -2514,8 +2522,10 @@ Patterns
 	sorted list that you can insert into in sorted way (with logn operations)
 		3 built-in Java data structures for this depending on what you need to do
 		PriorityQueue = minheap = when you just need to pick off the lowest or highest item but can keep adding whatever
+			also when you have duplicates
 		TreeSet = when all the items are unique and you want to be able to iterate in order (and even binary search if wanted)
 		TreeMap = similar intent to TreeSet except key-value mapping (inc. list or count as value)
+			can deal with duplicates via lists as the values
 	boolean simplifications (easy to forget these when nervous):
 		a < 0 == b < 0
 			gives you true if both pos or both neg, false otherwise (sign mismatch)
@@ -2595,8 +2605,9 @@ Patterns
 		right-to-left
 			for int i = 0 to n - 1:
 				digit = s[-(i+1)]
-				sum += digit << i
-			this is not really necessary unless you're adding the numbers with carry or something like that
+				sum += digit << i (or multiplier *= 10 each time)
+			this should perform the same, pending the exact details
+			it's better when you need to go right until you hit a delimitter from end of string
 	Number to String parsing
 		right-to-left
 			modulo and division loop with final string reveral at the end
@@ -2711,6 +2722,11 @@ Patterns
 		time complexity is branch factor to the N
 		backtracking could also happen implicitly if you have a problem where you're passing an array length too
 			then when the array shrinks back down, you already know what comes after it is going to be clobbered in the future
+	Lexographical Order
+		it's a good idea to know how to manually do lexographical order quickly in case of a not pure string sorting type problem
+		iterate until one of the strings runs out
+			if difference of that char position is not zero, return it
+		return difference of lengths otherwise (shorter one is lower, so negative is negative)
 
 Caveats
 	don't forget to check both sides if do something like reverse a range in-place to sort
@@ -2762,6 +2778,11 @@ Caveats
 			sometimes the optimizations you have to do to get in the top group is not an O() type change
 				and thus it won't even come up in an interview where you're not executing the code
 				eg. using Comparator.comparing costs a like 80%-ile in Leetcode but does not change the complexity
+	Streams API performance
+		if in a tight loop where every clock cycle matters, such as in LeetCode
+		you may find that a stream is much slower than a simple array copy or whatever
+		but in a real application (you have to test it), it might be fine (and more maintainable/readable)
+		also, keep in mind streams can do parallel operations out of the box, so it may be worth it for that
 Process
 	make and use your own test cases to catch issues instead of being passive
 	use theirs, but also make your own
