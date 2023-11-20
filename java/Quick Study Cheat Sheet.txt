@@ -630,6 +630,7 @@ Iterating String
 		next() and previous() move index and then get new char
 		first() and last() also move index before retrieving
 		getIndex(), getBeginIndex(), getEndIndex()
+		HINT: very useful for parsing from a variable length input (eg. pre-order DFS serialized tree)
 	in crazy LeetCode style recursion problems, this can really make the code cleaner
 		it also allows the recursive helper to "consume" the string without having to pass back a bunch of state
 
@@ -2411,8 +2412,6 @@ Patterns
 		if (doTheThing) {tail.next = new Node(); tail = tail.next;}
 		// later
 		return dummy.next;	// which will be null if nothing got inserted
-	DFS = recursion or stack
-	BFS = corecusion or queue
 	to add funtionality to collection, extend class
 		interface remains implemented for you
 		don't implement interface unless you're prepareed to do the whole thing
@@ -2576,24 +2575,6 @@ Patterns
 	Tree Splitting Recursion
 		key is to enumerate out the cases/options so that you don't get confused/overwhelmed
 		eg. the max path sum problem
-	DFS vs. BFS
-		if find the need to make a special record type for BFS, consider if DFS will do just as well
-			then you can pass in the other fields in the method signature
-		DFS also makes the space complexity O(depth) instead of O(n)
-	DFS Using Stack instead of Recursion
-		using a stack intead of queue and otherwise following the BFS pattern
-			gives you pre-order traversal
-		to get other types of traversal, you have to simulate how recursion uses the stack
-			recursion has an instruction pointer in addition to current node (is a way to think about it)
-			so you could make a stack record class that has some state/mode and throw a node on the stack twice
-				eg. visitChildren boolean
-			you control the order by the order in which you put children and the next mode of current back on the stack
-		another caveat when using a stack is that you want to get right to left on the children if you want left to right order
-		another approach is to do some kind of (hard to understand) order trick
-			eg. for in-order, you can throw all the node.left down the left side of the tree on the stack
-				then as you visit each node in stack, do the same downward loop again on the right side
-				this has no advantage for readability or time complexity, and has a disadvantage for space complexity
-					but people seem to really like to do it on LeetCode so at least be aware it's a thing
 	String to Number parsing
 		in problems where you are looking for a bunch of operators, separators, etc.
 			you may want to get char by char instead of splitting and using Integer.parseInt
@@ -2611,9 +2592,6 @@ Patterns
 	Number to String parsing
 		right-to-left
 			modulo and division loop with final string reveral at the end
-	DFS/Backtracking in String Permutations
-		in problems where you need to get fill out the whole string to return any answer
-		use recursion to fill out the string and concatenate results from the deepest levels
 	Time Complexity of Permutations
 		don't jump to saying n! when permutations are involved, that's not the same kind of permutation
 		a lot of time there will be a simple answer and then a more optimized answer that you have to think harder about
@@ -2633,100 +2611,6 @@ Patterns
 			it shouldn't because machines are 64-bit nowadays and 32-bit is just using a portion of the registers
 			but for some reason it sometimes has a performance improvement
 			possible reasons: something about caching, something about lower power consumption of the CPU, etc.
-	More Info about Search Order
-		** see "Search Order Review" notebook for more details
-		BFS (Level-Order Traversal)
-			queue - add non-null children as visit node from queue
-			O(n) time and space
-		Pre-Order DFS
-			parent before children
-				down whole left side of tree first, then back up and down to next child over at bottom, etc.
-			O(n) time and O(depth) space
-			iterative
-				same as BFS but use stack instad of queue
-				also need to add right child before left child since stack
-			recursive
-				visit given node, then recurse into left child, then right child
-		Post-Order DFS
-			children before parent
-				bottom left children of tree first, then bubble up to their parent, then next bottom children bubble up, so that can bubble up more
-				eventually bubbling all the way up to root
-			same stack structure and complexity as pre-order, but the "visitation" is different order
-			recursive
-				same as pre-order but just move the visitation line to after the children
-			iterative
-				Version 1: parallel stacks (or structure in stack)
-					boolean flag of whether adding children or actually visiting
-					you visit first and then add it back before the children with flag flipped
-					simulates how return value on stack when you recurse tells where to go back to in the caller
-				Version 2: serial stacks
-					use first stack to control visitation like in the normal pre-order version
-					but at the same time, push all "visited" nodes (but not their children) to the 2nd stack
-					also push left before right instead to make the order work out
-					then just pop off the 2nd stack in order
-					disadvantage: O(n) space instead of O(depth) [like BFS]
-						because of having to push everything onto stack 2 before doing the actual visitation
-		In-Order DFS
-			parent in between two children
-			binary search tree order
-			same stack structure and complexity as pre-order, but visitation is different order
-			recursive
-				same as pre-order but just move the visitation line to in between the children
-			iterative
-				Version 1: like post-order but rearrange the lines to control order of visitation
-				Version 2: special weird pattern
-					using a current reference and a stack at the same time
-					push nodes all the way down the left side, then pop stack to visit bottom
-					visit parent and then right, but instead of directly visiting right, do all the above again
-					Node current = root;
-
-					while (current != null || !stack.isEmpty()) {
-						// Reach the left most Node of the current Node
-						while (current != null) {
-							stack.push(current);
-							current = current.left;
-						}
-
-						// Current must be null at this point
-						current = stack.pop();
-						System.out.println(current.value);
-
-						// We have visited the node and its left subtree. Now, it's right subtree's turn
-						current = current.right;
-					}
-	Tree Serialization
-		BFS = more human readable but less optimal in time and space
-			implicitly leave out children of null nodes from previous levels though
-			serialization
-				regular queue-based BFS, but when get a null (as current parent), add # and don't add children to queue
-			deserialization
-				helper to process next # or numeric chunk from string iterator and return a node (or null) for it
-					don't forget to account for negatives!
-				another queue-based BFS where
-					process first number and make root for it, then add that to queue
-					process next 2 and add to front of queue (and to the parent)
-					don't add (or process chunks for) children of a null
-						this keeps it consistent with skipping the null children in serialization
-		DFS (pre-order) = more optimal but hard to read
-			serialization is just visiting in DFS order and writing # for nulls
-			deseralization = process chunk to make root, then process left tree, then right
-				this works best if you use a StringCharacterIterator to consume just the text the left tree needs
-	String Backtracking
-		use a char[] that is a copy, temporarily modify it and modify it back again
-			modifying back again (eg. to wildcard instead of 0 or 1) is important
-				otherwise on another recursion, you won't know to try both 0 and 1
-		helper method to search for first branch point, then recurse on each branch to add results to output (by reference)
-			if no branch occured, add the whole current string to the output (base case)
-		this is DFS, but not technically pre or post order because not a tree
-			DFS because going to end of string before adding anything to results
-		time complexity is branch factor to the N
-		backtracking could also happen implicitly if you have a problem where you're passing an array length too
-			then when the array shrinks back down, you already know what comes after it is going to be clobbered in the future
-	Lexographical Order
-		it's a good idea to know how to manually do lexographical order quickly in case of a not pure string sorting type problem
-		iterate until one of the strings runs out
-			if difference of that char position is not zero, return it
-		return difference of lengths otherwise (shorter one is lower, so negative is negative)
 
 Caveats
 	don't forget to check both sides if do something like reverse a range in-place to sort
