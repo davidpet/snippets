@@ -2368,13 +2368,6 @@ client uses generated stub for communication and passes protos
 service starts and listens on a port
 gRPC-gateway is a way to do REST clients from gRPC definitions
 
-[Effective Java Tips]
-** see the Effective Java notebook **
-readable on phone
-
-[Design Patterns]
-** see the Design Patterns Java notebook **
-
 [Interview Tips ***not from notebooks**]
 if need to implement linked list, just do it from scratch
 	trying to use built-in and then replacing it sounds cool, but causes problems
@@ -2392,132 +2385,20 @@ if you need a tree or graph, do it yourself (no java version)
 		depends on how much time you have and how central the abstraction is
 compiler doesn't like constructors without <> operator (unchecked warning)
 	it works but the type is erased and you lose type safety
-
-Patterns
-	struct-like wrapper for updating multiple variables in a helper
-		record = f(record, blabla); // treat as immutable
-			OR
-		f(record, blabla);	// mutate the instance passed in
-		basically simulating python tuple
-	dealing with empty linked lists/graphs/trees
-		usually easier to just use null
-			but may need a static wrapper to avoid hardcoded copies of logic to set if null
-	for operations like adding items one at a time, consider a wrapper class
-		eg. keeps head and last pointers even if singly-linked list
-	dummy head
-		when building a new linked list
-		you can avoid the ugly conditionals on each potential creation of the first node by using a dummy node as the head
-		Node dummy = new Node();
-		Node tail = dummy;
-		if (doTheThing) {tail.next = new Node(); tail = tail.next;}
-		// later
-		return dummy.next;	// which will be null if nothing got inserted
-	to add funtionality to collection, extend class
+since no tuples, use a POD class or record to simualte it (can make mutable or immutable)
+since LinkedList, TreeMap, and TreeSet don't expose internal nodes
+	if need to do your own linked list, tree, etc. need to make a class (and maybe a wrapper)
+to add funtionality to collection, extend class
 		interface remains implemented for you
 		don't implement interface unless you're prepareed to do the whole thing
 		to add your own interface, just add your own as a mixin
-	don't forget to subract '0' from char if it's a digit and doing math
-		but also don't forget that stringBuilder.append(1) is the same thing as stringBuilder.append('1')
-	don't forget that % can be used to check if a number evenly divides another
-		that should be obvious but I had a brain fart about it in a practice problem
-		did some unnecessary float division with epsilon check
-	use infinite lazy streams combined and with takeWhile() and such to make iteration less tedious
-	generating all combinations of values of a data structure:
-		take a version of the data structure in initial state
-		take a parameter saying which thing to vary (eg. cell by row and column)
-		call a recursive function that iterates the posisble values of the cell
-			then calls itself with next cell
-			define it such that the recursive calls will chain all the way to the last cell
-	recursion into iteration (eg. if not enough stack)
-		this will only work if it looks like TCO (single call)
-		wrap recursive part in a while loop that terminates on base condition
-		modify the variables at the end of each loop iteration to simulate TCO
-		make sure the base case is handled properly (eg. after the while loop)
-	backtracking
-		problem solving approach where you try out solutions and then undo the last part if fails
-		can be recursive but doesn't have to be
-		eg. try out different placements of queen on chess board and undo placements that don't succeed
-		there may be some element of pruning but it's not a synonym for it
-		the "generating combinations" pattern above can be thought of as backtracking
-			you back out a change that makes a digit too high and move to next cell, for instance
-		HINT: stringBuilder.setLength(previousLength) to efficiently truncate last appended thing(s)
-		NOTE: you can backtrack without explicitly "backtracking"
-			for instance, write into positions of an array above n in the recursive helper but then go back to n at this level
-	building string right to left
-		build the reverse string left to right and then reverse it at end
-		StringBuilder does not use a deque or anything like that
-	detecting sortedness
-		iterate through and add boolean for each element that is sorted in proper order relative to previous
-			first always true, can use a sentinel value to make that work like Integer.MIN_VALUE
-		ranges of false values show ranges of the array that are reverse sorted
-		don't forget to check both endpoints if do something like reverse a range
-	adding items to beginning of stream
+StringBuilder.append(1) is the same thing as StringBuilder.append('1') by end result
+StringBuilder.setLength(previousLength) is great for backtracking
+	similarly, an array where you pass the length and just stop using the additional length
+use infinite lazy streams combined and with takeWhile() and such to make iteration less tedious
+adding items to beginning of stream
 		Stream.concat(Stream.of(), theStream)
-	skyline/merging train tracks
-		all you can do is go through segment by segment and keep the state however is needed for the problem
-		there is no clever stream reduction or something that will get you out of it
-	permutation indices
-		wrap list in data structure with original index, then sort.  now you know how to get back
-	index vs. count
-		an index can be seen as representing the count of what came before it
-		thus why exclusive indices are also counts
-		conversly, a count can be seen as how many indices came before (subtract 1 to get last one)
-		this seems elementary, but in patterns like the partitioned one below it comes in handy to think explicitly about it
-	index in partitioned range
-		eg. ranges in a distribution or ith item in a sorted map/array of values to counts
-		iterate through the keys in the proper order (by sort, by insertion, however you arranged it)
-		keep a running total count (inc. the current item's count)
-		the first item where the count becomes greater than (not equal to) the index is the value for that index
-			it's off by one because we include the current item in the count
-			so we have to look for when count becomes index + 1 indirectly
-	median of sequence
-		don't forget to use float so you don't lose the 0.5 if applicable!
-		odd sequence: middle item -> n / 2
-		even sequence: average of 2 middle items
-			n / 2, n / 2 - 1
-		general version: take two items at n / 2 and (n - 1) / 2
-			if even, it works out the same with floor division
-			if odd, it's the same # twice
-			in either case, averaging works out to the correct result
-			don't even need to do a % 2 == 0 type check!
-	median of partitioned range (count map)
-		the key insight here was to simplify it to think of getting the two indices we want from the range
-		then to get them both at the same time as we iterate through
-		so you calculate what indices you need and then go through and accumulate counts
-		when a count becomes greater than one of the 2 indices, set it
-		when both have been set, you're done - take the average
-	sliding window
-		keep the outside loop variables minimal
-		eg. for reversing linked list, you need prev and cur, but not next
-			because cur already knows what next is
-			but nobody knows what prev is
-		you can calcualte variables inside as needed
-			eg. next as a cache for when you rotate the variables for the next window
-			that lets you guard by the current without having to protect null dereference
-		standardize your way of thinking of the variables, don't be wishy washy
-			eg. prev = the node already updated and cur = the node I'm about to update
-				then you can tell that when cur is null, the loop is over, and prev has the last head
-		usually you want to calculcate the new thing as a variable, then  rotate from oldest to newest to bring forward window
-	piecewise iteration
-		my instinct with these types of problems is to make a special iterator
-			but every time I've done it, the code becomes very large and has a lot of off by one issues
-			even when it works, it takes a really long time to implement
-			it sounds good on paper, and very declarative, etc. but it seems to not be a good pattern in general
-		instead, think of the spiral 2D array case and go with one of the two simple ways
-			use helper methods to make it cleaner looking
-			case 1: the ugly for loops (it gets the job done if any other way wastes time)
-				tends to be more susceptible to off-by-ones because it doesn't take the data into account, only its own assumptions
-			case 2: key off of set vs. unset array members (eg. nonzero) and use modes
-				also not forgetting to check the physical boundaries of the array
-				all examples online use an integer mode - I like to make an enum
-				simple next() method that does modulo on values()
-				this way tends to avoid a lot more bugs (RECOMMENDED)
-		if you do decide to make a special iterator, consider implementing Iterator<> interface from java.util
-	buffered parsing
-		eg. encoding a string aabbccd as 2a2b2c1d
-		standard for loop with current char and index being kept as state
-		the key mistake you might make is to forget to "flush the buffer" when the for loop terminates
-			this applies to a lot more things generically
+if you make an iterator, implmenet java.util.Iterator<T>
 	sorted list that you can insert into in sorted way (with logn operations)
 		3 built-in Java data structures for this depending on what you need to do
 		PriorityQueue = minheap = when you just need to pick off the lowest or highest item but can keep adding whatever
@@ -2525,96 +2406,32 @@ Patterns
 		TreeSet = when all the items are unique and you want to be able to iterate in order (and even binary search if wanted)
 		TreeMap = similar intent to TreeSet except key-value mapping (inc. list or count as value)
 			can deal with duplicates via lists as the values
-	boolean simplifications (easy to forget these when nervous):
-		a < 0 == b < 0
-			gives you true if both pos or both neg, false otherwise (sign mismatch)
-		return pos ? count : -count;
-			should be obvious but I forgot it in a problem so I'm adding it to my drilling
-	Bit Shifting
-		a << b is a * 2^b
-		a << b << 1 is a * 2^b * 2 (due to left associativity of <<, same as * operator)
-			a * 2^(b+1)
-			if used exclusively in a loop, then a*2^b becomes inclusive
-	In-Place reversal
-		my instinct is usually to do i to ((j-i)/2)+j, but it's ugly and error-prone
-			easy to forget to add j for instance
-		instead, use a runner technique like version
-			int i = start, j = stop -1; //inclusive
-			while (i < j) {
-				swap(arr, i++, j--);
-			}
-	Clipping
-		don't forget to use Math.max() and Math.min() for Clipping
-		and don't forget Math.max(0, x) is a ReLU style clipping
-			eg. Math.max(a - b, 0) to take difference only if a > b
-				instead of an extra 'if'
-	dealing with int[][] where inner int[] is some type of tuple
-		if the input and output lengths are different by an unknown amount
-			you will have to go through a List<int[]> (or make your own data structure for the tuple)
-			then use toArray(new int[size][]) to get the final result
-		don't forget that List<int[]> and Comparator<int[]> are both fine
-			because int[] is a reference type despite the elements being primitive
-		comparator can be, for instance, (a, b) -> a[0] - b[0]
-	Summary of Common Comparator Patterns
-		Arrays.sort(arr, (a, b) -> a - b);
-		Arrays.sort(arr, (a, b) -> a[0] - b[0]);
-		Arrays.sort(arr, Comparator.comparing(a -> a[0]));
-			slight performance hit due to indirection
-	Turning O(n^2) into O(n)
-		a lot of problems, esp. on LeetCode, are n^2 type problems that can become n by iterating on 2 indices
-		the key is to see that both indices do not need to redo any values and thus only have to iterate once
-		sometimes the code can still appear to be O(n^2)
-			but if the "inner loop" is just incrementing or decrementing an index and it never backs up
-				then it still turns out to be O(n)
-	Shifting Elements of Array
-		be careful not to accidentally copy the same element forward again and again
-			eg. copy from end to start if shifting to the right
-		also look out for chances to do things in-place by shifting and then being able to gaurantee not clobbering
-			such as in in-place merging from leetcode
-		watch out for chances to avoid extra shifting by just reversing the algorithm
-	Tree Splitting Recursion
-		key is to enumerate out the cases/options so that you don't get confused/overwhelmed
-		eg. the max path sum problem
-	String to Number parsing
-		in problems where you are looking for a bunch of operators, separators, etc.
-			you may want to get char by char instead of splitting and using Integer.parseInt
-		left-to-right
-			currentValue = 0
-			for each digit (left to right):
-				currentValue = 10 * currentValue + digit
-			this is especially nice for problems where you're considering increasing subsets of digits to use
-		right-to-left
-			for int i = 0 to n - 1:
-				digit = s[-(i+1)]
-				sum += digit << i (or multiplier *= 10 each time)
-			this should perform the same, pending the exact details
-			it's better when you need to go right until you hit a delimitter from end of string
-	Number to String parsing
-		right-to-left
-			modulo and division loop with final string reveral at the end
-	Time Complexity of Permutations
-		don't jump to saying n! when permutations are involved, that's not the same kind of permutation
-		a lot of time there will be a simple answer and then a more optimized answer that you have to think harder about
-		eg. in string problem where you can insert one of 3 operators at any position
-			simple answer = O(4^n) if you just try the 3 operators or lack of operator at all positions
-			better answer = O(3^n) if you use a smarter approach where you iterate through increasing subsets of the string and try adding
-			a little bit complicated why it improves it, but basically it's about the branching factor
-			if you see 4 recursive helper calls, the branching factor is 4, but if 3, then it's 3
-				so in the simple case, you'd choose each of the 4 and recurse on each of those branches
-				but in the better case, you only see 3 recursive calls and when no operator is present, recursion is skipped
-	Silly Java Optimization Tricks
-		these are generally only useful if you're in a competition and really need to shave off every clock cycle
-		instead of using the String object passed in to get charAt() and length() in a loop:
-			copy it to a char[] and store the length as its own int variable
-			eliminates a bunch of dereferencing and function calls to make it really bare metal
-		using int instead of long when you can get away with it (via other strange checks) MIGHT slightly increase performance
-			it shouldn't because machines are 64-bit nowadays and 32-bit is just using a portion of the registers
-			but for some reason it sometimes has a performance improvement
-			possible reasons: something about caching, something about lower power consumption of the CPU, etc.
+dealing with int[][] where inner int[] is some type of tuple
+	if the input and output lengths are different by an unknown amount
+		you will have to go through a List<int[]> (or make your own data structure for the tuple)
+		then use toArray(new int[size][]) to get the final result
+	don't forget that List<int[]> and Comparator<int[]> are both fine
+		because int[] is a reference type despite the elements being primitive
+	comparator can be, for instance, (a, b) -> a[0] - b[0]
+Summary of Common Comparator Patterns
+	Arrays.sort(arr, (a, b) -> a - b);
+	Arrays.sort(arr, (a, b) -> a[0] - b[0]);
+	Arrays.sort(arr, Comparator.comparing(a -> a[0]));
+		slight performance hit due to indirection
+String to Int parsing
+	if you need to optimize a parsing loop that involves non-digit chars
+	it's useful to be able to do your own parsing char by char instead of relying on Integer.parseInt all the time
+Silly Java Optimization Tricks
+	these are generally only useful if you're in a competition and really need to shave off every clock cycle
+	instead of using the String object passed in to get charAt() and length() in a loop:
+		copy it to a char[] and store the length as its own int variable
+		eliminates a bunch of dereferencing and function calls to make it really bare metal
+	using int instead of long when you can get away with it (via other strange checks) MIGHT slightly increase performance
+		it shouldn't because machines are 64-bit nowadays and 32-bit is just using a portion of the registers
+		but for some reason it sometimes has a performance improvement
+		possible reasons: something about caching, something about lower power consumption of the CPU, etc.
 
 Caveats
-	don't forget to check both sides if do something like reverse a range in-place to sort
-		or both ends of row in a train track within a row
 	don't forget to make it generic if you can (eg. T extends Comparable<? super T> instead of Integer)
 	if given a List-based tuple or something confusing, don't hesitate to make your own class and transform the collection first
 		the payoff can be huge when you have complicated nested iteration logic later
@@ -2632,60 +2449,14 @@ Caveats
 		Additional Rule of Thumb: for 2D matrix element comparison, consider for loop for readability
 			and also for performance
 		Additional Rule of Thumb: if you need the index, you need a for loop
-	make sure you use very simple examples to check logic
-		eg. to see you needed > instead of >= in partitioned range indexing pattern
-			all you neeed to see was item 0 has a count of 1
-		eg. for off by one errors in iteration (esp. in subrows/filters)
-			make sure not to confuse inclusive and exclusive (easy to do when in a hurry)
-	ALWAYS REMEMBER: negatives, zeroes, nulls/empties
-		these things come up naturally in day to day coding because of unit tests, etc.
-		but in interview it's super easy to let it slip
-	ALWAYS REMEMBER: if get hung up on indices or conditions, test with data
-		you can lose a lot of time and make a lot of mistakes trying to theory it out too much
-	ALWAYS REMEMBER: if give you a strange/unusual guarantee/limitation, always check if that helps you somehow
-		eg. if say no duplicates, then you can assume all values unique and that might simplify some algorithms a lot
-	OPTIMIZATION:
-		besides the usual things, like avoiding copies and using iteration instead of recursion to save memory
-		you can also optimize based on limitations/requirements they give you
-		and also based on the problem itself
-			eg. if asked to find the count for a prefix in a trie, then the trie only has to have prefixes and counts
-				so add() can build the full tree, but count() just needs to find the prefix node and return a count
-				all paths through a prefix on add() increment count
-		in other words, don't blindly implement a full data structure from memoroy - think about what you actually need
-		also, in the trie example, you could store a boolean saying if it's terminal instead of a whole key
-			then the whole key need not stay loaded in memory
-	do not confuse anagram w/ palindrome (anagram = rearrange, palindrome = reverse)
-		also don't confuse any of these with a crypto encoding
-	LEETCODE OPTIMIZATION
-		LeetCode pushes you to optimize because it tells you what %-ile you're in
-		this is good, but one caveat to keep in mind:
-			sometimes the optimizations you have to do to get in the top group is not an O() type change
-				and thus it won't even come up in an interview where you're not executing the code
-				eg. using Comparator.comparing costs a like 80%-ile in Leetcode but does not change the complexity
 	Streams API performance
 		if in a tight loop where every clock cycle matters, such as in LeetCode
 		you may find that a stream is much slower than a simple array copy or whatever
 		but in a real application (you have to test it), it might be fine (and more maintainable/readable)
-		also, keep in mind streams can do parallel operations out of the box, so it may be worth it for that
-Process
-	make and use your own test cases to catch issues instead of being passive
-	use theirs, but also make your own
-	also write assumptions, inputs, outputs, etc. in comments to help think through problem
-		use /* */ instead of // to make it slightly faster to type multiple lines
-	don't be afraid to do brute force, at least at first
-		esp. if N is small by the constraints of the problem
-HackerRank-specific tips
-	if you exceed the time limit, make sure you aren't updating the wrong variable or something
-		sometimes you think it's because it's pick and you used n^2, but a lot of time it's a bug
-		esp. if n is small
+		also, keep in mind streams can do parallel operations out of the box, so it may be worth it for that	
+HackerRank-specific tips (for Java)
 	since they hide the test data, you need to System.out.println() a lot to diagnose failures
-		don't be too quite to delete these until you're absolutely done
-	make pseudocode and clarifications in comments
-		and make your prints look like the pseudocode so you can see if it's working
-	there's a hidden area in between panes to scroll the whole window (eg. to get back to the code from looking at tests)
+		don't be too quick to delete these until you're absolutely done
 	beware of fake errors (slightly yellow/brown colored) due to thing not being used yet
 	var doesn't work in Java 8 but does in 15 (don't get confused by things like that)
-	watch out for holding down or repeated spaces causing erroneous . to be inserted
-
-[Data Structure Practice]
-***notebook with some useful practice structures***
+	
