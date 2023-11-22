@@ -358,7 +358,7 @@ other one-liner patterns
 		Map<Integer, Long> counts = Arrays.stream(arry).boxed().collect(groupingBy(n -> n, counting()));
 			keep in mind the count is a Long because it's a stream
 			the place this will bite you is when you do .getOrDefault(key, 0) -> need to do .getOrDefault(key, 0L)
-	if you find yourself doing something like a dictionay of counts and converting that to a ditionary of counts of counts
+	if you find yourself doing something like a dictionay of counts and converting that to a dictionary of counts of counts
 		you probably actually wanted a priority queue
 
 TreeSet
