@@ -1,0 +1,701 @@
+[Variables]
+int, float, str, bool
+True and False for bool
+'' and "" equivalent
+2 + 3j = complex
+
+None = absence of value
+    type is NoneType
+
+type(x) for reflection
+    type(x).__name__
+dir(x) = get all the members of x
+help(x) = get the docstring of x
+isinstance(a, b)
+
+x = 3
+    variable declarations are not typed
+x = 'hi'
+    can be set to a totally different type later
+
+2., 2e9, etc. for floats
+    float('inf') and float('-inf') to get infinities
+        these act like you'd expect (eg. infinity always stays infinity when add finite numbers)
+    float('nan')
+        stays nan no matter what operations you do to it
+    math.isnan(x)
+    all comparisons (==, <, etc.) with nan automatically False, even if both sides are nan!
+
+0b, 0x, etc. prefixes for binary, hex, etc.
+
+Variable Scope (unusual)
+    if you read a variable, it automatically looks from the current scope up to global as usual
+    but when you write a variable, it will only go up to the function's scope and then create a new variable if not there
+    this also means that variables don't nest within blocks in functions in the normal way
+        with statements, while statements, if statements, etc. can declare and set a value within them and it works fine
+    to make a truly local variable within a block, you'd have to enclose it in another function scope
+        eg. a helper function, or a nested/lambda function
+    you can use the 'global' keyword to write to a global variable instead of making a new local variable
+        global x
+        x = 100
+    similarly, you can use 'nonlocal' (which cannot be used for globals) to assign to a higher nested function variable
+        nonlocal x  # x is from function containing this function
+        x = 100
+    an advantage of this is to be able to create and set variables with multiple possible values in branches more concisely
+
+there is no such thing as 'const' or 'final' to prevent modification
+mutability and references
+    l = [1, 2, 3]
+    m = [l, l]
+    l.append(4)
+    print(m)   # [[1, 2, 3, 4], [1, 2, 3, 4]]
+
+    def f(s):
+        s.append(5)  # original affected
+
+use \ at end of line to continue on next line
+    may give you better result than how the formatter does long fluent API chains
+also, wrapping in something like (), [], or {} causes a line continuation syntactically
+
+python is very picky about indentation having to match and stuff like that
+
+declaration order doesn't matter in the same way as other languages
+    eg. within body of a function, you can use a variable that doesn't exist
+    as long as it exists by the time the function is called elsewhere, it will work out
+    this is the behavior of a scripting/interpretted language
+
+you can check for the existence of a variable itself with:
+    if 'x' in locals():  # note that we use string name of variable
+      print(x)
+    if 'x' in globals():
+      print(x)
+
+you can store variables on classes and functions that aren't defined in those places!
+    this is what allows decorators to work
+    it only works for stuff you define, not built-in stuff like integers and dictionaries
+    eg. class MyClass:
+          pass
+        m = MyClass()
+        m.x = 10
+        print(m.x)
+
+    eg. def f():
+          pass
+        f.x = 10
+        print(f.x)
+
+[Collections]
+collections in Python have literals but you can also use their explicit constructors (eg. list())
+
+list
+    x = [1, 2, 'hi']
+    x[0] = 100 # mutable
+    print(x[0])
+
+    x.append(val)
+    x.extend(y)
+        destructively add elements of y to x (leaving y alone)
+    x.insert(index, val)
+    x.remove(val)  # first occurence
+    x.pop()  # return and remove last item
+    x.pop(index)  # return and remove item at index
+    del x[index]
+    del x[low:high]
+    x.clear()
+
+    sum(l), max(l), min(l) top-level functions
+        these also have variadic parameter versions
+            eg. max(a, b, c)
+
+    l.sort() destructive, sorted(l) non-destructive (copy)
+    l.reverse() desturctive, reversed(l) non-destructive (copy)
+
+    x = a + b + [1, 2] # concatenation (non-destructive)
+        use a.extend() for destructive
+
+tuple
+    x = (1, 2, 'hi')
+    # immutable!
+    print(x[0])
+
+    y = (1,)    # single value tuple syntax
+
+set
+    x = {1, 2, 3} # mutable
+    x.add(4)
+    x.update([5, 6, 7]) # any iterable
+    x.remove(7)  # raises error if not present
+    x.discard(6)  # does not raise error if not present
+    x.pop()   # remove and return arbitrary item
+    x.clear()
+
+    bitwise operators overloaded to do set operations
+    also set.intersection(s1, s2) static method
+    also s1.intersection(s2) mutation
+
+    NOTE: you cannot use {} as empty set because it's ambiguous with empty dict
+        have to use set() constructor
+
+dict
+    x = {'a': 1, 'b': 2} # mutable
+    x['c'] = 3
+    # NOT ALLOWED: x.c = 3
+    print(x['c'])  # raises KeyError if not present
+    print(x.get('c', 0))   # default value if not present
+    del x['c']
+    x.pop('b')
+    x.clear()
+
+    default iteration and membership checks are for keys
+    you can be more explicit: x.keys(), x.values(), x.items() which are tuples of key and value
+        these are sequences, not lists or tuples (doesn't usually matter)
+
+    empty dict = {} or dict()
+
+bytes
+    x = b'abc=xff' # char and hex values
+
+Cloning
+    x = [*y] makes a shallow copy of list y into x
+    x = [**d] makes a shallow copy of dictionary d into x
+    x = list(y) is another way to clone (like a copy constructor)
+        often take an iterable rather than specific type
+        so that you can also do conversions
+Conversions
+    x = set(l) # list to set (to dedupe)
+    x = list(set(l)) # list to list with deduping
+Unpacking
+    x, y, z = collection
+        works for tuple, list, or other sequence
+        as long as the length of the collection matches the # of variables
+    [x, y, z] = collection
+        means the same thing as above (regardless of whether list or tuple)    
+Iteration
+    for item in l:
+        print(item)
+Membership
+    if item in l:
+        print('yes')
+Comprehensions
+    in general, look like the literal for the collection you're making
+        with a for loop inside to generate the elements
+    
+    squared = [x**2 for x in nums]
+    name_lengths = {name: len(name) for name in names}
+    unique_vals = {x for x in nums}
+
+    a special exception is with tuples and Generators
+        gen = (x**2 for x in nums)
+            this is a GENERATOR COMPREHENSION instead of TUPLE
+        tup = tuple(x**2 for x in nums)
+            this is a TUPLE COMPREHNSION (technically casting generator)
+
+    nesting is done with 2 for loops inline
+        [x**2 for row in matrix for x in row]
+            this flattens the matrix and gets the squares of its elements as a flat list
+
+    conditional comprehension with 'if'
+        even_squares = [x**2 for x in nums if x % 2 == 0]
+Negative indices
+    -1 = last item, -2 = 2nd to last item, etc.
+Slicing
+    [2:5] # includes 2, 3, 4
+    [:2] # includes 0, 1
+    s[-2:] # includes last 2 items only
+    s[:-1] # excludes last item
+    s[start:stop:step] # full version (all 3 can be left off and/or negative)
+        step -1 can be used to REVERSE the order
+        but the start and stop are taken literally and might end up empty
+        (ommiting start or stop is a special case where it will smartly adapt)
+    you will get empty list for invalid range (not throw)
+
+    for mutable collections, slices can be assigned
+        eg. assign [] to clear that range
+        eg. del operator on the slice to clear that range
+        eg. assign a list to change that range (even on size mismatch)
+    however, when stored as a variable, slices are COPIES of parts of the list
+Ranges
+    the range() function works similar to slicing
+    it returns an iterable that you can use with a 'for' loop
+Sorting
+    sorted(l, fn)
+        fn should return value to sort by
+Objects as keys
+    any of the built-in collections are hashable and thus can be used as keys
+    your own classes can be hashable if you implement the right stuff too
+
+Stack
+    use list with append() and pop()
+    can peek with l[-1]
+    or use collections.deque
+Queue
+    use collections.deque
+    similar to list but popleft() and popright()
+    still use append()
+
+[Strings]
+# for comments
+
+'' and "" are same (and allow to use other unescaped)
+''' and """ are multi-line strings
+r'' and r"" are raw strings
+f'' and f"" and f''' and f""" are f-strings
+
+immutable (modifications return copy)
+    you can get a mutable copy as a list of chars with list(s)
+
+strip() to remove leading/trailing whitespace
+replace(old, new)
+upper(), lower()
+split(delim) -> gets list of strings (similar logic to Java but not regex)
+delim.join(l) -> join a list by a delim string (method of str)
+
+s = s1 + " " + s2
+
+if substring in s:   # substring search
+    print('present')
+s.index(substring)   # explicit search
+s.count(substring)
+
+formatted strings
+    NOTE: with any of these, you can store the template as a variable in itself
+        though in an f-string, that would already be evaluated
+    
+    f'Hi, my name is {name} and I am {age} years old.'
+        name and age should be variables in the encosing scope
+    'Hi, my name is %s and I am %d years old' % (name, age)
+        this is the old-fashioned way, replaced by f-strings above
+        for single value, no () needed
+    'Hi, my name is {} and I am {} years old.'.format(name, age)
+    'Hi, my name is {name} and I am {age} years old.'.format(name=name, age=age)
+
+    {:.2f} (example of format specifier - in this case float with 2 places after decimal point)
+
+string as collection
+    len(s)
+    s[0], s[-1], s[1:3]
+        none of these support assignment
+        slicing gives another string
+    for c in s:
+        print(c)
+    l = list(s)   # mutable copy as list of characters
+
+    NOTE: character is not a type - it is just a string of length 1
+
+[Operators]
+mostly the same as C-like languages with some exceptions
+    additional operators like // and ** also support assignment (//= and **=) like others
+
+missing
+    ++ and --
+division
+    // behaves like / in c-like languages (floor division)
+    / becomes a float instead!
+exponentiation
+    a**b means a to the b power
+boolean
+    use words and, or, not instead of operators &&, ||, !
+    eg. a and not b
+bitwise
+    unlike booleans, these use the usual symbols (&, ^, ~, >>, etc.)
+
+presence in collection (boolean)
+    a in somelist
+    b not in somelist
+
+equality
+    a is b
+        True if same numeric value or same reference
+        same as == in Java
+    a is not b
+        opposite of a is b
+    a == b
+        value equality
+        more like .equals() in Java
+    a is None
+        considered better than doing a == None
+
+truthiness
+    since types aren't bound, there is a lot of flexibility for checks on variables
+    the following values are falsey in conditionals:
+        None
+        False
+        not True
+        0
+        ''
+        []
+    the rest are truthy
+    you can disambiguate None from [], for instance, using is None first
+    operators like and, or, not make into true booleans first
+
+ternary
+    no ? : like in C-like languages
+    instead it looks like:
+        a if a > b else b
+
+collections
+    [1, 2] * 3
+        [1, 2, 1, 2, 1, 2]
+    [1, 2] + [3, 4]
+        [1, 2, 3, 4]
+    [*mylist]
+        spread operator (in this case copying mylist)
+
+del
+    x = 5
+    del x
+    print(x)    # Error
+    del x,y   # delete multiple
+
+    l = [1, 2, 3]
+    del l[1]  # l = [1, 3]
+    l = [1, 2, 3]
+    del l[1:] # l = [1]
+
+    del mydict[key]
+
+[Control Flow]
+pass
+    a noop statement
+    eg. for an empty loop or function body (because required to have something there)
+
+if a < b:
+    print(a)
+elif b < a:
+    print(b)
+else:
+    print('same')
+
+while a < b:
+    a += 1
+    print(a)
+
+for element in l:
+    print(element)
+
+for index, element in enumerate(l):
+    print(index, element)
+
+for x, y in l:
+    # each element of l is a tuple which is unwrapped here
+
+for i in range(10):
+    print(i) # 0, 1, 2...9
+
+break and continue supported as usual
+
+match term: # like switch in another language
+    case 'bla1':
+        print('bla1')  # no fall-through, so no break needed
+    case 'bla2':
+        print('bla2')
+    case _:    # like default in another language
+        print('default')
+
+try:
+    someCodeThatMightThrow()
+    raise MyThrownException('I threw')
+    print('this code is unreachable')
+except ZeroDivisionError:
+    print("division by zero!")
+except MyThrownException as e:
+    print("Error: " + str(e))
+except (OtherError1, OtherError2) as e:
+    print("Either OtherError1 or OtherError2" + str(e))
+finally:
+    print("this will run no matter what")
+
+some built-in errors:
+    KeyError
+    AttributeError
+
+with open('myfile.txt') as f: # context management
+    contents = f.read()
+print(contents) # notice contents variable still lives (as does f, but in a closed state)
+
+[Functions]
+def f(a, b, c):
+    return a + b + c
+x = f(10, 20, 30)
+
+Overloading
+    true overloading does not exist
+    if you define the same name twice, the later one replaces the earlier one, even if params are different
+    you have to simulate overloading with default args and keyword args
+Tuples
+    return (a, b)
+        use tuple to return multiple values from a function
+    a, b = f(x)
+        tuple unwrapping in-place
+Default args
+    def f(x, a=0, b=0):
+        pass
+    f(10)
+    f(10, 20)
+    f(10, 20, 30)
+Keyword args
+    using same f as "Default args" above
+    f(10, b=1000, a=700)
+    f(10, b=10)
+
+    f(a=a)
+        something you commonly see when delegating args
+        Python knows the difference between the left and right side of this
+
+Spread (star and double-star)
+    f(10, arg=100, *l, **k)
+        l = positional args expanded in-place
+        k = keyword args expanded in-place
+        a way to forward variadic args
+            in addition to using collections to store args
+Rest/Variadic (star and double-star)
+    def f(x, a=10, *args, **kwargs):
+        pass
+    args becomes a list of positional args passed in besides the named ones
+    kwargs becomes a dictionary of keyword args passed in besides the named ones
+
+Generators (lazy)
+    def f():
+        yield 1
+        yield 2
+    print(list(f())) # evaluate whole thing
+
+[Functional]
+f = lambda: print('hi')
+g = lambda x: x**2
+h = lambda x, y=10, *args: x + y + max(args)
+def myfunc(x):
+    print(x)
+x = myfunc
+
+f()
+print(g(10))
+print(h(10, 20, 30, 40))
+x(10)
+
+nested functions are allowed and can be used like lambdas too
+    def f():
+        def lam():
+            print('hi')
+        return lam
+    f()()
+
+    NOTE: this is the only way to do multi-statement lambdas in Python
+        there is no way to have {} around a body like in other languages
+
+ignored params: _, __, etc.
+    you can use these in a function or a lambda as params
+    they are technically real names and can be used as such
+        but by convention, they are ignored params
+        usually to make args match without losing readability
+    eg. for _ in range(10):
+            print('hi')   # print 10 times, don't need index
+    eg. a, _ = f()  # unwrap without length error, but only need 1st thing
+
+functional operations
+    map
+        seq = map(lam, l)
+        print(list(seq))
+
+        NOTE: you can often do LIST COMPREHENSIONS instead
+    reduce
+        val = functools.reduce(lam, l, seed)
+        print(val)
+    filter
+        seq = filter(lam, l)
+        print(list(seq))
+
+        NOTE: you can often do LIST COMPREHENSION with an 'if' inside
+
+    zip
+        multiple lists to list of tuples
+            seq = zip(l1, l2, l3)  # variadic
+            for i1, i2, i3 in seq:
+                print(i1, i2, i3)
+        list of tuples to multiple lists
+            l1, l2, l3 = tuple(zip(*seq))
+        parallel iteration
+            for i, j in zip(is, js):
+                print(i, j)
+
+        NOTE: zip is lazy like the other functional operations
+        
+itertools
+    see stdlib section below
+    itertools lets you do various stream operations for declarative lazy sequence processing
+
+Closures
+    python closes BY REFERENCE over variables by default
+        for i in range(10):
+          yield lambda: print(i)
+        This will print 9 over and over (10 times)
+            because i is captured by reference even though it's primitive!
+            then the lambdas are returned all closing on the same variable that continues to live
+        This happens with nested functions too, not just lambdas!
+    in order to close BY VALUE instead, you need a lexical capture point (a function call)
+        def make_lambda(x):
+          return lambda: print(x)
+        for i in range(10):
+          yield make_lambda(i)
+    the good part about this behavior is you can modify the state
+        eg. increment a counter, iterate lines in a file, etc.
+    just remember that when it's a parameter, it's by value and when it's implicitly captured, it's by reference
+
+Class Method References
+    m = MyClass()
+    map(m.f, l)
+        method f of class MyClass is BOUND to instance m
+        map() will call it like a pure function, and m will automatically be passed as self
+        NOTE: if you see lambda x: m.f(x), you can probably just replace that with m.f
+    MyClass.f(m)
+        method f of class MyClass is UNBOUND, so you have to pass an instance as the first arg
+
+[Classes]
+'self'
+    similar to how you have to put 'this' everywhere in JS, you need 'self' to access instance members
+    in addition, you have to explicitly pass 'self' as the first param of instance methods!
+Inheritance
+    uses a prototype-like inheritance (similar to JS)(but no prototype member)
+    static data lives on the class and then gets copied to instances (like a stamp)
+    the instances are then independent from that point on
+
+    no 'virtual' keyword - everything is virtual (like Java) due to how the lookups work
+        just using the same name overrides already
+
+    diamond inheritance
+        ambiguity resolved by taking first thing from left in class's inheritance list (MRO)
+
+    unlike other languages, base c'tor is only automatically called if derived class has no c'tor!
+        can explicitly call it like below though
+
+Access Modifiers
+    apply within classes as well as top-level things in modules
+    default = public
+    _ = protected
+        only by convention (not enforced)
+    __ = private
+        enforced by NAME MANGLING at runtime
+            though the mangling is predictable and defeatable
+    __somename__ = not an access modifier but a special value with special meaning
+
+class MyClass:
+    static_var = 10
+    other_var = static_var  # no self needed because not in a method
+
+    def __init__(self, instance_param):
+        self.instance_var = instance_param
+
+    def f(self, x):
+        print(x)
+        print(self.instance_var)
+
+class MyDerivedClass(MyClass):
+    def __init__(self, instance_param):
+        super().__init__(instance_param)
+        self.derived_var = 10
+
+    def f(self, x):
+        print('inherited!')
+        print(x)
+
+    @staticmethod   # special attribute for static method
+    def g(x):       # no self needed for static
+        print(x)
+
+    @classmethod
+    def h(cls):     # class passed as arg
+        print(cls.static_var)
+
+class MultipleDerivedClass(BaseClass1, BaseClass2):   # no restriction
+    pass
+
+m = MyClass(x)  # self passed implicitly
+print(m.static_var)  # this is actually a copy now
+print(MyClass.static_var)
+print(m.instance_var)
+m.f(100)
+
+MyDerivedClass.g(100)
+MyDerviedClass.h()
+
+[Imports/Exports/Modules]
+import os
+import sys
+print(os.path)
+
+import os, sys
+print(os.path)
+
+import os as operating_system, sys as system
+print(operation_system.path)
+
+from os import path
+print(path)
+
+from os import path as os_path
+print(os_path)
+
+anything can be at the top-level of a module (variables, classes, functions, etc.)
+
+[stdlib]
+print(x)
+print(x, y, z)
+    print 3 values with space in between on single line
+print() for newline only
+print(x, y, z, sep='\t', end='')
+    overriding sep and end
+    in this case, tab between x, y, and z, and no newline at end
+print("x:", x)
+
+open() for file I/o doesn't need an import
+    with open(path, 'r') as file:  # open for text read
+        for line in file:          # iterate lines (inc. newlines)
+            print(line.strip())    # strip whitespace
+        
+        lines = file.readlines()   # list of lines (inc. newlines)
+
+        content = file.read()      # read whole file as single string
+other open modes include:
+    w = write (use write() method which does not write a newline) (use \n)
+    a = append
+    b = binary (bytes instead of str)
+    eg. 'wa', 'wb', 'rb', etc.
+
+math
+    isnan(x)
+    isclose(x, y)
+        for float near-equality
+statistics
+    mean(l)
+
+functools
+    reduce() [but map and filter are in global/default namespace]
+
+itertools
+    chain(seq1, seq2)
+        concatenates multiple sequences lazily into one sequence
+    cycle(seq)
+        lazily repeats a sequence forever
+    repeat(val, n)
+        lazily repeats a value n times
+    combinations(seq, length)
+        all combinations of 'length' elements of seq 
+            only unique combinations, with same element not being paired with itself
+    permutations(seq)
+        all possible permutations of sequence
+
+collections
+    deque: double-ended queue
+
+[Add to notebooks]
+x = list(y) as copy
+collection conversions via constructors
+diamond inheritance paragraph wrong about C++ I think
+str IMMUTABLE
+    mutable copy with list(s)
+str slice is a string copy (still immutable)
+assign to slice modifies original (eg. [] to clear), but assign slice to variable is copy
+character is string of length 1
+filter()
+??tuple as function args?
+??inline statics?
