@@ -12,6 +12,8 @@ type(x) for reflection
 dir(x) = get all the members of x
 help(x) = get the docstring of x
 isinstance(a, b)
+NOTE: unlike in some languages, you don't need special operators to pass classes around
+    eg. pass int to a function if need the int class for reflection purposes (as defaultdict takes in c'tor)
 
 x = 3
     variable declarations are not typed
@@ -281,6 +283,12 @@ string as collection
     l = list(s)   # mutable copy as list of characters
 
     NOTE: character is not a type - it is just a string of length 1
+
+regular expressions
+    see 're' in 'stdlib' section
+
+'string' package
+    for getting list of ascii letters, punctuation, etc.
 
 [Operators]
 mostly the same as C-like languages with some exceptions
@@ -665,8 +673,22 @@ math
     isnan(x)
     isclose(x, y)
         for float near-equality
+    sqrt(x)
+    floor(x)
+    exp(x) [e to the x]
+    log(x) [natural log]
+    log(x, base)
+    radians(angle)
+    cos(radians)
+    pi = constant
+    e = constant
 statistics
     mean(l)
+random
+    seed(value)
+    randint(inclusiveLower, exclusiveUpper)
+    random() [float from 0 to 1, not including 1]
+    shuffle(l) [destructive]
 
 functools
     reduce() [but map and filter are in global/default namespace]
@@ -685,7 +707,114 @@ itertools
         all possible permutations of sequence
 
 collections
+    defaultdict: dictionary with default values for keys not present
+        d = defaultdict(int)  # specify the type in c'tor
+        print(d['notpresent']) # 0
+        d['notpresent'] += 1 # becomes 1
+        trying to get or set the key makes it present from then on
+    Counter: count dictionary
+        counts = Counter([1, 1, 2, 3, 3, 3, 4])
+        print(counts[1])  # 2 because there are 2 1s
+        print(counts[0])  # 0 because not present
+        print(counts.most_common(2)) # [(3, 3), (1, 2)]
+        print(counts.most_common(1)[0][0]) # 3
+        print(sum(counts.values()))  # total count
+    namedtuple: tuple with named fields (like a struct)
+        acts like a normal tuple and a class at same time
     deque: double-ended queue
+        more efficient than regular lists for stack and queue operations
+
+os
+    path
+        expanduser('~/subfolder') -> '/home/username/subfolder' for instance
+        abspath(path)
+        relpath(abspath, relativeToPath)
+        dirname(path) -> parent folder of file or folder
+        basename(path) -> remove extension if present
+        splitext(path) -> split into basename and extension parts
+        join()
+        exists()
+        isfile()
+        isdir()
+    walk(path)
+        pre-order DFS (alphabetical) of folder tree starting at root
+        iterable of tuples of 3 items so you can do this
+            for dirpath, subdirnames, filenames in os.walk('.'):
+              print(dirpath, subdirnames, filenames)
+        paths are made to look like what you passed in (relative of absolute)
+        what you see in subdirnames, you are about to go into on a future iteration
+            but the current iteration is your chance to deal with the files themselves
+    listdir()
+        list files and folder (by name) in current working directory (or given directory)
+    getcwd()
+    chdir()
+    mkdir()
+    makedirs() [to make multiple levels]
+    rmdir() [must be empty]
+    environ = dictionary of environment variables (no $)
+        can be used to get/set in current shell instance
+    getenv(varname, default)
+    putenv(varname, value)
+
+shutil = higher-level OS file system functionality than os
+    copy()
+    move()
+    rmtree() [doesn't require empty]
+    make_archive() [to make zip file]
+    unpack_archive() [to unzip]
+
+sys
+    argv = list of cmdline args (element 0 = the top-level call such as the python file)
+    exit(code) = exit whole program with exit code
+    stdin, stdout, stderr
+    path = module search path
+    platform = OS info
+    version = Python version
+    modules = currently imported modules
+
+glob
+    glob('**/*.py')
+        recursive list of all python files in all subfolders in current working directory
+
+re
+    sub(regex, replacement, text) -> returns new text
+    findall(regex, text) -> list of all substrings matching
+
+string
+    ascii_letters = collection of all ascii letters
+    punctuation = collection of all punctuation chars
+
+pickle: read and write objects as binary file content
+    dump(obj, file)
+    load(file)
+
+    file must be open with open() as usual
+    depends on __getstate__ and __setstate__ members of object
+        the built-in stuff has it already
+
+copy
+    deepcopy(obj)
+        depends on __copy__ and __deepcopy__ existing on object (as built-ins have)
+
+time
+    deals with seconds (as floats)
+    time()
+    sleep(time)
+
+asyncio
+    lets you do async/await type stuff just by importing it (without having to reference)
+
+    async def f():
+        return 10
+
+    async def g():
+        x = await f()
+        return x
+
+    val = asyncio.run(g)  # top-level, once per program, to kick off the async graph
+    print(val)
+
+    see also: async with, asyncio.gather(), asyncio.Lock (async/await friendly alternative to threading.Lock)
 
 [Add to notebooks]
 x = list(y) as copy
