@@ -175,6 +175,21 @@ Unpacking
 Iteration
     for item in l:
         print(item)
+
+    if an object is iterable, it will have an __iter__() method to return an iterator
+    a generator function works as an iterator (supports the iterator interface)
+    you can also make a class that has a __next__(self) method and return that
+        python will call __next__() on the iterator as needed to get the next item
+        it should raise StopIteration when there are no more items
+    
+    iterators can be directly used like this:
+        it = iter(collection)
+        while True:
+            try:
+                print(next(iter))
+            except StopIteration:
+                break
+        
 Membership
     if item in l:
         print('yes')
@@ -419,10 +434,16 @@ finally:
 some built-in errors:
     KeyError
     AttributeError
+    StopIteration
 
 with open('myfile.txt') as f: # context management
     contents = f.read()
 print(contents) # notice contents variable still lives (as does f, but in a closed state)
+
+with open('myfile.txt'):
+    print('not necessary to keep variable - context is still active')
+with open('myfile.txt') as f, open('myfile2.txt') as g:
+    print('2 contexts at same time!')
 
 [Functions]
 def f(a, b, c):
@@ -470,6 +491,31 @@ Generators (lazy)
         yield 1
         yield 2
     print(list(f())) # evaluate whole thing
+
+    def g(seq):  # lazy sequence in terms of another lazy sequence
+        for item in seq:
+            yield item**2
+    print(list(g(f())))
+
+    def h():
+        yield 0
+        yield from f()  # expanded in-place (like * operator)
+        yield 3
+
+    def i():
+        x1 = yield 0
+        x2 = yield x1 * 10
+        yield x2 * 20
+
+    # two-way communication
+    gen = i()
+    next(gen) # 0
+    gen.send(100)
+    next(gen) # 1000
+    gen.send(1000)  # x2 becomes None if you don't call this
+    next(gen) # 10000
+    next(gen) # raises StopIteration
+    # you could use the gen.send() values to actually detect when to stop returning (eg. break a loop)
 
 [Functional]
 f = lambda: print('hi')
@@ -629,6 +675,85 @@ m.f(100)
 MyDerivedClass.g(100)
 MyDerviedClass.h()
 
+Interfaces
+    python doesn't have interfaces - everything is duck-typed
+    as long as the things referenced or called by the caller are on the object, it works
+
+Special Class Members
+    certain members can be present on your class to implement certain behaviors in python
+
+    __init__(self, ...) = c'tor
+    __del__(self) = d'tor
+
+    __str__(self) = converting object to string
+        eg. str(m)
+    __repr__(self) = string representation for debugging
+        eg. print(m)
+
+    __len__(self) = length of the collection
+    __iter__(self) = iterator class or generator function for iterating elements
+    __contains__(self, item) = membership check
+
+    __getitem__(self, index) = index operator (index could be anything you want)
+    __setitem__(self, index, value) = setting value by index
+    __delitem__(self, index) = deletion of value by index
+
+    __getattr__(self, name) = for reading values from an instance with . operator (as if fields)
+    __setattr__(self, name, value) = for dealing with assignment via .
+    __delattr__(self, name) = for deleting with deleting attributes via .
+
+    __getattribute(self, name)__ = generic attribution retrieval
+
+    __call__(self, ...) = call operator - for calling object as if it is a function
+    __enter__ and __exit__ for context management
+
+    __eq__(self, other), __lt__(self, other), __add__(self, other), __sub__(self, other), __and__(self, other), etc.
+    __bool__(self), __int__(self), etc. for type conversions
+    __hash__(self) = for hasing (eg. in dict)
+
+Properties
+    class Circle:
+        def __init__(self, radius):
+            self.radius = radius
+
+        @property
+        def diameter(self):
+            return 2 * self.radius
+
+        @diameter.setter
+        def diameter(self, value):
+            self.radius = value / 2
+
+        @property
+        def area(self):
+            return 3.14159 * self.radius**2
+
+    circle = Circle(1)
+    print(circle.diameter)
+    circle.diameter = 4
+    print(circle.diameter)
+    print(circle.area)
+
+Dataclass
+    (for simple POD types)
+
+    from dataclasses import dataclass
+
+    @dataclass
+    class MyClass:
+        x: int  # required constructor arg
+        y = 20  # optional constructor arg
+
+        def f(self):
+            return self.x + self.y
+
+        # __init__ defined for you
+        # has the member fields in order
+        # ones with values are optional
+
+    m = MyClass(10)
+    print(m.f())
+
 [Imports/Exports/Modules]
 import os
 import sys
@@ -641,10 +766,16 @@ import os as operating_system, sys as system
 print(operation_system.path)
 
 from os import path
+# avoid having to always use fully-qualified path
+# works for module as well as symbols within module
 print(path)
 
 from os import path as os_path
+# this works for renaming modules as well as symbols inside modules
 print(os_path)
+
+from os import *
+# import all symbols (usually not recommended)
 
 anything can be at the top-level of a module (variables, classes, functions, etc.)
 
@@ -684,6 +815,19 @@ sys.argv[1:]
 argparse built-in library can help parse the arguments
 common pattern in pip packages to have a dictionary of command name to function to call
     then use 1st arg as command and forward args to the function with * operator
+
+package
+    if a folder has an __init__.py file, it is a package
+    a package will import subpackages (usually relative with . and ..)
+        eg. from .deepsubfolder import deepmodule
+            then it's available as mypackage.deepmodule to the caller
+    packages can be in a hierarchy of other packages
+    importing from subfolders directly won't work - you have to import the package and let __init__.py set it up
+
+name clash issue
+    if you name a file the same as an api you're calling, it will try to import itself
+    the symptom of this will be that the import is empty
+    another place this comes up is if a folder is named after a script (causing ambiguity)
 
 [stdlib]
 print(x)
@@ -809,7 +953,8 @@ sys
     argv = list of cmdline args (element 0 = the top-level call such as the python file)
     exit(code) = exit whole program with exit code
     stdin, stdout, stderr
-    path = module search path
+    path = module search path (list of strings)
+        can append to it to add to the search path dynamically before importing a module
     platform = OS info
     version = Python version
     modules = currently imported modules
@@ -864,6 +1009,20 @@ argparse
     args = parser.parse_args()
     args.field1, args.flag, etc. then available
 
+dataclasses
+    dataclass: decorator for defining a data class
+
+logging
+    basicConfig()
+    logger = getLogger()
+    logger.info('this is an info message')
+    logger.error('this is an error!')
+
+importlib
+    reload(module): to reload a module (eg. to test changes)
+        reloads all references to same module even if imported multiple times in different ways
+    
+
 [pip]
 ** for any interactive command, use -y or -n switch to make it non-interactive**
 
@@ -889,6 +1048,7 @@ pip list --outdated
 
 wheel = pre-built binary package for python
     can be installed via pip
+    see Modules notebook for more details about wheels when needed (esp. the Apple and TensorFlow stuff)
 
 [conda]
 conda update conda
@@ -915,6 +1075,40 @@ termcolor
     print(colored('hi', 'red', attrs=['bold']) + ' there')
     colored() just makes text with escapes inside which can be concatted with un-colored text
 
+[decorators]
+function or callable class that wraps a function or class
+    either returns it with some change, or returns another one wrapping it
+eg. add attribute to function
+eg. wrap a function in another function that does logging
+
+def mydecorator(fn):
+    def wrapper(*args, **kwargs):
+        print('called')
+        return fn(*args, **kwargs)
+    return wrapper
+
+@mydecorator
+def myfn(x):
+    return x**2
+
+myfn(10)
+    returns 100 and also prints 'called' because of the decorator
+    myfn gets replaced by the decorator version right away
+
+built-in decorators:
+    @property: lets you treat a method as an attribute
+    @staticmethod
+    @classmethod
+    @abstractmethod
+
+[docstring]
+""" multi-line strings in certain places
+top of module for module documentation
+top of function (below prototype - indented) for function docstring
+top of class (below name - indented) for class docstring
+after variable (eg. a constant)
+can be one-line (all in one line) or have a space between the headline and the longer description
+
 [Add to notebooks]
 x = list(y) as copy
 collection conversions via constructors
@@ -927,3 +1121,4 @@ character is string of length 1
 filter()
 ??tuple as function args?
 ??inline statics?
+??return type with no return - is it None like in Perl??
