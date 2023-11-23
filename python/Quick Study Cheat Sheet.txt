@@ -1,3 +1,6 @@
+[Documentation]
+docs.python.org
+
 [Variables]
 int, float, str, bool
 True and False for bool
@@ -105,6 +108,32 @@ you can store variables on classes and functions that aren't defined in those pl
 
     eg. def f():
             f.x = 5 # from within class, just use the name
+
+Enums
+    use the enum module (import Enum, auto, etc.)
+    create an enum by either inheriting from Enum or creating an instance of Enum()
+    in class version, each member is assignment
+        either a value, or auto() call
+    in functional version: Enum('Color2', ['RED', 'GREEN', 'BLUE'])
+
+    ways to access:
+        Color.RED
+        Color(1)
+        Color['RED'] # case sensitive
+        for color in Color:
+          print(color)
+    
+    each member is unique and singleton (with respect to both == and 'is')
+        no matter how you access it above
+    each member has a .name and .value (for the ordinal)
+
+    enum class can have methods that can be called on the values (instances)
+
+Default Values
+    int() is 0
+    float() is 0.0
+    str() is ''
+    bool() is False
 
 [Collections]
 collections in Python have literals but you can also use their explicit constructors (eg. list())
@@ -1088,6 +1117,10 @@ typing
     TypeVar
     Union
     Optional
+
+enum
+    Enum
+    auto
 
 [pip]
 ** for any interactive command, use -y or -n switch to make it non-interactive**
