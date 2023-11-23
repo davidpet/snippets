@@ -754,6 +754,11 @@ Dataclass
     m = MyClass(10)
     print(m.f())
 
+[Generics]
+because python is dynamically weakly typed and duck-typed, it does not have generics
+any collection is a generic, with no constraints at all on elements (can mix and match however)
+however, you can somewhat simulate it at least in type hints using Typing.TypeVar (for type checking purposes only)
+
 [Imports/Exports/Modules]
 import os
 import sys
@@ -910,6 +915,10 @@ collections
     deque: double-ended queue
         more efficient than regular lists for stack and queue operations
 
+    abc (abstract base classes)
+        Callable = type annotation for a fn
+        Sequence = type annotation for a generic sequence
+
 os
     path
         expanduser('~/subfolder') -> '/home/username/subfolder' for instance
@@ -1022,6 +1031,11 @@ importlib
     reload(module): to reload a module (eg. to test changes)
         reloads all references to same module even if imported multiple times in different ways
     
+typing
+    Any
+    TypeVar
+    Union
+    Optional
 
 [pip]
 ** for any interactive command, use -y or -n switch to make it non-interactive**
@@ -1109,6 +1123,79 @@ top of class (below name - indented) for class docstring
 after variable (eg. a constant)
 can be one-line (all in one line) or have a space between the headline and the longer description
 
+[type hints]
+type hints aren't part of the actual execution of the program
+    just for type checkers if you have one setup
+    they can be arbitrarily left out, applied inconsistently, even wrong (if the type checker isn't aggressive or not set up)
+the syntax is very similar to TypeScript
+
+def add_numbers(a: int, b: int) -> int:
+    return a + b
+
+def print_this(a: int) -> None:
+    print(a)
+
+def do_stuff(a: int = 10, b: int = 5) -> int:
+    return a + b
+
+def add_numbers_list(l: list[int]) -> int:
+    return sum(l)
+
+def add_numbers_dictionary(d: dict[str, int]) -> int:
+    return sum(d.values())
+
+# This will still technically work if you pass <3 or >3 args.
+def add_numbers_tuple(t: tuple[int, int, int]) -> int:
+    return sum(t)
+
+# aliases
+Point = tuple[float, float, float]
+Points = list[Point]
+
+def centroid(p: Points) -> Point:
+    return tuple(mean(axis) for axis in tuple(zip(*p)))
+
+# variables
+x: int = 5
+y: Any = f() # any type (must be imported from Typing)
+
+# collections.abc imports
+# Callable (for functions)
+def transform(list1: list[int], list2: list[int],
+              fn: Callable[[int, int], int]) -> list[int]:
+    return [fn(left, right) for left, right in zip(list1, list2)]
+# Sequence (for sequences where you don't know if list, tuple, etc.)
+def add_numbers(s: Sequence[int]) -> int:
+    return sum(s)
+
+# Generics (simulated)
+from typing import TypeVar
+
+T = TypeVar('T')
+
+def first_thing(s: Sequence[T]) -> T:
+    return s[0]
+
+# Type union (shorthand for typing.Union[])
+def make_str(a: int | str) -> str:
+    if isinstance(a, int):
+        return str(a)
+    return a
+
+# shorthand for typing.Optional[]
+def coalesce(a: int | None) -> int:
+    if a is None:
+        return 0
+    return a
+
+[unit tests]
+** see Unit Tests notebook **
+not going to show much of it here
+it works much like JUnit type stuff from other languages
+class is instantiated to run test method
+setup and teardown, etc.
+mocking, faking, etc. available
+
 [Add to notebooks]
 x = list(y) as copy
 collection conversions via constructors
@@ -1122,3 +1209,5 @@ filter()
 ??tuple as function args?
 ??inline statics?
 ??return type with no return - is it None like in Perl??
+??object?
+no generics
