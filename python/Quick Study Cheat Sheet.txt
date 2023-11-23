@@ -3,6 +3,10 @@ int, float, str, bool
 True and False for bool
 '' and "" equivalent
 2 + 3j = complex
+float is 64-bit minus some overhead
+int is probably usually 64-bit (maybe minus some overhead) at first
+    but dynamically sized for very large values so it can grow
+    also some pooling/interning goes on
 
 None = absence of value
     type is NoneType
@@ -54,6 +58,19 @@ mutability and references
 
     def f(s):
         s.append(5)  # original affected
+there is no such thing as a local static variable in Python
+    some people create them like this:
+        def f():
+            if not hasattr(f, 'x'):
+                f.x = 10
+            else:
+                f.x += 1
+            return f.x
+    other ways:
+        default mutable args
+        closures
+        globals
+        statics on a class
 
 use \ at end of line to continue on next line
     may give you better result than how the formatter does long fluent API chains
@@ -77,7 +94,7 @@ you can store variables on classes and functions that aren't defined in those pl
     it only works for stuff you define, not built-in stuff like integers and dictionaries
     eg. class MyClass:
           pass
-        m = MyClass()
+        m = MyClass()  # note that you DO NOT USE NEW KEYWORD
         m.x = 10
         print(m.x)
 
@@ -85,6 +102,9 @@ you can store variables on classes and functions that aren't defined in those pl
           pass
         f.x = 10
         print(f.x)
+
+    eg. def f():
+            f.x = 5 # from within class, just use the name
 
 [Collections]
 collections in Python have literals but you can also use their explicit constructors (eg. list())
@@ -117,10 +137,13 @@ list
 
 tuple
     x = (1, 2, 'hi')
+    x = 1, 2, 'hi'
     # immutable!
     print(x[0])
 
     y = (1,)    # single value tuple syntax
+
+    () = empty tuple
 
 set
     x = {1, 2, 3} # mutable
@@ -260,6 +283,7 @@ f'' and f"" and f''' and f""" are f-strings
 
 immutable (modifications return copy)
     you can get a mutable copy as a list of chars with list(s)
+        make back into string with ''.join(c)
 
 strip() to remove leading/trailing whitespace
 replace(old, new)
@@ -377,6 +401,10 @@ del
 
     del mydict[key]
 
+hasattr(obj, name) to see if an attribute exists on an object
+    useful if you're going to be hiding variables in functions, for instance
+    eg. hasattr(x, 'count')
+
 [Control Flow]
 ; isn't required, but it is a way to fit multiple statements on one line
     eg. for shell one-liners
@@ -465,6 +493,17 @@ Default args
     f(10)
     f(10, 20)
     f(10, 20, 30)
+
+    def f(a=g()):  # not a "compile-time constant"
+        return a
+Default Mutable args
+    this is a weirdness of Python
+    when a default value of an arg is a mutable type like a list or dictionary
+        then modifying it within the function will modify the default (because it's cached that way)
+    eg. def f(x, a=[]):
+            a.append(x)
+        # every call to f without an a arg will grow the default a arg
+        # if you call with an a value, then call again without one, the cached one will come back
 Keyword args
     using same f as "Default args" above
     f(10, b=1000, a=700)
@@ -473,6 +512,9 @@ Keyword args
     f(a=a)
         something you commonly see when delegating args
         Python knows the difference between the left and right side of this
+Default return
+    when a function doesn't have a return statement, or reaches the end without returning
+    it returns None (which you can ignore to make it simulate void in other languages)
 
 Spread (star and double-star)
     f(10, arg=100, *l, **k)
@@ -551,7 +593,7 @@ ignored params: _, __, etc.
 
 functional operations
     map
-        seq = map(lam, l)
+        seq = map(lam, l) # lazy sequence
         print(list(seq))
 
         NOTE: you can often do LIST COMPREHENSIONS instead
@@ -624,7 +666,13 @@ Inheritance
 
     unlike other languages, base c'tor is only automatically called if derived class has no c'tor!
         can explicitly call it like below though
-
+object
+    the root of the type system is called 'object'
+    even primitives inherit from object
+    the default hash function returns a different hash for each instance
+        which makes it useful for unique opaque dictionary keys and such
+    object can be directly instantiated too
+        eg. to use as opaque key or something
 Access Modifiers
     apply within classes as well as top-level things in modules
     default = public
@@ -710,6 +758,10 @@ Special Class Members
     __eq__(self, other), __lt__(self, other), __add__(self, other), __sub__(self, other), __and__(self, other), etc.
     __bool__(self), __int__(self), etc. for type conversions
     __hash__(self) = for hasing (eg. in dict)
+
+    NOTE: a lot of these methods have top-level functions without underscores you can call to invoke them conveniently
+        eg. instead of m.__hash__(), you can call hash(m)
+        eg. hash(), str(), len(), iter(), etc.
 
 Properties
     class Circle:
@@ -1196,18 +1248,6 @@ class is instantiated to run test method
 setup and teardown, etc.
 mocking, faking, etc. available
 
-[Add to notebooks]
-x = list(y) as copy
-collection conversions via constructors
-diamond inheritance paragraph wrong about C++ I think
-str IMMUTABLE
-    mutable copy with list(s)
-str slice is a string copy (still immutable)
-assign to slice modifies original (eg. [] to clear), but assign slice to variable is copy
-character is string of length 1
-filter()
-??tuple as function args?
-??inline statics?
-??return type with no return - is it None like in Perl??
-??object?
-no generics
+[Jupyter]
+throughout the notebooks, there are examples of jupyter usage
+I did not include those here for now
