@@ -137,6 +137,7 @@ Default Values
 
 [Collections]
 collections in Python have literals but you can also use their explicit constructors (eg. list())
+a lot of the stuff mentioned in list will apply other places
 
 list
     x = [1, 2, 'hi']
@@ -153,6 +154,12 @@ list
     del x[index]
     del x[low:high]
     x.clear()
+    x.reverse()
+    x.copy() [shallow copy]
+        x[:] is same thing
+    x.index(item) for finding index of item in list from left side
+        raises ValueError if not found
+        linear search
 
     sum(l), max(l), min(l) top-level functions
         these also have variadic parameter versions
@@ -164,6 +171,9 @@ list
     x = a + b + [1, 2] # concatenation (non-destructive)
         use a.extend() for destructive
 
+    x == y # value equality implemented
+    x = [0] * 100 # initialize with 100 0s
+
 tuple
     x = (1, 2, 'hi')
     x = 1, 2, 'hi'
@@ -174,6 +184,8 @@ tuple
 
     () = empty tuple
 
+    and some of the stuff from list above
+
 set
     x = {1, 2, 3} # mutable
     x.add(4)
@@ -183,7 +195,7 @@ set
     x.pop()   # remove and return arbitrary item
     x.clear()
 
-    bitwise operators overloaded to do set operations
+    bitwise and minus operators overloaded to do set operations
     also set.intersection(s1, s2) static method
     also s1.intersection(s2) mutation
 
@@ -205,6 +217,32 @@ dict
         these are sequences, not lists or tuples (doesn't usually matter)
 
     empty dict = {} or dict()
+
+collections.deque
+    double-ended queue
+    can serve as an efficient stack, queue, or linked list
+        because it's backed by a linked list
+    like Java's LinkedList, since you're behind an interface that forces O(n) indexing
+        it's not as efficient as implementing your own for certain operations
+    otherwise, it more or less looks like a list with some extra members
+        where certain operations under the hood have different performance characteristics
+    
+    append() goes to right side in O(1)
+    appendLeft() goes to left side in O(1)
+    pop() comes off the right side in O(1)
+    popLeft() comes off the left side in O(1)
+
+    you can construct with a maxlen optionally
+        means if you add on one side and it goes above that len, items will fall off the other side
+Stack
+    use list with append() and pop()
+    can peek with l[-1]
+    or use collections.deque
+    list one is probably ok since not recopying whole array, just growing and shrinking
+Queue
+    use collections.deque because inserting at beginning is super costly
+    similar to list but popleft() and popright()
+    still use append()
 
 bytes
     x = b'abc=xff' # char and hex values
@@ -245,6 +283,9 @@ Iteration
 Membership
     if item in l:
         print('yes')
+
+    all(item in small_list for item in l)
+        a way to check if all items are in a collection
 Comprehensions
     in general, look like the literal for the collection you're making
         with a for loop inside to generate the elements
@@ -265,6 +306,11 @@ Comprehensions
 
     conditional comprehension with 'if'
         even_squares = [x**2 for x in nums if x % 2 == 0]
+
+    generator comprehensions can also be used directly as function call params
+        f(x**2 for x in range(10))
+            f() will get called with 1 arg, the generator (which is iterable)
+
 Negative indices
     -1 = last item, -2 = 2nd to last item, etc.
 Slicing
@@ -287,20 +333,36 @@ Ranges
     the range() function works similar to slicing
     it returns an iterable that you can use with a 'for' loop
 Sorting
-    sorted(l, fn)
-        fn should return value to sort by
+    sorted(l, key = fn, reverse = False)
+        fn should return value to sort by (can be derived/transformed arbitrarily)
+        ascending by default, can also reverse it for descending
+        the sort key will be used for sorting using the < operator
+            if the sort key is a custom class (or no sort key so elements used), then __lt__ will be called
+    the rough java equivalent is:
+        < operator = Comparable<T> implementation
+        key = Comparator passed in to override that
+Searching
+    bisect module has bisect_left and bisect_right to do binary search on sorted collection
+    bisect_left(sorted, item) uses < operator to look for leftmost occurence (and get index)
+    bisect_right(sorted, item) uses < operator to look for 1st item after rightmost occurence
+        can use as exclusive upper bound if want to take whole range
+    both let you pass in low and high bounds of the search as well as a key
+    if the index returned is len(sorted), then the insertion point is at the end (and item is not found)
+        or in the case of bisect_right, the item you wanted might be the last thing in the array (special case)
+    otherwise, you can tell if it was found or not by doing == on sorted[index]
 Objects as keys
     any of the built-in collections are hashable and thus can be used as keys
     your own classes can be hashable if you implement the right stuff too
+Implementing Objects for Collections
+    == operator is used for membership tests
+    < operator is used for sorting and binary searching
+    hash() is used for dict insertion
+    hash() and == are used for dict retrieval
+    repr() is used for printing collections (trickles down to elements)
+    str() is used for converting collections to string (trickles down to elements)
 
-Stack
-    use list with append() and pop()
-    can peek with l[-1]
-    or use collections.deque
-Queue
-    use collections.deque
-    similar to list but popleft() and popright()
-    still use append()
+Not Available:
+    persistent slice that responds to changes in original and/or can be used to modify the original
 
 [Strings]
 # for comments
@@ -648,6 +710,11 @@ functional operations
 
         NOTE: zip is lazy like the other functional operations
         
+    all
+        all(seq) = True if no elements are falsey (inc. if empty)
+    any
+        any(seq) = True if at least one element is truthy (false if empty)
+
 itertools
     see stdlib section below
     itertools lets you do various stream operations for declarative lazy sequence processing
@@ -785,6 +852,7 @@ Special Class Members
     __enter__ and __exit__ for context management
 
     __eq__(self, other), __lt__(self, other), __add__(self, other), __sub__(self, other), __and__(self, other), etc.
+        implementations for operators like ==, <, +, -, etc.
     __bool__(self), __int__(self), etc. for type conversions
     __hash__(self) = for hasing (eg. in dict)
 
@@ -961,6 +1029,9 @@ random
     randint(inclusiveLower, exclusiveUpper)
     random() [float from 0 to 1, not including 1]
     shuffle(l) [destructive]
+bisect
+    bisect_left(sorted, element)
+    bisect_right(sorted, element)
 
 functools
     reduce() [but map and filter are in global/default namespace]
