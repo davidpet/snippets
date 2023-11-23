@@ -363,6 +363,9 @@ del
     del mydict[key]
 
 [Control Flow]
+; isn't required, but it is a way to fit multiple statements on one line
+    eg. for shell one-liners
+
 pass
     a noop statement
     eg. for an empty loop or function body (because required to have something there)
@@ -645,6 +648,43 @@ print(os_path)
 
 anything can be at the top-level of a module (variables, classes, functions, etc.)
 
+python3 myfolder/myfile.py
+    direct execution
+    search path not used
+python3 -m myfolder.myfile
+    module execution
+    search path used
+        each . is a subfolder, but the root can be anywhere in search path
+        this allows you to execute libraries and installed dependencies this way too
+        current working directory, PYTHONPATH variable, installed packages, etc.
+python3 -c 'import myfolder.myfile'
+    execution via import (within one-liner shell command)
+python3 -c 'from myfolder import myfile; print(myfile)'
+    multiple statements within 1 line
+
+__name__
+    '__main__' for direct execution or module execution
+    name of the module itself if executed via an 'import' instead
+        either via -c or via executing another  .py file
+
+    very common to see if __name__ == '__main__' at top-level to distinguish library vs. script execution
+        eg. could run unit tests for script version
+
+__file__
+    path of the .py file (the current one, not the top level one)
+
+sys.argv[0]
+    the top-level thing being executed (instead of current file)
+    for direct and module, it is the current file, but for imports, it's the thing executing at the top
+    for one-liners that import the file, it's just -C
+sys.argv[1:]
+    args to the top-level script (passed to python3)
+    things like --flag are passed exactly like that as 1 arg
+    things like -n 5 are passed as 2 args exactly like that one after the other
+argparse built-in library can help parse the arguments
+common pattern in pip packages to have a dictionary of command name to function to call
+    then use 1st arg as command and forward args to the function with * operator
+
 [stdlib]
 print(x)
 print(x, y, z)
@@ -654,6 +694,8 @@ print(x, y, z, sep='\t', end='')
     overriding sep and end
     in this case, tab between x, y, and z, and no newline at end
 print("x:", x)
+escape sequences for color (have to escape back again)
+    alternatively, use a library like termcolor
 
 open() for file I/o doesn't need an import
     with open(path, 'r') as file:  # open for text read
@@ -815,6 +857,63 @@ asyncio
     print(val)
 
     see also: async with, asyncio.gather(), asyncio.Lock (async/await friendly alternative to threading.Lock)
+
+argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument(...) to add each arg and info about it one by one
+    args = parser.parse_args()
+    args.field1, args.flag, etc. then available
+
+[pip]
+** for any interactive command, use -y or -n switch to make it non-interactive**
+
+pip install termcolor
+    install package and make importable
+pip install --upgrade termcolor
+    install or update package
+pip install termcolor==2.3.0
+    install specific version
+    downgrades if necessary
+pip install 'termcolor>=1.1,<1.2'
+    install from a range of versions
+
+pip show termcolor
+    print info about installed package
+pip uninstall termcolor
+    uninstall a package
+
+pip list
+    show installed packages
+pip list --outdated
+    show list of outdated packages
+
+wheel = pre-built binary package for python
+    can be installed via pip
+
+[conda]
+conda update conda
+conda env list
+conda create -y -n conda-demo python=3.11
+conda activate conda-demo
+conda deactivate
+conda install termcolor
+conda env export >env.yaml
+conda env remove -y -n conda-demo
+
+conda manages:
+    python version
+    pip packages
+conda does not manage:
+    working directory
+    apt packages
+    node packages
+conda manages things by messing with PATH as you activate and deactivate environments
+
+[3rd party libraries]
+termcolor
+    from termcolor import colored
+    print(colored('hi', 'red', attrs=['bold']) + ' there')
+    colored() just makes text with escapes inside which can be concatted with un-colored text
 
 [Add to notebooks]
 x = list(y) as copy
