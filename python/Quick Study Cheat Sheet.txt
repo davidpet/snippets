@@ -699,6 +699,7 @@ some built-in errors:
     FileNotFoundError
     KeyboardInterrupt
         triggered by ctrl-c
+    NotImplemented
 
 with open('myfile.txt') as f: # context management
     contents = f.read()
@@ -932,25 +933,41 @@ Chess Queen Attacks: see Java notes (ToDo: move into common place)
 
 IIFE
     (lambda x: x**2)(5)
-    
+
 not supported:
   - pre-defined function types (for type hints only can use Callable)
   - special findfirst and findany calls
 
 [Classes]
+like with functions, a class object can be assigned to variables and still act as the class
+    eg. OtherClass = MyClass
+        o = OtherClass()
+
 'self'
     similar to how you have to put 'this' everywhere in JS, you need 'self' to access instance members
     in addition, you have to explicitly pass 'self' as the first param of instance methods!
 Inheritance
     uses a prototype-like inheritance (similar to JS)(but no prototype member)
-    static data lives on the class and then gets copied to instances (like a stamp)
-    the instances are then independent from that point on
-
+        if an attribute (either variable or method) is directly set on an instance, that is used
+            allowing you to add and replace functions and variables at runtime
+        if it is not directly set, it is forwarded to the class
+            the (technically) class/static members are then returned/used
+        if not set on the class, then the base classes (from left-to-right) are checked in DFS order
+            if not found in the hierarchy at all, then AttributeError is thrown
+    a key thing to note here is that instances dynamically see changes to their classes
+        it is not clone stamped at the point of instantiation
+        but changing superclass won't affect instance if subclass defines that symbol
     no 'virtual' keyword - everything is virtual (like Java) due to how the lookups work
         just using the same name overrides already
+        both for variables and functions
+    static methods act this way as well
+        the difference is that they don't have to have self as the first param
+    also note that everything is by name only, not by args or type
+        because no overloading in python
 
     diamond inheritance
         ambiguity resolved by taking first thing from left in class's inheritance list (MRO)
+        a result of how attribute lookups work
 
     unlike other languages, base c'tor is only automatically called if derived class has no c'tor!
         can explicitly call it like below though
@@ -964,12 +981,14 @@ object
 Access Modifiers
     apply within classes as well as top-level things in modules
     default = public
-    _ = protected
+    _ = protected (or semi-private)
         only by convention (not enforced)
     __ = private
         enforced by NAME MANGLING at runtime
             though the mangling is predictable and defeatable
     __somename__ = not an access modifier but a special value with special meaning
+
+    the "we are all robots" case (instances accessing each others' private variables) works here
 
 class MyClass:
     static_var = 10
@@ -1002,7 +1021,7 @@ class MyDerivedClass(MyClass):
 class MultipleDerivedClass(BaseClass1, BaseClass2):   # no restriction
     pass
 
-m = MyClass(x)  # self passed implicitly
+m = MyClass(x)  # self passed implicitly (no 'new' keyword)
 print(m.static_var)  # this is actually a copy now
 print(MyClass.static_var)
 print(m.instance_var)
@@ -1014,6 +1033,13 @@ MyDerviedClass.h()
 Interfaces
     python doesn't have interfaces - everything is duck-typed
     as long as the things referenced or called by the caller are on the object, it works
+    you could throw NotImplemented from a method to make it "abstract"
+
+Abstract Base Class
+    you could just have methods throw NotImplemented to make an ABC
+    there is also an abc module to make it a little more automatic (but not much)
+    hooks into the internals of the class to make it act like a language feature
+    see details in [stdlib]
 
 Special Class Members
     certain members can be present on your class to implement certain behaviors in python
@@ -1046,11 +1072,22 @@ Special Class Members
     __eq__(self, other), __lt__(self, other), __add__(self, other), __sub__(self, other), __and__(self, other), etc.
         implementations for operators like ==, <, +, -, etc.
     __bool__(self), __int__(self), etc. for type conversions
-    __hash__(self) = for hasing (eg. in dict)
+    __hash__(self) = for hashing (eg. in dict)
+        if object has multiple fields, make them a tuple and hash that
+        eg. return hash((self.field1, self.field2))
 
     NOTE: a lot of these methods have top-level functions without underscores you can call to invoke them conveniently
         eg. instead of m.__hash__(), you can call hash(m)
         eg. hash(), str(), len(), iter(), etc.
+
+    even more advanced ones like __new__ to hook construction and do crazy things
+
+Constructors
+    there is only one method of each name due to lack of overloading in Python
+    so if you provide multiple __init__, only the last one will stick
+        the others will be uncallable
+    thus, there are no delegating constructors within same class
+    if you don't provide __init__, then the object can be instantiated with no args
 
 Properties
     class Circle:
@@ -1094,6 +1131,14 @@ Dataclass
 
     m = MyClass(10)
     print(m.f())
+
+nesting
+    clases, functions, etc.  can be nested inside each other w/ no issue
+    nested classes don't inheritently have access to each others' private data
+    you can define a class inside a function and return an instance of it
+        this is a way to do anonymous classes
+
+not supported: partial classes, friend classes (can use _ variables), sealed/final
 
 [Generics]
 because python is dynamically weakly typed and duck-typed, it does not have generics
@@ -1289,6 +1334,11 @@ heapq
     heappop()
     heappushpop()
     heapreplace()
+
+abc: abstract base classes
+    ABC: inherit from this to make the class not instantiable directly
+    @abstractmethod: mark methods that subclasses must override
+        if a class inherits your class and overrides all these, it is concrete
 
 os
     path
@@ -1621,3 +1671,4 @@ I did not include those here for now
 ??itertools members
 ??operator module members
 ??chess queen attacks into common place
+??inheritance of variable names?  name hiding?
