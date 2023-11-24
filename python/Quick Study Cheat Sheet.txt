@@ -676,11 +676,28 @@ except (OtherError1, OtherError2) as e:
 finally:
     print("this will run no matter what")
 
+Exception is the usual common base of exceptions
+    raise Exception('summary', 'details')
+    e.args
+    str(e)
+    traceback.print_exc() [don't need to pass in e]
+        gets callstack and prints to stderr
 some built-in errors:
+    Exception
+        the most common base
     KeyError
+        eg. dictionary doesn't have key
+    ValueError
+        eg. int() on a string that is not an integer
     AttributeError
+        attribute (method or variable) not present on object
     StopIteration
     IndexError
+        eg. subscript out of range
+    ZeroDivisionError
+    FileNotFoundError
+    KeyboardInterrupt
+        triggered by ctrl-c
 
 with open('myfile.txt') as f: # context management
     contents = f.read()
@@ -690,6 +707,10 @@ with open('myfile.txt'):
     print('not necessary to keep variable - context is still active')
 with open('myfile.txt') as f, open('myfile2.txt') as g:
     print('2 contexts at same time!')
+
+asserts run as long as you don't run with -O (optimized) flag
+    assert condition
+    assert condition, message
 
 [Functions]
 def f(a, b, c):
@@ -1256,6 +1277,9 @@ sys
 glob
     glob('**/*.py')
         recursive list of all python files in all subfolders in current working directory
+
+traceback
+    print_exc()
 
 re
     use rawstrings to delimiante one level of \
