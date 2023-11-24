@@ -1132,7 +1132,7 @@ Streams API
 	infinite sequences
 		Stream.iterate(seed, lambdaOnPrevValue) -> infinite lazy sequence
 		eg. Stream.iterate(1, n -> n + 1) -> all positive integers
-		eg. STream.iterate(0, n -> n + 2) -> all even nonnegative integers
+		eg. Stream.iterate(0, n -> n + 2) -> all even nonnegative integers
 		then you can use map() etc. to transform further
 		do not accidentally assume n is the index! (be careful)
 

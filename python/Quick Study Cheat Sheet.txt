@@ -166,6 +166,7 @@ list
     sum(l), max(l), min(l) top-level functions
         these also have variadic parameter versions
             eg. max(a, b, c)
+        these can take `key` param to customize what you take the max and min by
 
     l.sort() destructive, sorted(l) non-destructive (copy)
     l.reverse() desturctive, reversed(l) non-destructive (copy)
@@ -798,6 +799,19 @@ Generators (lazy)
     next(gen) # raises StopIteration
     # you could use the gen.send() values to actually detect when to stop returning (eg. break a loop)
 
+Extension Methods
+    not directly supported, but easy to do
+    just make a function that takes a self param first
+    then assign to the class itself (or to an instance if you want)
+        eg. MyClass.my_method = my_method
+    then you can call it like any other method
+
+recursion
+    function calls itself by name
+    no TCO
+
+not supported: macros, inline, ref and out params
+
 [Functional]
 f = lambda: print('hi')
 g = lambda x: x**2
@@ -805,6 +819,8 @@ h = lambda x, y=10, *args: x + y + max(args)
 def myfunc(x):
     print(x)
 x = myfunc
+    a function name is just a variable assigned with a function object
+    it can be reassigned and they both point to the same thing
 
 f()
 print(g(10))
@@ -863,9 +879,15 @@ functional operations
     any
         any(seq) = True if at least one element is truthy (false if empty)
 
+    a lot of operations that are explicit calls in other languages are handled by Python syntax already
+        groupBy, flatMap, etc. can be done just by COMPREHENSIONS
+        limit and skip can be done by SLICING (but need to use islice if itertools sequence)
+
 itertools
     see stdlib section below
     itertools lets you do various stream operations for declarative lazy sequence processing
+    an alternative to writing your own generator comprehensions and such
+        or along with it, such as this comprehension: (x**2 for x in itertools.repeat(10))
 
 Closures
     python closes BY REFERENCE over variables by default
@@ -892,6 +914,28 @@ Class Method References
         NOTE: if you see lambda x: m.f(x), you can probably just replace that with m.f
     MyClass.f(m)
         method f of class MyClass is UNBOUND, so you have to pass an instance as the first arg
+    you can treat a class itself (or a variable referencing it) as a callable function for construction
+        constructor = MyClass
+        m = constructor(10)
+Operator Module
+    functions like add, mul, neg, lt, etc.
+    so that you can treat operators functionally too
+Commonly Used Method References to Replace lambdas
+    str.lower
+    list.append
+    int
+    len
+    sum
+    operator.add, operator.mul, etc.
+
+Chess Queen Attacks: see Java notes (ToDo: move into common place)
+
+IIFE
+    (lambda x: x**2)(5)
+    
+not supported:
+  - pre-defined function types (for type hints only can use Callable)
+  - special findfirst and findany calls
 
 [Classes]
 'self'
@@ -1170,6 +1214,12 @@ math
     cos(radians)
     pi = constant
     e = constant
+operator: functions for passing operators around functionaly
+    add
+    mul
+    not
+    lt
+    neg
 statistics
     mean(l)
 random
@@ -1191,11 +1241,26 @@ itertools
         lazily repeats a sequence forever
     repeat(val, n)
         lazily repeats a value n times
+    repeat(val)
+        infinite lazy sequence
+    count(start)
+        infinite lazy sequence of consecutive integers
+    count(start, step)
+        same but with a step other than 1
     combinations(seq, length)
         all combinations of 'length' elements of seq 
             only unique combinations, with same element not being paired with itself
     permutations(seq)
         all possible permutations of sequence
+    dropwhile(lam, l)
+    takewhile(lam, l)
+
+    the values returned by these are iterable sequences, but not indexable/slicable
+        you can use islice() to lazily slice them
+
+    islice(seq, count)
+    islice(seq, start, stop)
+    islice(seq, start, stop, step)
 
 collections
     defaultdict: dictionary with default values for keys not present
@@ -1550,3 +1615,9 @@ I did not include those here for now
 ???dict.setdefault
 ???NamedTuple details
 ??parallelSort()
+??prototype method inheritance is dynamic, not an in-place copy
+    ??what about variables
+??functools.partial (and other functools members)
+??itertools members
+??operator module members
+??chess queen attacks into common place
