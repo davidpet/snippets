@@ -3,6 +3,8 @@ docs.python.org
 
 [Variables]
 int, float, str, bool
+    technically all reference types, but int, float, and bool are immutable
+        thinking of them as primitive value types will pretty much always get you the right result though
 True and False for bool
 '' and "" equivalent
 2 + 3j = complex
@@ -255,6 +257,7 @@ Cloning
     x = list(y) is another way to clone (like a copy constructor)
         often take an iterable rather than specific type
         so that you can also do conversions
+    copy module also can deep copy
 Conversions
     x = set(l) # list to set (to dedupe)
     x = list(set(l)) # list to list with deduping
@@ -346,6 +349,8 @@ Sorting
     in general, if a collection or method doesn't take a reverse parameter, you can use a key like this to reverse the order:
         key = lambda x: -x
         key = operator.neg
+Shuffling
+    use random module
 Searching
     bisect module has bisect_left and bisect_right to do binary search on sorted collection
     bisect_left(sorted, item) uses < operator to look for leftmost occurence (and get index)
@@ -407,6 +412,26 @@ Priority Queue/Heap
     heappushpop(l, val) = push then pop
     heapreplace(l, val) = pop then push
 
+Immutability
+    list -> tuple
+        independent copy
+    set -> frozenset
+        independent copy
+    dict -> types.MappingProxyType
+        view on the original
+
+Thread Safety
+    in general, read operations on collections are thread-safe, but write operations are not
+        and read during write is not
+    this applies to almost all the built-ins as well as sortedcontainers
+        also applies to heapq
+    one exception is collections.deque, which is designed to be thread-safe on the two ends
+        but not in the middle
+    to add thread safety, use locking
+
+Swapping
+    a,b = b,a # right side makes tuple, left side unpacks it
+
 Not Available:
     persistent slice that responds to changes in original and/or can be used to modify the original
     a lot of the optimization methods in set and dictionary
@@ -414,6 +439,12 @@ Not Available:
         which probably doesn't matter if using the O(1) version anyway
     built-in sorted dict and set (use sortedcontainers library)
     directly making maxheap (have to use a hack)
+    special types for bitfields, bit sets, enum sets, enum maps, etc.
+    string builder (see in Strings)
+    tree/graph directly by nodes (implement yourself easily with classes)
+    struct/value type (though @dataclass and NamedTuple has that kind of goal)
+    proxy pattern immutable wrappers
+    proxy pattern synchronized wrappers
 
 [Strings]
 # for comments
@@ -464,6 +495,11 @@ string as collection
     l = list(s)   # mutable copy as list of characters
 
     NOTE: character is not a type - it is just a string of length 1
+
+string builder
+    there is no StringBuilder-like class in Python
+    the pythonic way to efficiently append to a string is to build a list and use ''.join() on the list
+        could even use a list comprehension to do it all inline
 
 regular expressions
     see 're' in 'stdlib' section
@@ -1247,6 +1283,9 @@ typing
     Union
     Optional
 
+types: dynamic type creation stuff
+    MappingProxyType: read-only view of a mapping with [] operator (such as dictionary)
+
 enum
     Enum
     auto
@@ -1422,3 +1461,4 @@ I did not include those here for now
 [ToDo]
 ???operator module (functional)
 ???dict.setdefault
+???NamedTuple details
