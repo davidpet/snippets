@@ -441,6 +441,7 @@ Not Available:
     directly making maxheap (have to use a hack)
     special types for bitfields, bit sets, enum sets, enum maps, etc.
     string builder (see in Strings)
+    case insensitivity in strings
     tree/graph directly by nodes (implement yourself easily with classes)
     struct/value type (though @dataclass and NamedTuple has that kind of goal)
     proxy pattern immutable wrappers
@@ -459,10 +460,16 @@ immutable (modifications return copy)
         make back into string with ''.join(c)
 
 strip() to remove leading/trailing whitespace
+    lstrip(), rstrip()
 replace(old, new)
-upper(), lower()
+upper(), lower(), title()
 split(delim) -> gets list of strings (similar logic to Java but not regex)
 delim.join(l) -> join a list by a delim string (method of str)
+startswith()
+endswith()
+isascii(), isnumeric(), isalpha(), isalnum(), isupper(), etc.
+
+find(), rfind(), replace(a, b, count=None), removeprefix(possiblePrefix), removesuffix(possibleSuffix), 
 
 s = s1 + " " + s2
 
@@ -484,6 +491,9 @@ formatted strings
     'Hi, my name is {name} and I am {age} years old.'.format(name=name, age=age)
 
     {:.2f} (example of format specifier - in this case float with 2 places after decimal point)
+        or in the old style %.2f
+        see Java notes for rundown of the specifiers (%02d, %.2f, %15s, %-15s, %s, %d)
+    format specifiers are pretty permissive about type mismatches
 
 string as collection
     len(s)
@@ -493,6 +503,7 @@ string as collection
     for c in s:
         print(c)
     l = list(s)   # mutable copy as list of characters
+    because str is iterable, things like sorted(s) will work too
 
     NOTE: character is not a type - it is just a string of length 1
 
@@ -501,11 +512,39 @@ string builder
     the pythonic way to efficiently append to a string is to build a list and use ''.join() on the list
         could even use a list comprehension to do it all inline
 
+conversions
+    int(s) will throw ValueError if not a proper integer string
+        isnumeric(s) can be used to check it first
+    str(n) will use the __str__ method of the object (simple for types like int)
+    repr(n) will use the __repr__ method (simple for types like int)
+    print(n) will automatically use __repr__
+
 regular expressions
     see 're' in 'stdlib' section
 
 'string' package
     for getting list of ascii letters, punctuation, etc.
+
+Encoding
+    python strings (in python 3) are unicode (utf-8)
+    to convert a string to bytes, use s.encode('utf-8')
+    to go the other way, b.decode('utf-8')
+    previous versions of python had a lot of complications about unicode but not anymore
+
+Line endings
+    the different system ones all becomes \n on read
+    \n becomes proper system one on write
+    there are params to customize it in open(), read(), write(), etc.
+
+Case insensitivity
+    not built-in like most languages
+    commonly done by converting tolower() for comparison
+    or use re.IGNORECASE with regex
+
+Extra copies
+    you can assume operations that take portions of strings make copies
+        for same reason as Java - don't want to keep big one around for small one
+    but it's possible under the hood some optimizations are done you don't know about
 
 [Operators]
 mostly the same as C-like languages with some exceptions
@@ -1219,9 +1258,33 @@ glob
         recursive list of all python files in all subfolders in current working directory
 
 re
-    sub(regex, replacement, text) -> returns new text
-    findall(regex, text) -> list of all substrings matching
+    use rawstrings to delimiante one level of \
+    methods tend to take a regex string first
+        because you can use re.compile(regex) to compile
+        then methods on the compiled regex will look the same but drop first arg
+            technically just calling them as instance instead of static
+    
+    named capture groups look like this in python: "(?P<name>text)
 
+    sub(regex, replacement, text) -> returns new text with all replacements made
+        can refer to capture groups as \1, \2, etc. (or \g<1>, \g<2>, etc.)
+        can refer to named capture gruops as \g<name>
+        both of these differ from other languages where you use $
+    findall(regex, text) -> list of all substrings matching
+        if regex has capture groups, you get a tuple of capture group texts for each match instead
+    finditer(regex, text) -> like findall, but more info
+        match.group(numOrName) to get capture groups
+
+    compile(regex) -> can call the methods above without first arg
+        pre-compiled for efficiency on multiple texts
+
+    modifiers like re.MULTILINE go as last arg in compiling or in method calls
+        re.MULTILINE = treat ^ and $ as per line
+        re.DOTALL = include newlines in .
+        re.IGNORECASE = case insensitivity
+        combine with bitwise | operator
+
+    ** see Regex Syntax spreadsheet **
 string
     ascii_letters = collection of all ascii letters
     punctuation = collection of all punctuation chars
@@ -1462,3 +1525,4 @@ I did not include those here for now
 ???operator module (functional)
 ???dict.setdefault
 ???NamedTuple details
+??parallelSort()

@@ -765,29 +765,7 @@ most important regex syntax
 	Keep in mind, you will have to replace all `\` with `\\` to do this for real
 		verbatim strings are not raw strings!
 		also remember if need to use a char like +, have to make it \\+ in the string (escape for regex and for Java)
-
-	- `abd|def` means abc OR def
-	- `\s` means whitespace character
-	- `\w` means word character (alphanum and _)
-	- `\b` means word boundary
-	- `\d` means digit
-	- `\S`, `\W`, etc. are inverses of above (capitalized)
-	- `\` in front of any special operator escapes it to make it literal (eg. `\\`)
-	- `[a-zA-Z0-9]` character set
-	- `[^ \t]` negated character set
-	- `[a\\-]` escaping the dash
-	- __quantifiers__ after objects (eg. capture group or character set)
-	- `*` = 0 or more
-	- `+` = 1 or more
-	- `?` = 0 or 1
-	- `{n}` = exactly n
-	- `{n,}` = at least n
-	- `{n,m}` = n to m (inclusive)
-	- put an additional `?` after any __quantifier__ to make it __non-greedy__
-	- `^` and `$` = beginning and end of whole string
-	- or of individual lines if using `MULTILINE`
-	- `()` for capture groups (can be nested)
-	- `(?<name>)` for named capture groups
+	** see Regex Syntax spreadsheet for specific syntax not specific to Java **
 
 math on char -> integer -> can cast back to char
 	be careful of this case: buffer.append(digit + '0')
