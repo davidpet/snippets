@@ -888,6 +888,8 @@ functional operations
                 print(i, j)
 
         NOTE: zip is lazy like the other functional operations
+        NOTE: zip will truncate to the shortest of the input sequences
+            to pad to the longest with a fill value, see itertools.zip_longest
         
     all
         all(seq) = True if no elements are falsey (inc. if empty)
@@ -1348,8 +1350,14 @@ itertools
             only unique combinations, with same element not being paired with itself
     permutations(seq)
         all possible permutations of sequence
+    product(seq1, seq2)
+        cartesian product of all combos of elements of the two sequences (as tuples)
+    pairwise(seq)
+        tuples of overlapping pairs
+        eg. [1, 2, 3, 4, 5] -> [(1, 2), (2, 3), (3, 4), (4, 5)]
     dropwhile(lam, l)
     takewhile(lam, l)
+    zip_longest() = like zip but lets you pad short sequences to match longest sequence length
 
     the values returned by these are iterable sequences, but not indexable/slicable
         you can use islice() to lazily slice them
@@ -1860,6 +1868,5 @@ throughout the notebooks, there are examples of jupyter usage
 I did not include those here for now
 
 [ToDo]
-??itertools members
 ??chess queen attacks into common place
 ??fibonacci via lazy sequence
