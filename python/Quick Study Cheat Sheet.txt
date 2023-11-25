@@ -336,6 +336,9 @@ Slicing
         eg. del operator on the slice to clear that range
         eg. assign a list to change that range (even on size mismatch)
     however, when stored as a variable, slices are COPIES of parts of the list
+
+    NOTE: slice is actually a built-in top-level data type
+        s = slice(2, 3)
 Ranges
     the range() function works similar to slicing
     it returns an iterable that you can use with a 'for' loop
@@ -816,6 +819,15 @@ Generators (lazy)
 
     NOTE: generators aren't subscriptable, so you have to use itertools.islice() to slice/limit them
         you also can't directly take len() for the same reason [maybe do len(list(gen))]
+        another way to count the items in a generator without making a temporary list:
+            sum(1 for _ in gen)
+        both methods consume all the items from the generator
+
+    generators are STATEFUL
+        if you consume 1 item, then convert to a list, that will be missing the 1st item
+        to start over, you have to call the generator function again to get a new generator
+        you can store the result of the call as a variable to keep the state
+
 Extension Methods
     not directly supported, but easy to do
     just make a function that takes a self param first
@@ -1092,9 +1104,12 @@ Special Class Members
     __contains__(self, item) = membership check
 
     __getitem__(self, index) = index operator (index could be anything you want)
+        NOTE: can use isinstance(index, int) and isinstance(index, slice)
+            then you can have code to handle indexing and slicing
+            using a[2:3] automatically passes in a slice(2, 3) to the __getitem__ function
     __setitem__(self, index, value) = setting value by index
     __delitem__(self, index) = deletion of value by index
-
+        
     __getattr__(self, name) = for reading values from an instance with . operator (as if fields)
     __setattr__(self, name, value) = for dealing with assignment via .
     __delattr__(self, name) = for deleting with deleting attributes via .
@@ -1115,7 +1130,8 @@ Special Class Members
         eg. instead of m.__hash__(), you can call hash(m)
         eg. hash(), str(), len(), iter(), etc.
 
-    even more advanced ones like __new__ to hook construction and do crazy things
+    even more advanced ones like __new__ to hook higher-level construction and do crazy things
+        eg. things like @dataclass and ABC
 
 Constructors
     there is only one method of each name due to lack of overloading in Python
@@ -1552,7 +1568,9 @@ datetime
     datetime.now() + timedelta(days=1)
 
 asyncio
-    lets you do async/await type stuff just by importing it (without having to reference)
+    lets you do async/await type stuff
+    async/await keywords are already in the language
+        but you have to use asyncio to set up the top-level stuff to make it work
 
     async def f():
         return 10
@@ -1597,6 +1615,18 @@ types: dynamic type creation stuff
 enum
     Enum
     auto
+
+json
+    dump(mydict, myfile, indent=2)
+        myfile is an open file (or sys.stdout for instance)
+    mydict = load(myfile)
+
+    s = dumps(mydict, indent=2)
+    mydict = loads(s)
+
+urllib: basic http requests and responses
+    3rd party 'requests' library is considered better
+http: status codes
 
 threading
     multiple threads in python do not run concurrently because of Global Interpreter Lock (GIL)
@@ -1885,3 +1915,13 @@ mocking, faking, etc. available
 [Jupyter]
 throughout the notebooks, there are examples of jupyter usage
 I did not include those here for now
+
+[Performance]
+variable name length can have a small impact on the size of the compiled bytecode
+    but the difference is so small that readability is more important
+variable name length can have a slight impact on compiling into bytecode
+    but usually miniscule impact on the runtime performance
+in practical applications, shorter variable names (when harming readability) is not recommended
+    people do it in Leetcode because competition culture is different
+    they are trying to write the code faster and shave off every nanosecond and byte
+    they don't care about readability - just winning
