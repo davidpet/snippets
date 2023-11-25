@@ -898,6 +898,8 @@ functional operations
         groupBy, flatMap, etc. can be done just by COMPREHENSIONS
         limit and skip can be done by SLICING (but need to use islice if itertools sequence)
 
+    partial application done by functools.partial()
+
 itertools
     see stdlib section below
     itertools lets you do various stream operations for declarative lazy sequence processing
@@ -1316,7 +1318,17 @@ bisect
     bisect_right(sorted, element)
 
 functools
-    reduce() [but map and filter are in global/default namespace]
+    reduce(fn, l, seed) [but map and filter are in global/default namespace]
+    partial(fn, *args) used to get a function with args bound so you don't need to pass them
+    partialmethod(method, *args) is like partial() but for class methods (ignores and preserves 'self' param)
+
+    @cache
+        memoize a function automatically
+        eg. make a recursive function and just put this decorator to make it not waste effort
+
+    @total_ordering
+        if a class has at least __eq__ and one of the comparison operators
+        then it will generate the rest of the comparison operators
 
 itertools
     chain(seq1, seq2)
@@ -1848,7 +1860,6 @@ throughout the notebooks, there are examples of jupyter usage
 I did not include those here for now
 
 [ToDo]
-??functools.partial
-??functools members
 ??itertools members
 ??chess queen attacks into common place
+??fibonacci via lazy sequence
