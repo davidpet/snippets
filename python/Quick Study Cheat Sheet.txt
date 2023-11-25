@@ -1146,6 +1146,11 @@ Dataclass
     m = MyClass(10)
     print(m.f())
 
+    NOTE: MyClass.x is a type hint, not an attribute
+        at least until @dataclass wraps it in a class that has the attribute for real
+        type hints like this go into the __annotations__ field of the class
+        if you didn't have the decorator, and did MyClass.x, it would throw AttributeError
+
 nesting
     clases, functions, etc.  can be nested inside each other w/ no issue
     nested classes don't inheritently have access to each others' private data
@@ -1843,7 +1848,6 @@ throughout the notebooks, there are examples of jupyter usage
 I did not include those here for now
 
 [ToDo]
-??varaible declaration only with no value in class?  (via type annotation, or without?)(dataclass at least does it)
 ??functools.partial
 ??functools members
 ??itertools members
