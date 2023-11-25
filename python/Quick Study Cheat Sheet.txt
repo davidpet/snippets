@@ -465,6 +465,7 @@ strip() to remove leading/trailing whitespace
 replace(old, new)
 upper(), lower(), title()
 split(delim) -> gets list of strings (similar logic to Java but not regex)
+    split() -> split by whitespace
 delim.join(l) -> join a list by a delim string (method of str)
 startswith()
 endswith()
@@ -1220,7 +1221,7 @@ name clash issue
     the symptom of this will be that the import is empty
     another place this comes up is if a folder is named after a script (causing ambiguity)
 
-[stdlib]
+[stdlib]                            
 print(x)
 print(x, y, z)
     print 3 values with space in between on single line
@@ -1231,6 +1232,16 @@ print(x, y, z, sep='\t', end='')
 print("x:", x)
 escape sequences for color (have to escape back again)
     alternatively, use a library like termcolor
+print('text', file=sys.stdout)  # can choose what file to print to (default is stdout)
+    can use sys.stderr also
+
+text = input('Please enter a number: ')
+    prompts user and reads what they enter (until and excluding the newline)
+    you can loop for input if you want, and use a combination of a user entered value and KeyboardInterrupt (ctrl-c) to break
+num = int(text.strip())
+    example of reading numeric value
+vals = [int(item) for item in input('Please enter numbers: ').strip().split()]
+    example of reading structured input
 
 open() for file I/o doesn't need an import
     with open(path, 'r') as file:  # open for text read
@@ -1272,6 +1283,7 @@ random
     randint(inclusiveLower, exclusiveUpper)
     random() [float from 0 to 1, not including 1]
     shuffle(l) [destructive]
+    gauss(mean, stddev)
 bisect
     bisect_left(sorted, element)
     bisect_right(sorted, element)
@@ -1380,6 +1392,10 @@ shutil = higher-level OS file system functionality than os
     unpack_archive() [to unzip]
 
 sys
+    stdout
+    stderr
+    stdin
+
     argv = list of cmdline args (element 0 = the top-level call such as the python file)
     exit(code) = exit whole program with exit code
     stdin, stdout, stderr
@@ -1672,3 +1688,6 @@ I did not include those here for now
 ??operator module members
 ??chess queen attacks into common place
 ??inheritance of variable names?  name hiding?
+??varaible declaration only with no value in class?  (via type annotation, or without?)(dataclass at least does it)
+??coalescing
+??safe navigation
