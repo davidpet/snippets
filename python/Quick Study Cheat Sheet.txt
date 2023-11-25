@@ -814,6 +814,8 @@ Generators (lazy)
     next(gen) # raises StopIteration
     # you could use the gen.send() values to actually detect when to stop returning (eg. break a loop)
 
+    NOTE: generators aren't subscriptable, so you have to use itertools.islice() to slice/limit them
+        you also can't directly take len() for the same reason [maybe do len(list(gen))]
 Extension Methods
     not directly supported, but easy to do
     just make a function that takes a self param first
@@ -898,7 +900,7 @@ functional operations
 
     a lot of operations that are explicit calls in other languages are handled by Python syntax already
         groupBy, flatMap, etc. can be done just by COMPREHENSIONS
-        limit and skip can be done by SLICING (but need to use islice if itertools sequence)
+        limit and skip can be done by SLICING (but need to use islice if itertools sequence or generator)
 
     partial application done by functools.partial()
 
@@ -947,7 +949,22 @@ Commonly Used Method References to Replace lambdas
     sum
     operator.add, operator.mul, etc.
 
-Chess Queen Attacks: see Java notes (ToDo: move into common place)
+Chess Queen Attacks
+    to avoid writing 8 nasty for loops
+    create generators for the 8 directions of infinite movement from a point
+        1-dimensional generators zipped together
+    itertools.takewhile() based on boundary validity and problem criteria
+    len(list(seq)) after doing those filters (and sum the 8)
+
+    the iterative alternative is 8 for loops, each with either nesting or hardcoding one of the variables
+    then each for loop has to check other criteria (like if hits obstacles) and bail
+    then just increment count each non-bailed iteration
+    conceptually the same but uglier, more repetitive, and have to craft each loop w/ copy/paste
+
+Fibonacci:
+    1. use functools.cache to memoize a recursive function
+    2. use a generator that remembers previous 2 values in a rolling window
+    3. use a list and compute item by item
 
 IIFE
     (lambda x: x**2)(5)
@@ -1363,6 +1380,8 @@ itertools
         you can use islice() to lazily slice them
 
     islice(seq, count)
+        for limiting/slicing infinite sequences that aren't subscriptable
+        eg. generators and things returned by itertools calls
     islice(seq, start, stop)
     islice(seq, start, stop, step)
 
@@ -1866,7 +1885,3 @@ mocking, faking, etc. available
 [Jupyter]
 throughout the notebooks, there are examples of jupyter usage
 I did not include those here for now
-
-[ToDo]
-??chess queen attacks into common place
-??fibonacci via lazy sequence
