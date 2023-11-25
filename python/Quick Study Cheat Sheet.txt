@@ -1284,6 +1284,11 @@ random
     random() [float from 0 to 1, not including 1]
     shuffle(l) [destructive]
     gauss(mean, stddev)
+
+    Random() to make an independent random number generator instance
+        call with methods like the above
+        eg. to put on thread-local storage
+
 bisect
     bisect_left(sorted, element)
     bisect_right(sorted, element)
@@ -1458,8 +1463,19 @@ copy
 
 time
     deals with seconds (as floats)
-    time()
+
+    time() # since epoch
+    perf_count() # higher-precision, less range
     sleep(time)
+    localtime() # struct of time information fields
+
+datetime
+    time(hours, minutes)
+    datetime.now()
+    date.today()
+    timedelta(days=1)
+        total_seconds()
+    datetime.now() + timedelta(days=1)
 
 asyncio
     lets you do async/await type stuff just by importing it (without having to reference)
@@ -1507,6 +1523,126 @@ types: dynamic type creation stuff
 enum
     Enum
     auto
+
+threading
+    multiple threads in python do not run concurrently because of Global Interpreter Lock (GIL)
+        but can be preempted at any time to run a different one
+        inc. in the middle of print statements
+        good for IO-bound tasks, not for CPU-bound
+    timeouts are in float seconds
+
+    Thread
+        thread = Thread(target=fn, args=(arg1,)) # can ommit args
+        thread.start()
+        thread.join(timeout) # optional, can wait forever too
+        thread.is_alive()
+            thread can die by normal termination or an exception
+
+        the OOP version is to inherit from Thread and implement run() method
+
+        no way to force kill threads
+        main thread ending doesn't end other threads (even with sys.exit())
+
+    Event
+        e = Event()
+        pass e to threads (eg. as arg) and also use it in parent
+        e.set() to signal event
+        e.wait() to wait for event (with optional timeout)
+        set will wake up all waiting threads (not just 1 like a condition)
+
+        this is the cleanest way to stop a running thread from another thread
+
+    Lock
+        l = Lock()
+        pass l to threads (eg. as arg) and also use it in parent
+        with l:
+            # this is a critical section
+        not reentrant!
+        no special syntax keyword
+
+    RLock
+        exactly like Lock, but it's reentrant
+    Semaphore
+        exactly like Lock, but c'tor takes a count
+
+    Condition
+        acts as both a lock and an event
+        but with wait(),notify(),notifyAll() like in Java
+        you wait or notify within a critical section, unlike with events
+
+    Timer
+        thread = Timer(delay, fn)
+        thread.start()
+
+    Thread-local storage
+        thread_local_storage = local()
+            can call this globally in the main thread
+            each thread will have its own copy
+        thread can add and retrieve attributes from the thread_local_storage object
+            eg. thread_local_storage.random = random.Random()
+    
+    ** no volatile keyword needed **
+    ** no atomic types available **
+
+multiprocessing
+    uses parallel processes with IPC
+        separate address spaces, copied from host process on creation (kind of)
+        benefit = get around GIL and achieve true cpu-bound parallelism
+        drawback = extra overhead and have to use IPC because no shared memory
+
+    Process
+        process = Process(target=fn, args=(arg1,))
+        process.start()
+        process.join()
+
+    Pipe
+        parent_conn, child_conn = Pipe()
+            pass child_conn into child process via args
+        child_conn.send()
+        child_conn.close()
+        parent_conn.recv()
+        ** there is also a bi-directional version**
+    Queue
+        use same object in parent and child process
+        put() and get()
+    Value
+        use same object in parent and child process
+        'value' attribute (read and write) to share a data value
+    Array
+        use same object in parent and child process
+        read/write via indexing/slicing to share data
+    Manager
+        for more complex objects and flexibility
+
+concurrent.futures
+    thread pools, executors, and futures all tied together
+
+    ThreadPoolExecutor
+        executor = ThreadPoolExecutor(max_workers=n)
+            threads are created only as needed, so can set high
+            set to 1 for single thread executor
+        future = executor.submit(fn)
+
+        future.done() boolean
+        future.result() to block on and get value
+
+        future.cancel() to request cancellation
+            only works if didn't start yet
+
+        executor.shutdown(wait=True)
+            wait for tasks to stop
+            doesn't forcefully stop them (no way to do that)
+
+        futures executing in the thread pool can use the normal threading stuff
+            locks, conditions, events, etc.
+
+        asyncio.wrap_future(future) can be used to combine futures w/ asyncio async/await
+            can await the result of this
+
+    ProcessPoolExecutor
+        works similarly to ThreadPoolExecutor
+        but uses multiprocess instead of threads
+            which means have to use IPC to communicate
 
 [pip]
 ** for any interactive command, use -y or -n switch to make it non-interactive**
@@ -1691,3 +1827,5 @@ I did not include those here for now
 ??varaible declaration only with no value in class?  (via type annotation, or without?)(dataclass at least does it)
 ??coalescing
 ??safe navigation
+??partial application
+??multiprocess to get around GIL limitation
