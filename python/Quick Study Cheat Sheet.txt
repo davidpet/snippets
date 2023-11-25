@@ -215,6 +215,7 @@ dict
     del x['c']
     x.pop('b')
     x.clear()
+    x.setdefault(key, value) # set value only if not present
 
     default iteration and membership checks are for keys
     you can be more explicit: x.keys(), x.values(), x.items() which are tuples of key and value
@@ -554,6 +555,8 @@ mostly the same as C-like languages with some exceptions
 
 missing
     ++ and --
+    safe navigation
+    coalescing
 division
     // behaves like / in c-like languages (floor division)
     / becomes a float instead!
@@ -1270,12 +1273,16 @@ math
     cos(radians)
     pi = constant
     e = constant
-operator: functions for passing operators around functionaly
+operator: functions for passing operators around functionally
     add
     mul
     not
-    lt
+    lt, gt, eq
     neg
+    truth
+    is
+    abs
+    getitem, setitem
 statistics
     mean(l)
 random
@@ -1339,6 +1346,19 @@ collections
         print(sum(counts.values()))  # total count
     namedtuple: tuple with named fields (like a struct)
         acts like a normal tuple and a class at same time
+
+        Point = namedtuple('Point', ['x', 'y'])
+            give the internal names of the class to create and the fields
+                all as strings
+            pass a 'defaults' keyword arg with a list to provide default values
+        p = Point(10, y=100)
+            takes positional and keyword args
+
+        p[0]
+        x,y = p
+        p.x
+        p.y
+
     deque: double-ended queue
         more efficient than regular lists for stack and queue operations
 
@@ -1813,19 +1833,9 @@ throughout the notebooks, there are examples of jupyter usage
 I did not include those here for now
 
 [ToDo]
-???operator module (functional)
-???dict.setdefault
-???NamedTuple details
-??parallelSort()
-??prototype method inheritance is dynamic, not an in-place copy
-    ??what about variables
-??functools.partial (and other functools members)
-??itertools members
-??operator module members
-??chess queen attacks into common place
-??inheritance of variable names?  name hiding?
+??or, and return value not boolean?
 ??varaible declaration only with no value in class?  (via type annotation, or without?)(dataclass at least does it)
-??coalescing
-??safe navigation
-??partial application
-??multiprocess to get around GIL limitation
+??functools.partial
+??functools members
+??itertools members
+??chess queen attacks into common place
