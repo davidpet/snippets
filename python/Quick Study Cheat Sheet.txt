@@ -556,7 +556,6 @@ mostly the same as C-like languages with some exceptions
 missing
     ++ and --
     safe navigation
-    coalescing
 division
     // behaves like / in c-like languages (floor division)
     / becomes a float instead!
@@ -595,7 +594,18 @@ truthiness
         []
     the rest are truthy
     you can disambiguate None from [], for instance, using is None first
-    operators like and, or, not make into true booleans first
+
+coalescing
+    'and' operator actually returns last item seen in short-circuiting
+        which could be truthy or not
+    'or' operator actually returns last item seen in short-circuiting
+        which could be truthy or not
+        this can be used for coalescing:
+            y = x or 0
+                if x is truthy, y = x
+                if x is falsey, y = 0
+    the short-circuiting and condition logic are controlled by __bool__ conversion
+    'not' will just convert to boolean right away
 
 ternary
     no ? : like in C-like languages
@@ -1833,7 +1843,6 @@ throughout the notebooks, there are examples of jupyter usage
 I did not include those here for now
 
 [ToDo]
-??or, and return value not boolean?
 ??varaible declaration only with no value in class?  (via type annotation, or without?)(dataclass at least does it)
 ??functools.partial
 ??functools members
