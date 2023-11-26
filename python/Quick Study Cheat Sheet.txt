@@ -1948,6 +1948,8 @@ b = np.copy(a)
     independent copy
 np.save(filename, a)
 a = np.load(filename)
+l = a.tolist()
+    numpy array back to python list (of lists, etc.)
 
 a.shape
     tuple (2, 3)
@@ -2229,3 +2231,97 @@ Ragged Tensors
     structure looks right but some dimensions internally aren't right
     eg. 3 rows and 2 columns matrix, but maybe one of the rows is missing a column structurally
     this is actually allowed, but the results are unexpected, so don't ever let it happen
+
+[pandas]
+import pandas as pd
+
+df = pd.DataFrame(dictionaryOfLists)
+    keys = columns
+    values = rows
+    conceptually a table
+df = pd.DataFrame(listOfDictionaries)
+    same effect, but more duplication (eg. keys appearing in all the dicts)
+    in this case, it's more like each dictionary is 1 row (1 datapoint)
+df = pd.DataFrame(numpy_matrix, columns=listOfColumnNames)
+df.info()
+    technical info about the table
+df.describe()
+    statistics about the table (mean, max, stdev, etc.)
+df.dtypes
+    table of data types for columns
+
+print(df)
+    in jupyter, a formatted table will show up
+
+df = pd.read_csv(filename)
+    more formats, compression, etc.
+    can pass index_col string to specify a column to treat as the index column
+        replaces default index column you get
+df.to_csv(filename)
+    overwrites existing
+    more options, formats, etc.
+
+df[columnName] = a pd.Series object
+df.columnName = same thing
+a series is basically a named list of values
+    you can make one like this: pd.Series([1, 2, 3], name="Age")
+    can call methods like min(), max(), mean(), std() on it
+df.max() and methods like that will work on all the columns
+    give you that stat for each one
+series.str.replace(name1, name2)
+    returns a new Series with string replacement
+df[columnName] = df[columnName].replace(str1, str2)
+    can replace a series in table (in this case the one with replacements)
+
+df.head(10)
+    first 10 rows
+df.tail(10)
+    last 10 rows
+
+df.shape
+    like numpy
+
+df[[name1, name2]]
+    get a DataFrame consisting of a subset of columns
+df[[name2, name1, name2]]
+    supports reordering and repeats
+df[name1] > 30
+    series of booleans
+df[name1]**2
+    series with element-wise arithmetic
+df[3:2]
+    subset of rows
+df[df["Age"] > 30]
+    filtering rows
+df.loc[df["Age"] > 35, ["Name", "Age"]]
+    filter rows and cols at same time
+df[3:2]["Age"]
+    filtering rows and cols via operator
+df.iterrows()
+    to iterate rows
+
+df["Name"] = "Bob"
+    broadcasted to all rows
+df["Name"] = series
+    can replace a column, a row, etc. with transformed/broadcasted data
+    can also add a new column this way
+    spaces allowed in column names
+
+df = df.rename(columns=dictionary)
+df = df.drop(listOfColumns)
+a = df.to_numpy()
+    just the values - no names
+a[["Name", "Age"]].values
+    selective numpy array
+
+dataframes and series can be plotted with their plot() methods
+    can do various kinds of plots
+
+df = df.groupby(columnName).mean()
+    group by a column and take the mean of the rows for each group
+df = df.groupby(columnName).count()
+    group by a column and count the number of values of other columns
+df = df.sort_values(by=columnName)
+    sort by a column
+
+pd.concat([df1, df2])
