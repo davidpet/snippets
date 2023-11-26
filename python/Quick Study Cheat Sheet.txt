@@ -1813,6 +1813,23 @@ sortedcontainers
     SortedKeyList
     SortedSet
     SortedDictionary
+requests
+    http request framework (more intuitive and fully-featured than urllib)
+manim
+    3blue1brown's animation library
+    ** have notebook for it **
+matplotlib
+    graphing for jupyter notebooks (and other places)
+    ** have notebook for it **
+sympy
+    symbolic computation library
+    in many ways similar to tensorflow autodiff but more general
+    ** have notebook for it **
+scikit-learn
+    some machine learning stuff
+    I've used it for feature scaling for my TF models
+    it can also do linear regression, PCA, etc.
+    ** have notes in Google Drive for it **
 
 [decorators]
 function or callable class that wraps a function or class
@@ -2330,6 +2347,8 @@ df = df.sort_values(by=columnName)
 pd.concat([df1, df2])
 
 [TensorFlow]
+** these aren't as complete as the notes I have in Google Drive - just some rough notebooks **
+
 import tensorflow as tf
     will try to use GPU for tensors and CPU for datasets by default
         can be switched on the fly if GPU is configured (differs by platform)
