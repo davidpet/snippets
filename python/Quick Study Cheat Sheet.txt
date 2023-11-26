@@ -268,7 +268,10 @@ Unpacking
         works for tuple, list, or other sequence
         as long as the length of the collection matches the # of variables
     [x, y, z] = collection
-        means the same thing as above (regardless of whether list or tuple)    
+        means the same thing as above (regardless of whether list or tuple)
+    a[0],a[4] = collection
+        the left side doesn't have to be a new variable or a variable at all
+        it is just a general assignment  
 Iteration
     for item in l:
         print(item)
@@ -1823,7 +1826,7 @@ def mydecorator(fn):
         return fn(*args, **kwargs)
     return wrapper
 
-@mydecorator
+@mydecorator # NOTE: @mymodule.mydecorator if in a module
 def myfn(x):
     return x**2
 
@@ -2325,3 +2328,241 @@ df = df.sort_values(by=columnName)
     sort by a column
 
 pd.concat([df1, df2])
+
+[TensorFlow]
+import tensorflow as tf
+    will try to use GPU for tensors and CPU for datasets by default
+        can be switched on the fly if GPU is configured (differs by platform)
+    it has a lot of similarities to numpy
+        eg. having its own data types to represent scalar numbers
+        eg. has its own tensor operations that resemble numpy opeations with slightly different names
+        assuming something will act like numpy is a good default
+            eg. axes
+            eg. slicing
+            eg. broadcasting
+            eg. scalars
+            eg. shapes
+    some differences from numpy
+        a lot of functions/methods have different names but do the same thing
+        a lot less methods on tf tensors (have to call functions instead)
+
+with tf.device('/CPU:0'):
+    # any tensor created here is on CPU
+    # operations on that tensor are done on CPU
+      # even after the context is over or if in GPU context
+with tf.device('/GPU:0'):
+    # any tensor created here is on GPU
+    # operations on that tensor are done on GPU
+      # even after the context is over or if in CPU context
+What will move a tensor from CPU to GPU?
+    copying it (tf.identity()) in GPU context
+    mixed operations between CPU and GPU tensor (will make the result on GPU)
+        original left where it is though
+    keras model() call will create on GPU by default (unless in CPU context)
+
+t = tf.constant([[1, 2, 3], [4, 5, 6]])
+    create a tensor
+    just like np.array()
+
+t.device
+    info about which CPU or GPU the tensor exists on
+
+numpy functions that are the same here:
+    stack, concat, transpose, concat, zeros, ones, reshape
+numpy functions that are renamed here:
+    np.copy() -> tf.identity()
+    np.linalg.norm() -> tf.norm()
+tf.numpy() to get a numpy array from a tensor
+    for scalars, this has better behavior
+        in that case, can effectively think of it as getting the value itself
+t.assign_add(u) # += as in-place mutation
+
+dataset = tf.data.Dataset.from_tensor_slices(t)
+    create a dataset from a tensor with 1st dimension as the sample dimension
+        each row is a sample
+    fluent API for data processing pipeline
+    you can also pass a tuple of tensors to have batches be tuples
+        eg. x and y matrices for ground-truth labels
+            see dataset.map() below for more details
+    you can pass a list of tensors to have each tensor be a sample
+for sample in dataset:
+    print(sample)   # tensor with shape without 1st dimension
+    NOTE: if batch size is not 1, then this will iterate over batches instead of samples
+        from now on, we'll refer to iteration items as batches even if batch size is 1
+    iterating a dataset DOES NOT CONSUME it like a generator
+        you can iterate it multiple times and it will just start over
+        in the model, each time iterating the whole thing is an EPOCH
+tf.transpose(tf.concat(list(dataset), axis=0))
+    reconstruct original tensor based on iteration
+    simulates building a large tensor out multiple datasets, for instance
+dataset = dataset.batch(2)
+    change batch size from 1 (the default) to 2
+    instead of individual samples, now you'll get a tensor of samples
+    the structure will be like the original tensor, but the 1st dimension will be <= batch size
+    eg. if have 3 samples, then iterate, you'll get:
+        2 items
+        1st item is a tensor with 2 rows (2 samples)
+        2nd item is a tensor with 1 row (1 sample)
+            still has outer dimension, unlike the batch size 1 case
+    NOTE: model.fit() doesn't need you to respecify batch size if you set it here
+    WARNING: trying to override batch size again will throw an exception
+tensor = dataset.reduce(seed, fn)
+    reduces the dataset down to a tensor
+    fn will take (accumulated, nextValue)
+    eg. to count batches in a dataset (which will consume it):
+        dataset.reduce(0, lambda x,_: x + 1).numpy()
+dataset = dataset.map(fn)
+    run a function to map batch to batch for each batch in the pipeline
+    eg. dataset = dataset.map(lambda batch: (batch[:, :-1], batch[:, -1]))
+        makes each batch into a tuple
+        item 0 = the batch with the last column missing
+        item 1 = the last column values for the batch
+        model.fit() expects dataset batches to look like this
+            item1 of batch tuple = ground truth labels
+            can leave off y arg of model.fit()
+    WARNING: if batches are tuples with ground-truth labels
+        map() will automatically unwrap to 2 args for the lambda instead of 1 tuple
+        but you still must return a tuple to keep the structure
+        a benefit of this is you can write a function with the 2nd arg defaulted to None
+            then it will work with or without ground-truth labels
+    NOTE: from_tensor_slices can also take a tuple of tensors to avoid having to do this map
+dataset = dataset.shuffle(buffer_size=3, seed=42)
+    make the dataset return samples in shuffled order
+    shuffing is both within and between batches (ignores batches)
+    buffer_size is typically the whole # of samples as it affects the granularity of Shuffling
+    shuffling happens again between each full iteration (epoch)
+dataset = dataset.take(n)
+    truncate the dataset to the first n batches
+    be careful where you place it relative to shuffle
+dataset = dataset.skip(n)
+    skip the first n batches
+    same considerations as for take()
+train, validation = dataset.take(2), dataset.skip(2)
+    for the split to be consistent and non-overlapping,
+        make sure to shuffle AFTER this and not before (w/ same seed in both places)
+next(iter(dataset.take(1)))
+    getting the 1st batch
+dataset = dataset.prefetch(tf.data.AUTOTUNE)
+    prefetch new batches into memory while model is working on the oldest batches
+    this keeps the CPU and disk busy while the GPU is training, validating, etc.
+    AUTOTUNE lets the system figure out the # of batches
+    this mostly applies to datasets loaded form disk, such as CSV
+    this typically goes at the END of the pipeline
+dataset = tf.data.DataSet.zip(dictionaryOfDataset)
+    makes a dictionary-like dataset
+    keys are maintained in batches emitted by the dataset
+    batches are emitted from each dataset as values
+    each "batch" is a dictionary of batches basically
+    this is the format used by CSV datasets as well
+    make batch sizes of the individual datasets consistent or this won't work correctly
+    you can also put the dictinoary in a tuple with a tensor (eg. ground truth labels)
+    map() can be used to translate between dictionary and tensor datasets manually later
+dataset = tf.data.DataSet.from_generator(fn, output_signature=...)
+    each value yielded by the generator is a sample
+dataset = tf.data.experimental.make_csv_dataset('titanic.csv', batch_size=1)
+    streamed from disk and prefetched with AUTOTUNE by default
+    1st line = column names by default
+    shuffled on each epoch by default
+    can provide label_name to extract a ground truth label (and make tuple dataset automatically)
+    gives a dictionary dataset with column names as keys
+    if you don't specify num_epochs, it will repeat the dataset forever without reiterating
+    don't call .batch() on a csv dataset - use the param in make_csv_dataset()
+
+Keras
+    model = tf.keras.models.Sequential([tf.keras.layers.Dense(1, activation='sigmoid')])
+    model.compile(optimizer=tf.keras.optimizers.Adam(learning_rate=LEARNING_RATE),
+              loss='binary_crossentropy',
+              metrics=['accuracy'])
+    history = model.fit(
+        train_dataset,
+        validation_data=validation_dataset,
+        epochs=epochs
+    ) # use history.histor['accuracy'] for plotting
+    model.predict(dataset)
+        returns numpy array instead of tf tensor!
+            also doesn't batch the output at all (no dimension for batch, just samples)
+        if ground truth labels (tuple dataset), will just ignore the labels
+        if you correlate results back to inputs, be careful of shuffling
+            don't need to shuffle in prediction - that is for training
+    model.predict_on_batch(batch)
+        you can batch the dataset yourself and predict 1 batch at a time
+        eg. if you want to write out to disk in batches
+
+    tf.keras.layers.Input(shape=shape)
+        input layer to put first in your sequential model
+        in cases where tensor shape is ambiguous, this helps lock it down
+        the shape should not contain the batch dimension (that will be added by the model)
+    
+    Functional API (alternative to above sequential api)
+        use the same layers but patch together your own graph
+            good for more complicated than simple sequential networks
+                eg. node needs to go two places
+
+        input = tf.keras.layers.Input(shape=(5, 5))
+        output = tf.keras.layers.Dense(1)(input)
+            layer created and then called as a function on the input
+            you chain together a graph this way
+
+        model = tf.keras.Model(inputs=[input], outputs=[output])
+            list all inputs and outputs so keras knows the graph
+            the object passed to inputs is somewhat flexible
+            can be a list of tensors, dictionary of tensors, etc.
+                batch dimension smartly added to tensors inside with None value
+
+        mode.input_shape has the input shape with batch dimension added
+            uses None as the size of the dimension to show that it's flexible
+        you can use something like a tf.keras.layers.Concatenate to transform the input
+        you can use the inputs inside the structure of the input to the model directly in your graph
+            then the model will expect that outer structure, but the graph will know how to patch in the proper nodes
+
+        you can do tensor operations in between
+        the things that you're passing between layers are actually tensors in GRAPH MODE
+            with shape having None as 1st dimension for batches (within the inner structure as appropriate)
+            can do tensor operations on a graph mode tensor, and it will give another graph mode tensor
+                shape will follow naturally and may still contain None dimensions
+        once you create a layer, it deals with batched shapes all the way through everywhere
+        NOTE: you are allowed to pass None for unknown dimensions in your shapes too (not just for batching)
+
+        if you call a layer on an eager mode tensor (such as tf.constant() result)
+            it will evaluate in eager mode
+
+        @tf.function decorator can be applied on a function to compile it to graph mode
+            then it can be used in a training loop in graph mode to run more efficiently
+            if only run once, no difference - because 1st run is when it gets compiled/traced
+            graph mode is more efficient than eager mode, so it is used for training loops in production
+    
+AutoDiff
+    this is the low-level old-fashioned primitive way to train models
+        keras uses it internally without exposing it to you
+        if you use this approach, you would do your own math and apply your own gradients
+        this is how it worked before keras came along
+
+    x = tf.Variable(10.0, name='x', dtype=tf.float32)
+        x is a variable assigned 10
+        autodiff wants floats instead of integers
+    with tf.GradientTape() as tape:
+        # in context of graident tape, operations are tracked
+        y = x**2
+            # y is a tensor (potentially in graph mode, potentially in eager mode)
+            # any operation on a variable gives you a tensor (for tracking in autodiff)
+        z = y + 1
+            # z is another tensor
+            # operations on tensors return other tensors and track for autodiff
+    dz_dx = tape.gradient(z, x)
+        get gradient of a variable with respect to the input variable
+        this will also be a tensor
+        you can then use this tensor to update weights, etc.
+    
+        second param could be a list instead if have multiple input variables to differentiate against
+            then you get back a tuple
+
+        this works transparently for matrices
+            input variables can be matrices, operations can be matrix operations including @
+            gradients can be matrices
+            shape of gradient with respect to matrix will match the matrix
+    Gradient Descent Example
+        make A and x tf.Variable objects
+        calculate b = A@x and J = tf.norm(b) within tape context
+        get gradient of J with respect to A
+        subtract learning rate times gradient from A
+    
