@@ -1107,6 +1107,8 @@ Special Class Members
         NOTE: can use isinstance(index, int) and isinstance(index, slice)
             then you can have code to handle indexing and slicing
             using a[2:3] automatically passes in a slice(2, 3) to the __getitem__ function
+            using a[2,3,1:4] automatically passes a tuple to the __getitem__ function
+                in this case a tuple of 2 integers and a slice
     __setitem__(self, index, value) = setting value by index
     __delitem__(self, index) = deletion of value by index
         
@@ -1121,6 +1123,10 @@ Special Class Members
 
     __eq__(self, other), __lt__(self, other), __add__(self, other), __sub__(self, other), __and__(self, other), etc.
         implementations for operators like ==, <, +, -, etc.
+        a lot of operators have an r version for when your type is on the right side instead of left
+            eg. __radd__(self, other)
+            first, python will call the class on the left side and only call you if they throw NotImplemented
+        if operating with a type you don't know how to deal with, you should throw NotImplemented so the other type gets a chance
     __bool__(self), __int__(self), etc. for type conversions
     __hash__(self) = for hashing (eg. in dict)
         if object has multiple fields, make them a tuple and hash that
@@ -1925,3 +1931,301 @@ in practical applications, shorter variable names (when harming readability) is 
     people do it in Leetcode because competition culture is different
     they are trying to write the code faster and shave off every nanosecond and byte
     they don't care about readability - just winning
+
+[numpy]
+import numpy as np
+    not on GPU
+        but still very efficient using CPU better than if you wrote pure Python code to do matrices
+    top-level and instance functions to do same thing (in general)
+    in general, assume mutations return a new copy unless in the "In-Place Mutation" section
+
+    a lot of functions that operate on an array will accept a regular python list and convert for you
+    a lot of functions that take a shape will accept a scalar value to mean 1D array of that size
+
+a = np.array([[1, 2, 3], [4, 5, 6]]) # 2x3 matrix
+    new independent object (not linked to original list passed in)
+b = np.copy(a)
+    independent copy
+np.save(filename, a)
+a = np.load(filename)
+
+a.shape
+    tuple (2, 3)
+    a scalar has shape ()
+a.reshape((2, 3))
+    flattened order of elements will be same
+    think of as nested loop with leftmost dimensions being outermost loop
+    eg. 1, 2, 3, 4, 5, 6 in the above
+a.reshape((2, -1))
+    -1 means make this one whatever is needed to make the others work out
+np.expand_dims(a, axis=2)
+    new dimension of size 1 added (in this case after the columns)
+    effectively just adding [] at some point in the hierarchy
+    flattened element order is still the same and elements themselves are unchanged
+a[..., np.newaxis]
+    shorthand for the expand_dims call above
+    the ... gets the full dimensions up until the last one (covered below)
+    the np.newaxis tells np to add a new axis of size 1 here
+np.swapaxes(A, 0, 1)
+    transpose rows with columns (in this case)
+    more general form of transposing a 2D matrix (arbitrary dimensions)
+    actually changes element order in final result
+len(a)
+    rows (1st dimension size)
+
+a.dtype
+    eg. int, float, etc.
+    can pass into np.array() as keyword arg to cast on creation
+    numpy uses its own types in its arrays (eg. np.int64 when you say int)
+a.as_type(float)
+    copy with casting
+    HINT: cast bool to int to get 0s and 1s
+a.round()
+    round floats to nearest (but stay floats)
+    also np.round(anylist)
+
+a[row][col] = scalar of shape ()
+    type of the item is (in this case) np.int64
+    it acts just like an int(with all operators) but will fail isinstance() test on int
+        doing math between int and np.int64 will give you np.int64
+    you can cast it with int() or use a[row][col].item() to get original type
+    np.int64 and others act like matrices of shape ()
+a[row] = a numpy array of shape (3,)
+a[:,col] = a numpy array of shape (2,)
+a[:-1,:-1] = a numpy array of shape (2,1)
+a[..., col] = shorthand for putting : for all axes before the last one
+    can use it for other axes, not just the first ones
+
+np.zeros((3, 2))
+np.zeros((3, 2), dtype=int)
+np.zeros_like(a)
+np.ones((3, 2))
+np.ones_like(a)
+np.full((3, 2), 100) # specific value
+np.eye(3) # identity matrix 3x3
+
+np.tril(a) # zeroes out upper right half (except the diagonal) to make lower triangular
+
+np.arange(count)
+    creates a 1D array from 0 to count - 1
+    then you can reshape it into what shape you need
+np.linespace(lower, inclusiveUpper, count)
+    end up with floats
+np.meshgrid(xs, ys)
+    pairs up all combos of x and y coordinates from the two lists
+    then gives back 2 matrices, one for x cordinates and one for y coordinates
+    you can interpret matching elements from both as being a point in 2D space
+    overall order is upper left corner -> upper right corner -> left on next row -> etc.
+
+np.random.seed(42)
+np.random.random_sample((3, 2))
+    gets a 3x2 matrix of [0,1) floats
+np.random.random((3, 2))
+    same as random_sample
+np.random.randn((3, 2))
+    similar to random() but normal distrubition instead of uniform
+    you can multiply and add to give it a mu and sigma
+
+a == 2
+    element-wise comparison
+    will give a boolean matrix
+a == b
+    same but comparing elements of 2 arrays
+a > 3
+    similar idea to == but with < operator
+    and others work too
+
+-a
+    element-wise negation
+a**2
+    element-wise power
+a + 2
+a * 2
+a / 2
+a - 2
+    element-wise arithmetic
+a + b
+a / b
+a * b
+a - b
+    element-wise arithmetic between two arrays
+~a
+    element-wise boolean inversion
+    very useful for masking
+
+a[a > 2]
+    index masking
+    a > 2 gives boolean matrix of same shape as a
+    then a[mask] gives just the True elements
+    result is reshaped to 1D
+a[[False, True]]
+    masking by row (because 1D mask)
+    same overall structure as original but less rows
+a[:, [False, True, True]]
+    masking by column (because row is : slice)
+    same overall structure as original but less columns
+a[:, [1, 0, 1]]
+    when masking with int instead of boolean, it is index rearranging instead
+    the int tells what index from original you want there
+    ok to include same one multiple times
+HINT: both types of masking are useful for operating on multiple parallel matrices based on something like argmax
+
+A @ B
+A.dot(B)
+np.dot(A, B)
+np.matmul(A, B)
+    these are all ways to multiply two compatible matrices (linear algebra style)
+    if the matrices are 3D, then it is a parallel 2D multiplication across the 1st dimension
+        if one is 3D, the other will be broadcasted to be multliplied in parallel with all 2D matrices
+A.T
+np.transpose(A)
+    ways to transpose a matrix (linear algebra style)
+np.diag(A)
+    digonal vector of matrix
+np.linalg.det(A)
+    determinant of matrix
+np.linalg.solve(A, b)
+    get x to solve Ax = b
+np.linalg.norm(A)
+    L2 norm of matrix
+
+np.dot(x, y)
+    dot product of 2 1D vectors
+np.linalg.norm(x)
+    length of 1D vector
+np.linalg.norm(x, axis=-1)
+    length of vectors within matrix
+
+np.sum(A)
+    sum of all elements
+    HINT: if boolean, it will be how many were True!
+        eg. np.sum(a > 3)
+np.mean(A)
+    average over the elements of A
+    HINT: if boolean, will give you ratio of elements that matched
+        eg. np.mean(a > 3)
+np.max(A), np.min(A)
+    max and min across all elements
+np.std(A)
+    standard deviation
+np.ptp(A)
+    peak to peak
+np.argmax(A), np.argmin(A)
+    index of max or min element within array
+    but it's the flattened index (reshaped to 1D)
+The above aggregates can take an 'axis' keyword param
+    then they aggreaget along the given axis (0 for 1st axis, etc.)
+    -1 means last axis (-2, -3, etc. going to the left)
+    along axis means collapse that axis and remove it from the shape
+
+np.sign(A)
+    -1, 0, or 1 element-wise
+np.exp(A)
+    element-wise e^x
+np.log(A)
+    element-wise ln
+np.maximum(A, B)
+    element-wise max across multiple matching arrays
+    not the same as np.max()!
+    very useful with broadcasting
+        eg. np.maximum(A, 0) for ReLU element-wise
+np.allclose(A, B)
+    float near-equality element-wise
+np.sin(A)
+    element-wise trigonometric operation
+np.clip(A, 2, 3)
+    element-wise clip min 2 and max 3 (inclusive)
+np.pi, np.e
+    math constants
+
+np.tile(A, 2)
+    treat A as a tile and make 2 tiles along last axis (column)
+np.tile(A, (2, 1))
+    treat A as a tile and make 2 tiles along row axis and 1 along column
+np.tile(A, (2, 2))
+    make a square of 4 copies of A
+np.concatenate([A, B], axis=1)
+    treat A and B as separate tiles and put them together along the column axis
+np.stack([A, B], axis=0)
+    like concatenate but adds a new dimension to tile the matrices
+
+Broadcasting
+    when arrays mismatch in size in an operation that expects them to match
+        key to vectorizing equations
+
+    first, make the # of dimensions match
+        turn scalars into [1, 1, 1, etc.]
+        for others, add dimensions of size 1 to left of its dimensions
+    from right to left in dimensions, skip equal ones and throw error if smaller one is not 1
+        for each mismatched dimension, repeat smaller array along that axis to make match
+        the one getting repeated can differ between individual dimensions
+
+    eg. A + 5
+        5 becomes [[5]] to have shape (1, 1)
+        [[5]] repeated along column axis to become [[5, 5]]
+        [[5, 5]] repeatd along row axis to become [[5, 5], [5, 5], [5, 5]]
+        then add A + that to get the element-wise addition of 5 to A
+
+    eg. A + b (matrix + 1D vector)
+        if A has shape (3, 2) and b has shape (2,) for instance
+        b becomes (1,2), then repeatd 3 times along row axies to make it (3, 2)
+        so b is effectively a row vector added to all 3 rows
+            its elements add to the corresponding columns, all the way down the rows
+        NOTE: same result as if you gave a proper row vector (1,2) instead of (2,)
+
+    eg. A + b (matrix + column vector by shape)
+        b repeated twice along col axis
+        so b is added to both columns (elements adding to rows)
+
+    eg. row vector + column vector
+        column vector has to be repeated along column axis
+        row vector has to be repeated along row axis
+        result is adding the tiled out result
+
+    eg. 3d matrix times 2d matrix
+        2d matrix has dimension 1 added to front to make it 3D
+        then it's repeated along 1st dimension
+        then the multiplication does a parallel multiplication along that dimension
+        so the result is of multiplying each 2D matrix within the 3D one by the 2D matrix
+
+Scalars
+    s = np.array(10) # scalar value array
+        shape is ()
+    s.reshape(1)
+        becomes shape (1,) which is 1D array with 1 value
+    broadcasted as (1,1,1,1...) as described above
+    s.item()
+        get value from the scalar
+        will fail if not a scalar
+        back to original type (int instead of np.int64)
+    s = a.squeeze()
+        if all the dimensions of a are 1, this will give a scalar array for it
+
+In-Place Mutation
+    A[:, 1] = np.zeros(2)
+        zero out column 1
+    A[:, 1] = 0
+        zero out column 1 by broadcasting
+    A[1:, 1:] = 0
+        zero out submatrix
+        this is just example - you could send any array in (with or without broadcasting)
+    np.fill_diagonal(A, 10)
+        set all diagonal elements to 10
+    A.fill(10)
+        set all elements to 10
+    A[A > 2] = 0
+        zero out all elements greater than 2
+    A[[0, 1]] = A[[1, 0]]
+        swap rows 0 and 1
+        the right side gives you just the rows you want in the order you want them
+        then the left side assigns them into their final targets
+        so it's not 100% in-place efficiency-wise, but the end result is that way
+
+1D Vector Caveat
+    some operations do the wrong thing if you have a 1D vector
+    to be safe, properly reshape them to have a dimension of size 1 to make them 2D (or whatever)
+
+Ragged Tensors
+    structure looks right but some dimensions internally aren't right
+    eg. 3 rows and 2 columns matrix, but maybe one of the rows is missing a column structurally
+    this is actually allowed, but the results are unexpected, so don't ever let it happen
