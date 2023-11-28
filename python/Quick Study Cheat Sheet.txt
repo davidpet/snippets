@@ -457,6 +457,7 @@ Not Available:
 
 [Strings]
 # for comments
+no null termination (that is just a C++ thing)
 
 '' and "" are same (and allow to use other unescaped)
 ''' and """ are multi-line strings
@@ -1951,6 +1952,9 @@ in practical applications, shorter variable names (when harming readability) is 
     people do it in Leetcode because competition culture is different
     they are trying to write the code faster and shave off every nanosecond and byte
     they don't care about readability - just winning
+don't worry too much about things like tuple packing/unpacking, etc.
+    focus on algorithm order and readability, not individual clock cycles
+    even on Leetcode those things don't have that much impact
 
 [numpy]
 import numpy as np

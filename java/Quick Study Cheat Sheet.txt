@@ -656,6 +656,7 @@ Deep copies
 
 [Strings]
 c++style comments (// and /* */)
+no null termination (that is just a C++ thing)
 
 reference type/interned/immutable
 not array, not indexable with []
