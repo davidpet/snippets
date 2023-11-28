@@ -2378,13 +2378,13 @@ use infinite lazy streams combined and with takeWhile() and such to make iterati
 adding items to beginning of stream
 		Stream.concat(Stream.of(), theStream)
 if you make an iterator, implmenet java.util.Iterator<T>
-	sorted list that you can insert into in sorted way (with logn operations)
-		3 built-in Java data structures for this depending on what you need to do
-		PriorityQueue = minheap = when you just need to pick off the lowest or highest item but can keep adding whatever
-			also when you have duplicates
-		TreeSet = when all the items are unique and you want to be able to iterate in order (and even binary search if wanted)
-		TreeMap = similar intent to TreeSet except key-value mapping (inc. list or count as value)
-			can deal with duplicates via lists as the values
+sorted list that you can insert into in sorted way (with logn operations)
+	3 built-in Java data structures for this depending on what you need to do
+	PriorityQueue = minheap = when you just need to pick off the lowest or highest item but can keep adding whatever
+		also when you have duplicates
+	TreeSet = when all the items are unique and you want to be able to iterate in order (and even binary search if wanted)
+	TreeMap = similar intent to TreeSet except key-value mapping (inc. list or count as value)
+		can deal with duplicates via lists as the values
 dealing with int[][] where inner int[] is some type of tuple
 	if the input and output lengths are different by an unknown amount
 		you will have to go through a List<int[]> (or make your own data structure for the tuple)
