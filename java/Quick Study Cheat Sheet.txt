@@ -1283,7 +1283,7 @@ Streams API
 
 		Boxing
 			Integer[] a = Arrays.stream(intArr).boxed().toArray(Integer[]::new);
-			Integer[] a = Arrays.stream(intArr).map(n -> n).toArray(Integer[]::new);
+			Integer[] a = Arrays.stream(intArr).mapToObj(n -> n).toArray(Integer[]::new);
 		Unboxing
 			int[] a = Arrays.stream(integerArr).mapToInt(Integer::intValue).toArray();
 		Boxed Type to Boxed Type
@@ -1359,7 +1359,7 @@ Inheritance
 	super.method() to call base method from derived method
 	can "extend" 1 class but "implements" as many interfaces as you want
 	can mark a method as "final" to prevent overriding
-	can mark a class as "final" to prevent subclassingf
+	can mark a class as "final" to prevent subclassing
 	covariant return types supported
 	you can increase access in a subclass (eg. make a protected member public)
 		but you can't go the other way
