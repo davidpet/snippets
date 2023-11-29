@@ -140,6 +140,7 @@ Default Values
 [Collections]
 collections in Python have literals but you can also use their explicit constructors (eg. list())
 a lot of the stuff mentioned in list will apply other places
+trailing commas are allowed in all literals (and even in function calls)
 
 list
     x = [1, 2, 'hi']

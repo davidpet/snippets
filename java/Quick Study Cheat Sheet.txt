@@ -41,6 +41,9 @@ for upcast, value is sign-extended
 	values that fit in the smaller range will still be the same value
 for downcast, value is truncated from left
 	if value fit to begin with, it will be correct
+numeric literals generally have correct type with some caveats
+	can't directly assign negative numbers to char (but 0 and positive nums fine)
+	if you use a hex literal, it will be considered int instead of whatever the variable is
 since there is no short literal, one thing that can get you is comparing with a bitmask
 	the bitmask will be integer because there is no short literal in Java
 	so the short gets implicitly widened to integer and no longer matches the mask
@@ -158,6 +161,10 @@ literal, indexer, etc. only available for arrays, which are a weird type in gene
 array can take primitive types but the others must take boxed types
 arrays cannot be concated directly (either with + or with a method)
 	you could use streams or something else to do so
+
+NOTE: trailing commas {1, 2, 3,} for formatting are allowed in Java
+	but you never see it, unlike in web languages
+	only for array literals, not for function calls
 
 int[] numbers = {1, 2, 3, 4, 5}; // fixed size, mutable contents
 f(new int[] {1, 2, 3});		// only way to pass an array literal
@@ -2174,12 +2181,16 @@ java.lang has some useful built-in annotations already
 in addition, frameworks like Guice and Spring provide their own
 
 [Records]
-*not supported by ijava*
 lets you define just what you need in a class and have a bunch of stuff auto-generated
 
 record Person(int arg1, int arg2) {
-	public Person {}
+	public Person {/* c'tor code */}
+
+	// other members
 }
+
+if you just want a struct that is hashable and equatable (and printable):
+	record Point(int x, int y) {} // no c'tor needs to be specified - automatically created
 
 differs from class in following ways:
 	record instead of class
@@ -2189,6 +2200,10 @@ differs from class in following ways:
 		the arg names at the top are PRIVATE instance variables
 automatically generated: constructor, equals, hashCode, toString, getters of same name as params
 no automatic copy constructor, but you can pass the private args as constructor args to make a copy
+
+WARNING:  iJava (in jupyter) behaves slightly differently than this and I don't know why, so be careful in interviews
+	in iJava, there are no getters added to the class, and the varaibles are public instead of private
+	that makes it more like a true C++ style struct, rather than a Java-fied version
 
 [Switch Expressions]
 int m = switch (n) {
