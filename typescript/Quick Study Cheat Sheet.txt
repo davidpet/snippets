@@ -10,43 +10,89 @@
 [Variables]
 boolean (true/false)
 number (both float and integer)
+  all the usual literals (inc. exponential, hex, etc.)
+  built-in symbols for dealing with floating point:
+    NaN
+    Infinity
+    -Infinity
+    isNan()
+    isFinite()
 string (lowercase)
 
-let x: number = 5;
-const x: number = 5;
-let x = 5;
+let x: number = 5; // mutable
+const x: number = 5; // immutable
+let x = 5; // type inference (the variable is typed, but it was inferred at compile-time)
 
-regular enums and string enums
-enum Direction {
-    Up = "UP",
-    Down = "DOWN",
-    Left = "LEFT",
-    Right = "RIGHT",
-  }
-let playerDirection: Direction = Direction.Up;
+let point: {x: number, y: number} = {x: 10, y: 20}; // custom object
+let obj: object = {x: 10, y: 20}; // works because all objects inherit object
+let point: {x: number, y: number} = {x, y}; // Shorthand Property Names
+  x and y are used as both the keys and the variables to get the values from
+  if the variables were called something else, you'd still have to say x: somethingElse and y: somethingElseElse
 
-any
-void
-null
-undefined (either explicitly or by being uninitialized)
-unknown
-never
+let a: any = 5;
+  a could be any type
+  often used for compatibility with JavaScript code where anything goes
+  a could be reassigned a different type of object arbitrarily
+  you can do whatever operations you want on it, like you're in JavaScript land
+let a: unknown = 5;
+  similar to any, but you can't do any operations on it that are type-specific
+  you have to convert to a type first (eg. via type narrowing)
+  otherwise, it's similar to using object directly
 
-NaN
-Infinity
--Infinity
-isNan()
-isFinite()
+let n: null = null; // the type of null is null
+let u: undefined = undefined; // the type of undefined is undefined
 
-reference types mutable but strings are immutable references (just like Java)
+let n: never = f(); // the function is not expected to return (eg. because always throws)
 
-let x! string;
-    treat as not nullable in a class even though not initialized just yet
-let x? string;
-    treat as optional in class (undefined if missing
-    same as doing let x: string | undefined
+let x: number | string;   // type unions
+  can at any time assign a number or string (and back and forth) to the variable
+let x: number | null;   // nullable type via union
+let x: number | undefined;
+
+static variables only exist as class members (no local statics)
 
 scoped like Java, not Python
+  block-scoped, not function-scoped
+
+primitives are mutable variables (while the objects themselves are immutable)
+  as in most languages
+objects are mutable reference types (as in most languages)
+  let obj1 = {x: 10, y: 20};
+  let obj2: {x: number, y: number} = obj;
+  obj2.x = 100;  // this changes obj1 (a reference, not a copy)
+structural typing does not imply copying - just matching
+strings are immutable references like in Java, C#, etc.
+collections, including arrays, are also mutable reference types
+
+Nullability
+  let x: number;    // no value specified
+    x is actually undefined, even though we didn't say it could be undefined with a type union!
+  let x: number|undefined;  // same thing, but other code will be able to tell it could be undefined better
+  let x: number|null = null;  // explicit nullability specification
+  if (x === null || x === undefined) {...}
+  note that both null and undefined are real valeus from JavaScript and === will work even if the type is wrong
+
+Type Alias
+    type Person = {
+      name: string;
+      age: number;
+      email: string;
+    };
+
+    type BetterPerson = Person;
+
+    const x: BetterPerson = {name: "bob", age: 20, email: "bob@bob.com"};
+
+Enums
+  regular enums and string enums
+    eg. can just give values with no = to auto-assign like in other c-like languages
+  enum Direction {
+      Up = "UP",
+      Down = "DOWN",
+      Left = "LEFT",
+      Right = "RIGHT",
+    }
+  let playerDirection: Direction = Direction.Up;
 
 [Collections]
 let a: number[] = [1, 2, 3, 4, 5];
@@ -63,6 +109,7 @@ let o: {a: number, b: string} = {a: 10, b: 'hi'};
 
 let tuple: [number, string] = [10, 'hi'];
     tuple[0] and tuple[1]
+    tuples are mutable (not like python)
 
 let s: Set<number> = new Set([1, 2, 3, 4, 5]);
     add(), has(), delete(), size()
@@ -78,17 +125,25 @@ let a: ReadonlyArray<number> = [1, 2, 3, 4, 5];
 also ReadonlyMap, etc.
 not truly readonly, just enforces the usage (like C++ const)
 
+spread operator (see Operators)
+
 [Strings]
+s + t + 3
+  concatenates two strings and a number (converted to string)
+
 `Hello, {name}!` // should be variable in current scope
 '' and "" are both for string (char is just a single character string, not special thing)
 
 s.length
 s[0], s.charAt()
+s = s.toUpperCase()
 
 console.log()
 console.error()
 console.warn()
 console.info()
+
+s = n.toFixed(2) // format a number as a fixed-point decimal string
 
 /regex syntax/
 regex.test(), matches(), etc.
@@ -97,28 +152,106 @@ str.replace(regex, otherText)
 JSON.stringify(), JSON.parse()
 
 [Operators]
-== is value equality for number and string, reference equality otherwise
-=== is strict equality (value and type)
-!= and !== corresponding to above
+all the usual arithmetic, arithmetic assignment, bitwise, and comparison operators from c-like language
+  and ternary operator
+&&, ||, ! for conditions
 
-x as OtherType
-+str (cast to number)
-n.toString()
+type narrowing (a unique feature of TS)
+  if (typeof x === "string") {
+    let y: string = x;  // legal because x is type string in this scope
+  }
+  if (x !== null) {
+    // in here, you can treat x as not nullable
+  }
 
-?? and ? and ! operators
-! doesn't throw (telling TS to just trust you)
+== for a number or string will try to coerce one to match the other (eg. number to string) before comparison
+  it comes from JavaScript and causes a lot of bugs
+=== (also from JavaScript) does not do this coercion
+  thus, it is called strict equality
+  it is mostly (and often mandatorily) recommended instead of == in TypeScript
+both == and === will check value equality for numbers and strings
+both == and === will check reference equality (not value) for reference types like objects and arrays
+=== works correctly with null or undefined (and similar) as well
+  you are permitted to do the === check even if the type says it can't be null or undefined
+!= and !=== correspond to == and ===
+for value equality in a custom object, you have to implement .equals() for the class
+arrays don't have .equals(), but you can use JSON.stringify(arr) === JSON.stringify(otherArr)
 
-... spread operator
+Casting/Coercion
+  x as OtherType // compiler will keep you honest
+    will only do things like any to a specific type or polymorhpic stuff
+    wil not do things like string to number
+    for things the compiler can't see are wrong, you may get unexpected behavior
+      eg. let s: string = "hi";
+          let o: any = s;
+          let b: boolean = o as boolean;
+          console.log(b);
+          // you expect it to print a boolean, but it prints a string
+      this is because 'as' is a pure TypeScript compiler feature
+        it is removed entirely in the emitted JavaScript code
+  let y: number = +s; // coercion to number via unary + operator
+    eg. string to number
+    will throw exception if bad format
+  n.toString()
+    but 10.toString() not allowed because of parsing issues
+  
+?? nullish coalescing
+  x ?? "hi"
+    will be x unless x is null or undefined, then it will be "hi"
+  note a general truthiness check - just null|undefined check
 
-!! for truthiness (or ! for not truthiness)
-    empty collections are truthy if not null|undefined
-    0 and "" are falsey
-short-circuiting and giving back last value seen
-implicit cast to boolean kind of (but gives real value back)
+! non-null assertion
+  let x: number = nullableNumber!;
+    TS doesn't actually do anything at runtime here (including throwing anything)
+    you are just telling the compiler to trust you that the thing cannot be nullable here anymore
+    you could very easily be wrong and have null at runtime when the compiler thinks you can't (be careful!)
+      could end up causing other bugs and throwing other kinds of errors at runtime
 
-if (x !== null) {
-    // in here, you can treat x as not nullable!
-}
+? safe-navigation operator (also called optional chaining, or Elvis operator)
+  a?.b?.c?.d
+  if any link in the chain is nullish (null|undefined), stops and returns that
+
+typeof x
+  gets a string representing the primitive type of an object (in JS)
+  note it's not a function call (no parenth)
+    eg. typeof x === "string"
+  because it's so primitive, it doesn't work for polymorphism in class hierachy
+    all reference types except string are seen as 'object', including arrays
+    even null is 'object' (but 'undefined' is 'undefined')
+  number, boolean, and string work as you'd expect (it's very useful for these specific types)
+
+x instanceof MyClass
+  boolean check of whether the class is in the inheritance chain of x
+  it works because JavaScript uses prototype inheritance, so JS will check the prototype chain for the class object
+  but it won't detect structural typing, so be very careful relying on this!
+
+"fn" in y
+  membership check
+  if y is an object, this will check if it has a method or variable called 'fn'
+  may be defeated by minification
+
+Truthiness
+  !! and ! are opposites
+    !! makes value into boolean based on truthiness, ! does same but negates it
+  falsey: null, undefined, 0, "", NaN, false
+  truthy: empty collections, empty arrays, empty objects, anything else
+  boolean operators like && and || return actual values (not boolean conversion)
+    they evaluate the conditions in terms of truthiness (as with !! and !)
+    and then do short-circuiting based on that
+    then the last value seen is the one returned (the original value, not the boolean)
+  you can use || as a truthiness coalescing operator
+  statements like if() do an impliict truthiness conversion too
+    for instance, you can do if (myIntValue && myStringValue)
+    but your linter and coding conventions may wish you to use !! to be more explicit
+
+Spread Operator
+  const a = [1, 2, 3];
+  const b = [...a, 4, 5, 6]; // [1, 2, 3, 4, 5, 6]
+
+semicolons are technically optional
+  JS people don't like them
+  TS people like them
+  leaving it out can actually ruin the parsing of some multi-line statements
 
 [Control Flow]
 try {
@@ -188,6 +321,9 @@ nested functions allowed but uncommon due to multiline lambdas
 return type can be ommited to let it be inferred
     eg. void, esp. private method
 
+never is a special return type that means the function never returns
+  eg. if the body throws
+
 [Functional]
 const addNumbers = (a: number, b: number): number => a + b;
 let greetFunc: (name: string) => void;
@@ -215,6 +351,13 @@ map, reduce, and filter available on arrays
 use extra () to return object from lambda
 
 [Classes]
+let x! string;
+    treat as not nullable in a class even though not initialized just yet
+    promising to set before read (eg. in c'tor)
+let x? string;
+    treat as optional in class (undefined if missing
+    same as doing let x: string | undefined
+
 type Person = {
     name: string;
     age: number;
