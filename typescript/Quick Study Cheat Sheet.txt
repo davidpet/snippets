@@ -1,5 +1,11 @@
-*** for the time being this will just be a super quick and superficial list of diffs from Java***
-*** I will do better later after the immediate need ***
+** rewrite of this sheet is in progress **
+** steps:
+** 1. go through notebooks again in detail and merge into what's here (mostly replace, but make sure nothing missed)
+** 2. sync with Java quick notes to see if any topics missed (from here and notebooks)
+** 3. sync with python quick notes for the same reason (since JS/TS has some in common with python note in common with Java)
+** 4. also include: pure JS, HTML, CSS/SASS, Dom, Angular, React
+** 5. any other popular libraries
+** 6. include info on latest versions (and mark current version here)
 
 [Variables]
 boolean (true/false)

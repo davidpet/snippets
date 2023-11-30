@@ -1,3 +1,9 @@
+** rewrite of this sheet is in progress **
+** steps:
+** 1. go through notebooks again in detail and merge into what's here (mostly replace, but make sure nothing missed)
+** 2. sync with Java quick notes to see if any topics missed (from here and notebooks)
+** 3. sync with python quick notes for the same reason (probably less to find from there, but some stuff like operator overloading will match)
+** 4. see if any new versions since last time (and mark current version here)
 
 This is not a comprehensive list of C++ features (that would be too big).
 It is just a list of some of the key UNIQUE things about C++ worth keeping in mind, especially after not using it a while.
