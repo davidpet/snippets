@@ -1,6 +1,13 @@
 [Documentation]
 docs.python.org
 
+[Current Version]
+most of these notes based on 3.10 but not comprehensive with newer features
+3.11 is faster and I use it on Linux, but Mac is stuck on 3.10 due to tensorflow-macos compatibility
+TensorFlow currently supports 3.11 as of these notes
+3.12 just came out in October 2023
+    I will study it when TensorFlow switches to it
+
 [Variables]
 int, float, str, bool
     technically all reference types, but int, float, and bool are immutable
@@ -1206,6 +1213,7 @@ nesting
         this is a way to do anonymous classes
 
 not supported: partial classes, friend classes (can use _ variables), sealed/final
+a variable and method of the same name cannot exist because methods/functions are variables in Python
 
 [Generics]
 because python is dynamically weakly typed and duck-typed, it does not have generics

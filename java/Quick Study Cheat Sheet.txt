@@ -1,9 +1,4 @@
-*************************************************************************************
-This document represents items that jumped out at me as needing to be studied for Java interviews at a point in time.
-Since in the future, different items would jump out at me based on the experience I have between now and then, it is only an artifact of this moment in time.
-Going forward, I should review the actual notebooks, but this is so I can study up quickly at first.
-Also, the interview tips section is only in here (not elsewhere).
-*************************************************************************************
+** most of these notes are summarized from notebooks, except for the interview stuff at the bottom **
 
 [Online Documentation]
 searching for Java Stream, for instance, gives you a Java 8 result
@@ -12,6 +7,14 @@ as a result of this, a lot of the info in here may be limited to 8 unnecessarily
 
 also, sometimes methods aren't listed in the main list but are listed as being included by other things
 	be careful!
+
+[Current Version]
+the last version considered in these notes is Java 21 (released Sept 2023)
+iJava (for jupyter notebooks) mostly supports it by having it on your system (with some quirks)
+
+the "preview" features are not considered here because they're not finalized yet
+	but just as an interesting FYI, the preview features in 21 are looking pythonic
+		eg. more convenient for command-line one-liners, more data-oriented programming stuff, etc.
 
 [Variables]
 String
@@ -439,6 +442,8 @@ StringBuilder
 	setLength() is a way to truncate efficiently
 		just change the inner length without re-copying anything
 		eg. when generating permutations of a string
+	repeat(str, n) [new to Java 21]
+		append n copies of str into the builder
 
 	methods that mutate the data return the object itself
 		this allows you to chain fluently
@@ -1542,6 +1547,8 @@ Serializable
 			but enum is often better for that Pattern
 	the most important built-in stuff, including Enum, ArrayList, etc. implement Serializable
 
+it is legal to have a method with the same name as a variable and vice versa
+
 [Generics]
 type parameters can only be reference types (no primitives)(but arrays are allowed, even arrays of primitives!)
 generic methods are weird in Java
@@ -2180,30 +2187,58 @@ java.lang has some useful built-in annotations already
 	@SuppressWarnings("name")
 in addition, frameworks like Guice and Spring provide their own
 
+[Pattern Matching instanceof]
+enhancement to instanceof to allow casting at same time
+if (obj instanceof String str) {
+            System.out.println(str.length());
+        }
+
 [Records]
-lets you define just what you need in a class and have a bunch of stuff auto-generated
+new feature (16+ and still evolving)
+lets you define an immutable struct-like entity that has a bunch of things auto-generated
+using 'record' instead of 'class', you get a class that inherits from 'java.lang.Record'
+the compiler behavior around this is similar to enums in a lot of ways
 
-record Person(int arg1, int arg2) {
-	public Person {/* c'tor code */}
+public record Point(int x, int y) {}
+	this makes a class, so it could be top-level
+	but it could also be inside a class (and is implicitly static like enums and interfaces)
 
-	// other members
+Point p = new Point(10, 100);	// automatically get c'tor
+System.out.println(p.x());	// automatically gets accessor of same name as vars
+	the vars x and y become 'private final' variables
+	that means only the record itself can see them directly
+	but it also means they cannot be changed!
+other auto-implemented methods: equals(), hashCode(), toString()
+	very convenient for using in collections!
+
+NOTE: there is a bug in ijava (jupyter) where records inside classes can see the private variables
+	and also sometimes the record can change its own private final variables
+	try not to rely on either of these bugs
+	probably caused by REPL implementation for the interactive environment
+
+// can add more content inside record
+record Point(int x, int y) {
+	Point { // note you don't put the params here again
+		// c'tor code
+	}
+
+	double distance() {
+		return Math.sqrt(x*x + y*y);
+	}
 }
 
-if you just want a struct that is hashable and equatable (and printable):
-	record Point(int x, int y) {} // no c'tor needs to be specified - automatically created
+[Record Pattern Matching]
+this is an extension of the idea of pattern matching instanceof to cover record destructuring
+in this example, Circle is a record that as a Point and a Radius (both also records)
+the instanceof construct lets us destructure it into consistuent variables for convenience
+note that we can use explicit types or var for type inference
+if any of the things don't exist (eg. because they are null), it won't match
 
-differs from class in following ways:
-	record instead of class
-	constructor args moved up to typename
-	constructor has no args
-	can put whatever you want in the class body
-		the arg names at the top are PRIVATE instance variables
-automatically generated: constructor, equals, hashCode, toString, getters of same name as params
-no automatic copy constructor, but you can pass the private args as constructor args to make a copy
-
-WARNING:  iJava (in jupyter) behaves slightly differently than this and I don't know why, so be careful in interviews
-	in iJava, there are no getters added to the class, and the varaibles are public instead of private
-	that makes it more like a true C++ style struct, rather than a Java-fied version
+if (o instanceof Circle(Point(var x, var y), Radius(int r))) {
+	System.out.println(x);
+	System.out.println(y);
+	System.out.println(r);
+}
 
 [Switch Expressions]
 int m = switch (n) {
@@ -2216,21 +2251,84 @@ int m = switch (n) {
 then the result of the switch is a value
 because it returns a value, it has to be EXHAUSTIVE (but can have default)
 
+you can also have a void switch expression like this:
+	switch (n) {
+		case 1 -> System.out.println("1");
+		default -> System.out.println("30");
+	} // no semicolon needed because no assignment
+
+[Pattern Matching Switch]
+these concepts apply to the old-fashioned switch as well as switch expressions
+	but they're really geared towards making switch expressions better
+		to replace old-fashioned complicated switches with fall-through
+this is an extension of the same idea in pattern-matching instanceof
+	the overall goal is to allow more data-oriented programming styles and cut down on boilerplate
+note that these concepts are shown separately and for switch expressions
+	but they can be freely combined and used with old-fasheioned switches too
+
+// casting types (like pattern matching instanceof)
+switch (o) {
+	case null -> System.out.println("null!");
+	case String s -> System.out.println(s);
+	case Intenger n -> System.out.println("Number: " + n);
+	default -> System.out.println("Who knows!");
+}
+
+// getting rid of fall-throughs
+// NOTE: null has to come to the left of default, but they can be combined
+switch (n) {
+	case 0, 1, 2 -> System.out.println("< 3");
+	case 3, 4, 5 -> System.out.println(">= 3 < 6");
+	case null, default: System.out.println("something else (or nothing)");
+}
+
+// bodies for just cases that need it
+switch (n) {
+	case 0, 1, 2 -> System.out.println("< 3");
+	case 3, 4, 5 -> {
+		int x = n * n;
+		yield x;	// the result of the expression
+	}
+	default -> System.out.println("");
+}
+
+// guard clauses
+case Integer i when i >= 30 -> System.out.println(">= 30");
+
 [Compact Numbers]
 can put _ between digits in a numeric literal and they will be ignored (for visual convenience)
 
 [Text Block Formatting]
 a verbatim block can have .formatted() after to pass format args
 
-[Pattern Matching instanceof]
-enhancement to instanceof to allow casting at same time
-if (obj instanceof String str) {
-            System.out.println(str.length());
-        }
-
 [Sealed Classes]
 a new thing to restrict which classes can sublcass a class
 note that before this feature, 
+
+[SequencedCollection]
+in Java 21, java.util.SequencedCollection is added
+it is an interface that inherits from java.lang.Iterable
+it is a superinterface of ones like List<T> that have a definite first and last item
+it has new methods (which are now part of interfaces like List<T> by extension) for accessing first and last
+
+addFirst, addLast, getFirst, getLast, removeFirst, removeLast
+	the idea is to remove the .size() - 1 and 0 boilerplate you see everywhere
+also has a reversed() method to get a reversed view on the sequence non-destructively
+
+[Virtual Threads]
+Project Loom
+
+"platform threads" (physical threads from the OS) are stuck servicing one task
+	if they become blocked, the platform thread can't do anything
+virtual threads are a new way to have platform threads switch between tasks when they are blocked
+existing threading methods like sleep() have been updated to interact nicely with this concept
+aside from how they are created, virtual threads are meant to act exactly like normal threads
+
+Thread thead = Thread.startVirtualThread(runnable)
+Thread thread = Thread.ofVirtual().start(runnable)
+
+ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor();
+// then submit a Runnable as usual
 
 [AutoValue]
 google library with annotations to make value classes and builders
