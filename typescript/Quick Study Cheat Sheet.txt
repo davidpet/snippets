@@ -18,6 +18,8 @@ number (both float and integer)
     isNan()
     isFinite()
 string (lowercase)
+bigint (if need more than 54-bit integers)
+  trailing n literal (eg. 'const x = 10n;`)
 
 let x: number = 5; // mutable
 const x: number = 5; // immutable
@@ -56,6 +58,13 @@ scoped like Java, not Python
 
 primitives are mutable variables (while the objects themselves are immutable)
   as in most languages
+the primitive types (from JS) are: string (!!!), boolean, number, undefined, null, symbol, bigint
+  they are true value types and don't have any methods to call themselves
+  when you do something like 5.toString(), that is an error because it tries to call it on the primitive
+JS has boxed types String and Number, for instance, but it's a little different from boxing in Java
+  if you do 'const x = 5' and then 'x.toString()', JS will autobox and call the method inline!
+  in general, you should never have to use the boxed types directly (and it is very uncommon to do so)
+
 objects are mutable reference types (as in most languages)
   let obj1 = {x: 10, y: 20};
   let obj2: {x: number, y: number} = obj;
@@ -101,6 +110,20 @@ Interning
     and be false even for same literal string
   otherwise, === will be true because of the shared pool of strings
     you don't usually need to worry about that
+
+JS vs. TS Types
+  most of the types discussed here and in Collections come from JS
+  but the following are added by TS:
+    enums
+    tuples (which is really just an array with mixed types)
+    any
+    unknown
+    never
+    void
+  also, generics don't exist in JS
+    Map is a container that can take objects of any type and doesn't enforce they match
+      like using raw type in Java
+    TS adds generics functionality to provide safety when you develop and compile your code
 
 [Collections]
 Literals
@@ -168,6 +191,7 @@ Maps
   m.set(key, value)
   m.get(key)
     m.get(key) || defaultValue
+    note that you CANNOT do m[key] (even though you can for objects)
   m.has(key)
   m.delete(key)
   m.size()  // # of keys
@@ -574,6 +598,7 @@ constructor(name: string, age: number, private breed: string) {
 no destructors/finalizers
 
 [Generics]
+compiles down to using raw types because JS doesn't have generics (but does have the containers, as raw types)
 functions are normal instead of weird like Java
 can take primitives as well as reference types
 
