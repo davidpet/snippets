@@ -1,11 +1,22 @@
 ** rewrite of this sheet is in progress **
 ** steps:
 ** 1. go through notebooks again in detail and merge into what's here (mostly replace, but make sure nothing missed)
+** 1b. don't forget the JS notebooks too
 ** 2. sync with Java quick notes to see if any topics missed (from here and notebooks)
 ** 3. sync with python quick notes for the same reason (since JS/TS has some in common with python note in common with Java)
-** 4. also include: pure JS, HTML, CSS/SASS, Dom, Angular, React
+** 4. also include: pure JS, HTML, CSS/SASS, Dom, Angular, React, rxjs
 ** 5. any other popular libraries
 ** 6. include info on latest versions (and mark current version here)
+
+[Playgrounds]
+https://www.typescriptlang.org/play - TypeScript playground
+  not just for testing TypeScript code
+  can also show you the JS code emitted, which is useful for learning JS when you know TS
+    or understanding better what concepts in TS actually mean
+Javascript - just use Chrome Devtools, console tab
+  you can enter a statement and hit Enter to run it
+  will see the DOM of the current page and keep state
+  even comes with jquery ready to use
 
 [Variables]
 boolean (true/false)
@@ -158,6 +169,11 @@ Arrays
   [][] for multidimensional arrays
     nested [] just as you'd expect
 
+  Array.from() can make an array-like thing into a true array
+    the thing you pass in must support indexing and length like an array
+    or alternatively, must be something iterable
+    this is also another way to shallow-copy an array
+
 Tuples
   similar to array, but fixed length and not homogeneous type
   let tuple: [number, string, boolean] = [10, 'hi', true];
@@ -292,6 +308,7 @@ Conversions
   parseInt() and parseFloat() to get numbers from strings
   +s // number to string via unary plus operator
   JSON.stringify() to make object into json string
+    JSON.stringify(o, null, 2) to pretty-print with 2 spaces per indent
   JSON.parse() to make json string into object
   n.toString() to get string from number
   o.toString() to get string from object (as it defines for itself)
@@ -346,6 +363,9 @@ type narrowing (a unique feature of TS)
   }
   if (x !== null) {
     // in here, you can treat x as not nullable
+  }
+  if (x) {
+    // in here, x is not undefined or null
   }
 
 == for a number or string will try to coerce one to match the other (eg. number to string) before comparison
@@ -969,6 +989,9 @@ Importing From TS Files
       no file extension on the TS file importing from
     
     eg. import {PI} from './subfolder/myconstants';
+
+    NOTE: it is possible to add folders to the search path for relative imports
+      via your tsconfig.json file
 Importing from Node Modules
   import {SomeSymbol} from 'somepackage';
     the main difference here is the lack of ./
@@ -1035,20 +1058,313 @@ Ambient Declarations
 
     some JS libraries will already come with .d.ts files becuase they're commonly used by TS users
 
-[stdlib]
-** no imports needed **
+  Top-Level of Code
+    like Python, you can put whatever you want at the top level and it will execute when imported
+    the first file executed is the entry point
+    however, unlike Python, TS doesn't like you redefining symbols (eg. same class, function, etc.) multiple times at same level in same file
+      that is why you have to use IIFE in Jupyter notebook cells
 
-Math
+[Project Configuration]
+TypeScript compiler = tsc
+
+tsconfig.json
+  TypeScript compiler options for your project
+  a folder containing (recursively) .ts files should have a tsconfig.json file at the root
+  when you compile/run a TS file, the compiler will automatically search upward for it in the ancestry
+    if it doesn't find one, it will still run (with some default options)
+  you can make a new one (with helpful comments) with 'tsc --init'
+    frameworks like Angular also make their own for new projects
+
+  baseUrl = base path for imports (relative to the tsconfig.json)
+  outDir = where to put the output build artifacts (eg. js files)
+  strict = enable to get a bunch of strict checks like nullness
+  noImplicitOverride = requiring override keyword to override a method
+  target = which version of JS to emit code for
+    this affects what code you can write as well (eg. which bulit-in data structures you can use)
+
+package.json
+  NPM package information for your project
+    searched upward similarly to tsconfig.json
+  used in conjunction with node_modules folder to find packages you import in your code
+  you can  make a new one with 'npm init'
+
+NVM = for side-by-side node versions (similar to conda for Python)
+  nvm install node
+    make environment with latest version and make it the default
+  nvm install node [version]
+  nvm use [version]
+  nvm which [version]
+    to see physical install location
+  nvm deactivate
+
+  npm packages from environments will go into subfolders of ~/.nvm
+
+NPM = Node Package Manager
+  comes bundled with node itself
+  installing node (possibly via nvm) is first step before doing any projects
+  then you can use it to install Angular, React, whatever you want
+
+  npm install somepackage
+    installs a package into the local project (based on working directory and search upward)
+    manages package.json and node_modules folder
+  npm install --save somepackage
+    same thing (save option used to be required, so you'll see it online)
+  npm install --save-dev somepackage
+    install a package as a dev dependency
+    available during development but not in production
+    eg. chrome devtools integrations, ambient types, etc. might be here
+  npm install
+    based on existing package.json, install all local modules into node_modules folder
+    you have to do this when you sync a package.json from GitHub, for instance
+  npm install -g typescript
+    install a package globally so that it's always available
+    often used for ones that have command-line scripts
+    local packages shadow global ones
+  npx somecommand
+    runs an npm package command from the latest version remotely without having to install globally
+    if you have the package and it's the latest version, it will use yours for efficiency
+  npm run scriptName
+    run a script from local package
+  npm run -g scriptName
+    run a script from global package
+  
+  Some Useful Packages
+    typescript
+      the typescript compiler
+      install globally
+    @angular/cli
+      for Angular projects
+      install globally
+    ts-node
+      gives you a TS repl
+      install globally
+    prettier
+      code formatter
+    eslint
+      linter
+
+Node
+  node
+    to get JS repl
+  node file.js
+    execute a file at the terminal
+
+tsc
+  tsc --init
+  tsc myfile.ts
+    creates myfile.js
+
+  does not do minification, optimization, or polyfills
+  you need other tools like WebPackage, Babel, etc. for that
+  that's why ES target in tsconfig.json is so important
+
+ts-node
+  ts-node myfile.ts
+    directly execute ts file
+    probably calls tsc to compile?
+
+** see Setup notebook for more details on environment setup **
+
+[stdlib]
+unlike Java, Python, C++, etc. there are no imports needed for standard library symbols
+  imports are for other TS/JS files and node packages
+most standard library symbols come from JS
+  TS adds generics to some of them for type safety, but the underlying raw type is from JS
+  also it adds ambient declarations for type safety
+  but for instance, new Date() already works in JS because object creation is from there
+
+a lot of built-in functions, collections, primitives, etc. already discussed above in various places
+
+Browser DOM
+  these are global objects you can automatically access in both JS and TS
+    though TS adds strong typing to them so that you will use them safely
+  to add your own members to them JS-style in TS, you can use declaration merging on their types
+    then TS will let you set the fields you want
+  it's worth noting that the below types exist in JS by the same name, but TS adds ambient declarations
+    this is to make you code in a type-safe way so that when it compiles down to JS, you have less bugs
+  
+  window: Window (default target of 'this')
+    contains all global variables defined with 'var' (old-fashioned not recommended way)
+    also contains document, location, etc. as properties
+    properties added to window become globally available too
+      eg. setTimeout() actually lives in window, and you can call setTimeout() without putting window. in front
+    you can check for existence (eg. to see if script or browser) with 'typeof window === undefined' or similar
+  document: Document
+    the main starting point for DOM manipulation
+    
+    Getting Single Elements
+        const element: HTMLElement|null = document.getElementById('myId');
+        if (element) {
+          const buttonElement: HTMLButtonElement = element as HTMLButtonElement;
+          console.log(buttonElement.value);
+        }
+
+        const myDiv = document.querySelector("#myDiv") as HTMLDivElement; // if no strict null checks option
+        if (myDiv) {
+            // TypeScript knows `myDiv` is a div element
+            myDiv.style.backgroundColor = "blue";
+        }
+    Getting Multiple Elements
+        document.getElementsByClassName('myClass')
+        document.getElementsByTagName('myTag')
+        document.querySelectorAll('myTag.myClass')
+
+        these return array-like objects that aren't true arrays
+          can make into true arrays with Array.from()
+        return empty collection instead of null when not found
+
+    Events
+        myDiv.addEventListener('click', (event) => {
+          event.preventDefault(); // or stopPropagation, whatever you want
+          console.log('clicked!');
+        });
+
+        element.dispatchEvent(event) to dispatch an event yourself
+          can be one of the built-in ones or your own
+          an event has a name and an event object with properties (like addEventListener shows)
+          eg. const myEvent = new CustomEvent('myCustomEvent', {
+                  detail: { message: 'Hello from custom event!' }
+              });
+    
+        myDiv.removeEventListener('click', fn); // fn must be same reference you added for this to work
+          if an element is remove from the DOM, it is considered good practice to remove the listeners
+          although modern browsers SHOULD be able to figure this out
+            if they don't, it would be a memory leak
+    
+    Adding DOM Elements
+      const newDiv: HTMLDivElement = document.createElement('div');
+      newDiv.id = 'new-div';
+      newDiv.innerText = 'This is a new div.';
+
+      document.body.appendChild(newDiv); // to append top level
+
+      const container = document.getElementById('container');
+      if (container) {
+          container.appendChild(newDiv);
+      }
+
+    Removing DOM Elements
+      element.parentNode.removeChild(element)
+      element.remove() // more direct, but not supported in IE
+        polyfill can fix that though
+  location: Location
+    for dealing with url and host type stuff
+
+    href = current page url
+      can also use toString()
+    various properties for components of the URL, such as hostname, search, port, etc.
+
+    reload() to refresh the page
+    replace(url: string) to navigate to another page without adding a back button entry
+    assign(url: string) to navigate to another page with a back button entry
+      you can also change location.href and do location.reload()
+
+Math: static math functions you can call on numbers
+  abs()
+  ceil(), floor(), round()
+  max(), min() [variadic]
+  random() [0,1)
+  sqrt()
+  pow(base, exp)
+  sine(), cos()
+  log(x), log10(x), exp(x)
+
 Date
+  const date = new Date()
+  date.getMonth(), date.getYear(), date.getTime(), etc.
+  date.toDateString()
+  date.setMonth(), etc.
+
+setTimeout(fn, delay = 0)
+  run fn after a delay in milliseconds (minimum)
+  if 0, it will just go into the queue of tasks to be dispatched by the browser's event loop (after what is already in there)
+  this is useful for when you want to do something after the current event handling is completed properly
+    esp. useful in things like Angular change detection
+    or if your code will take a long time and you want to let the UI continue to function
+  this is part of Java's simulated multithreading
+
 Promise<T>
-setTimeout(() => {})
-XmlHttpRequest for ajax stuff
+  const promise: Promise<string> = new Promise((resolve, reject) => {
+    // do some kind of async code
+    // that calls resolve() with a string
+    // or reject() with an error string
+
+    // eg. used in a lambda passed to an HTTP handler
+    // eg. used in a setTimeout() lambda
+    // eg. await another promise
+  });
+
+  aside from creating your own promises, you will often get them from sever calls and such
+
+  // chainable
+  promise.then((data) => transform(data))
+         .then((transformedData) => transformedData.x)
+         .catch((error) => handleError(error));
 
 async/await keywords
-    mark function as async and have it explicitly return a Promise<T>
-    inside the function, pretend it returns T
-    can await a promise inside the function
-    other async functions can await your function
+    JS syntactic sugar for chaining promises as if they are synchronous
+
+    async function(x: number): Promise<string> {
+      const y = await someOtherAsyncFunction(x);
+      return (x + y).toString();
+    }
+
+    'async' makes a function that returns a promise into an async function
+      still have to explicitly return promise in signature
+    in the body, you return the synchronous value instead of a promise
+    in the body, you can use 'await' to have it continue when another promise resolves
+      this is part of the state machine magic the 'async' keyword provides
+    other 'async' functions can 'await' your function (or promise)
+    functions that are not 'async' can still call your function, but they must directly deal with the promise
+
+Ajax
+  XMLHttpRequest is the built-in browser type for making calls to the server
+  it is a bit ugly, and usually you will want to use libraries that wrap it better
+    eg. with promises, etc.
+  frameworks like Angular have their own ways to do it too
+    eg. in Angular, HttpClientService helps you get JSON objects from the server
+      returns an observable
+  there is a proposal to add Observable (from rxjs) directly to the JS language
+    it is still just a proposal and may not happen for a long time if ever
+
+JSON
+  JSON.stringify() and JSON.parse() as described in Strings above
+
+[Decorators]
+similar to Python, you can make a function that takes a decloaration and wraps it
+the interface is more complicated - look it up when needed
+important thing to know is there are decorators you can import (without the @) and use with @
+  eg. @log f() {}
+  eg. @ViewChild() formGroup: FormGroup;
+    Angular people like to use () even when no args, for consistency with the ones that have args
+  eg. @SomeDecorator(option1, option2) x: MyClass;
+
+[JSDoc]
+** see JSDoc notebook for full working example **
+similar to docstrings in other languages
+
+/**
+  * Adds two numbers.
+  * @param {number} a - The first number.
+  * @param {number} b - The second number.
+  * @returns {number} The sum of the two numbers.
+  */
+function add(a, b) {
+  return a + b;
+}
+
+[Testing]
+Jasmine
+  describe(), it(), etc.
+  test files usually in 'specs' folder
+Karma
+  for running in browser (inc. Jasmine tests)
+Angular/Protractor
+  based on Jasmine and Karma plus its own stuff like TestBed
+  test files usually in same folder as code
+Selenium
+  browser interaction and screenshots
+screendiffs require 3rd party libraries
 
 [Angular]
 templates + styles (encapsulated via shadow DOM and/or extra classes/selectors)
@@ -1179,3 +1495,10 @@ Redux for state management
 
 [ToDo]
 function expression 'this' binding (more useful for anonymous classes?)
+declaration merging (interfaces, classes w/ interfaces, for partial classes?  for extension methods?)
+var (function scope, hoisting, global object, re-declaration, discouarged)
+require()
+old prototype style and use in TS vs. JS
+[Symbol.iterator]()  syntax
+iterator protocol
+jquery in JS vs. TS context
