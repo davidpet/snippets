@@ -460,58 +460,63 @@ finally {}
 Not Available: context management, asserts (have to use libraries)
 
 [Functions]
+types look a lot like python type annotations (but compiler actually cares)
+unlike in C/C++/Java/etc., you have to put 'function' in front if not a class method
+  this is similar to having to use 'def' in Python
+unlike in Python, you can't arbitrarily reassign a function to a different lambda or something
+  functions are not just treated as variables
+  HOWEVER, in pure JS you could do that (TS compiler is the one preventing it)
+
 function add(x: number, y: number): number {
     return x + y;
 }
 
-// Optional parameters
+Optional Params
   function greet(name?: string): void {
     if (name) {
       console.log(`Hello, ${name}!`);
-    } else {
+    } else { // name is undefined
       console.log("Hello, stranger!");
     }
   }
 
-greet(); // Output: Hello, stranger!
-greet("John"); // Output: Hello, John!
+  greet(); // Output: Hello, stranger!
+  greet("John"); // Output: Hello, John!
 
-// Default parameters
+Default Params
   function power(base: number, exponent: number = 2): number {
     return Math.pow(base, exponent);
-}
+  }
 
-function sum(...numbers: number[]): number {
+Named Params
+  not a first-class language feature, but you can do it with objects
+
+  function greet({ name, age }: { name: string; age: number }): void {
+    console.log(`Hello, ${name}! You are ${age} years old.`);
+  }
+  greet({ name: "John", age: 30 }); // Output: Hello, John! You are 30 years old.
+
+Rest Params
+  function sum(...numbers: number[]): number {
     return numbers.reduce((acc, curr) => acc + curr, 0);
   }
 
-// Named arguments via anonymous class
-function greet({ name, age }: { name: string; age: number }): void {
-    console.log(`Hello, ${name}! You are ${age} years old.`);
+  function processOptions(options: { [key: string]: any }): void {
+    // use options as an iterable object with keys and values
+    // key is not a variable - it is telling it how to interpret the options object
+    // this makes use of index signatures
   }
+  processOptions({a: 1, b: 2});
+  // could use ...options to process multiple objects
 
-greet({ name: "John", age: 30 }); // Output: Hello, John! You are 30 years old.
-
-// Overloading
-// to overload by # params, use optionals
-function processData(data: string): void;
-function processData(data: number): void;
-function processData(data: string | number): void {
-    if (typeof data === "string") {
-      console.log(`Processing string data: ${data}`);
-    } else if (typeof data === "number") {
-      console.log(`Processing numeric data: ${data}`);
-    }
-  }
-
-nested functions allowed but uncommon due to multiline lambdas
-    unlike Python
-
-return type can be ommited to let it be inferred
-    eg. void, esp. private method
-
-never is a special return type that means the function never returns
-  eg. if the body throws
+Overloading
+  doesn't work because of redefinition of symbols
+  the usual way is to use type unions w/ instanceof, optional params, etc.
+  there is a way to declare your intent to have overloads to the compiler, intellisense, etc.
+    function f(a: number, b: number);
+    function f(a: number, b: string);
+    function f(a: number, b: number|string) {// implementation goes here}
+    // similarly b could be optional if you had f(a: number) in the list
 
 Generators
   function* lazyList(limit: number): IterableIterator<number> {
@@ -526,31 +531,123 @@ Generators
     OR const a = Array.from(l) // to make into eager array
   can send values into the .next() call just like python for two-way communication
 
+nested functions allowed but uncommon due to multiline lambdas
+    unlike Python
+
+return type can be ommited to let it be inferred
+    eg. void, esp. private method
+    general rule: maybe ommit if can be easily inferred
+      but include by default, except for private methods
+
+never is a special return type that means the function never returns
+  eg. if the body throws
+
 [Functional]
+"fat arrows" with all the usual combos
+  multiline body, implicit return, type inference on args, etc.
+  you can't leave out the () though
+
 const addNumbers = (a: number, b: number): number => a + b;
 let greetFunc: (name: string) => void;
+let run: () => void;
+const run = () => console.log('hi');  // void statements allowed on void returns
+const fns: (() => void)[] = []; // list of lambdas
 
-fat arrows
-all the usual combos
+function expressions: like lambdas (and assignable to varaibles like lambdas)
+  looks like defining a function but without the name
 
-closures by reference (except loop variables)
+  const fn = function (x: number, y: number): number {
+    return x + y;
+  }
 
-_, __, etc.
+  completely interchangeable with lambdas and functions just like lambdas are
+  subtle difference = handling of 'this'
 
-fn.bind(thing)
-    binds 'this' in the context of fn to point to the object thing
-    eg. in a lambda that uses 'this' but was not returned from the target class
-fn.bind(thing, a, b)
-    can also bind arguments so don't have to pass them on calls
+to return an object from a lambda with {} and no body, you have to wrap it in extra ()
+  because it will think the {} is a method body
+  eg. (a, b) => ({x: a, y: b})
 
-fn.apply(thing, [a, b])
-    calling fn with array of args
-fn.call(thing, a, b)
-    calling fn with positional args
+IIFE:
+   (() => {
+    console.log("lambda call!");
+  })();
 
-map, reduce, and filter available on arrays
+variables with function types can be assigned lambdas or normal functions
+  then you can call the variable just like it was a normal function
+but you cannot rebind a normal function to a different function or a lambda in TS
+  in JS you can
+  in TS, you can think of it like it's a "const" variable (though it's not exactly the same)
+  also in JS, people like to use lambdas assigned to constants instead of using 'function'
+    less popular in TS
+functions (inc. top-level, lambdas, methods, and function expressions) are reference type
+  they even have methods
 
-use extra () to return object from lambda
+closures usually are by reference (even for primitives)
+  but loop variables are an exception (eg. for loop iteration variable)
+  to make a value close by value instead of reference, you need to make it a parameter of a function
+    in other words, lexically capture it
+    eg. a nested function, an IIFE lambda around the lambda, etc.
+  this is similar to Python except for the part about loop variables
+
+you can use _, __, ___, etc. as "don't care" values for lambdas, destructuring, etc.
+  technically those are actual names (valid identifiers)
+  but by convention they are d.c. values
+
+this
+  the 'this' keyword is not as straightforward as other languages
+    it has a lot of JS weirdness that TS is stuck with
+    not just for use in classes (normal functions have it too)
+  
+  in a top-level function that is not lambda or function expression, 'this' is either:
+    the global object (eg. window in a browser) by default
+    undefined if in strict mode
+  in a lambda (with arrow), it is captured from surrounding scope
+    eg. if in a class, it is the class instance
+    eg. if in a top-level function, it is whatever it is there
+  in a function expression, it depends on the context
+  in a method of a class, 'this' is the instance
+    and you're required to use 'this' to access members (similar to 'self' in Python)
+      but don't include in method signature
+
+  you can call the bind() method on a function object to explicitly bind 'this' to something
+    eg. to treat a free function as a method of a class when called
+    see Partial Application for more details
+
+Partial Application
+  // just binding 'this'
+  function f() { console.log(this); }
+  const g = f.bind([1, 2, 3]);
+
+  f();  // prints global object or undefined
+  g();  // prints [1, 2, 3]
+
+  // binding 'this' and some args
+  function f(a: number, b: number, c: number): number {
+    console.log(this);
+    return a + b + c;
+  }
+  const g = f.bind(this, 10, 20);
+  g(30);  // prints global object and returns 60
+
+Applying Arguments from Iterable
+  function f(a: number, b: number, c: number): number {
+    console.log(this);
+    return a + b + c;
+  }
+  
+  f.apply(this, [10, 20, 30]); // prints global object and returns 60
+  f(...arr) where arr = [10, 20, 30] would also work
+    using spread operator to expand args
+    when you don't need to bind 'this'
+
+Applying Arguments Positionally
+  f.call(this, 10, 20, 30);
+  this is similar to bind() except it's actually calling
+  a convenient way to bind 'this' without having to make a variable for the result
+
+map, reduce, filter
+  map, reduce, and filter are array methods that return new arrays
+  note that reduce signature looks like arr.reduce(fn, seed) [weird order]
 
 [Classes]
 let x! string;
@@ -791,3 +888,7 @@ React = unidirectional flow, virtual DOM (always being "rebuilt")
 dynamically returning templated HTML code from functions
 Redux for state management
     and built-in state management functions
+
+[ToDo]
+index signatures
+function expression 'this' binding
