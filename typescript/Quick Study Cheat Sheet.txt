@@ -1517,3 +1517,9 @@ are decorators from JS or TS?
 https://www.npmjs.com/package/typescript-collections
 https://www.reddit.com/r/leetcode/comments/wuxw3s/how_do_you_make_a_priority_queue_in_javascript/
 https://www.collectionsjs.com/sorted-map
+array reification like Perl?
+some() and every()
+localStorage.setItem(key, value)
+JSON.stringify() sedcond param = key list
+comma vs. ; in {} syntax (for clarity)
+demonstrations of this in anonymous objects and various {} scenarios since confusing
