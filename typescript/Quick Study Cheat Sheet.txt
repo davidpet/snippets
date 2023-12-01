@@ -177,6 +177,7 @@ Maps
     console.log(key);
     console.log(value);
   }
+  also can use m.keys(), m.values(), m.entries()
 
 Objects (as structs)
   let o: {a: number, b: string} = {a: 10, b: 'hi'};
@@ -205,6 +206,9 @@ Objects (as structs)
     unquoted string keys in an object may be subject to minification (and their usages as well)
       the minifier may be smart enough to not minify it (but maybe you want it to)
   
+  Object.keys(o), Object.values(o), Object.entries(o)
+    to iterate over fields in an object as if a map
+
 Objects (as classes)
   'class' instead of 'interface' and can have constructor, methods, etc.
   created with 'new' instead of structurally like with structs
@@ -277,6 +281,7 @@ console.log()
     much better than toString() and such
   output goes into debug console (eg. Chrome Devtools)
   console.log() for empty line
+    can also use \n in strings
 console.error()
   like console.log() but more serious (shows up red)
 console.warn()
@@ -302,6 +307,7 @@ Regular Expressions
 [Operators]
 all the usual arithmetic, arithmetic assignment, bitwise, and comparison operators from c-like language
   and ternary operator
+  and pre and post increment/decrement
 &&, ||, ! for conditions
 
 type narrowing (a unique feature of TS)
@@ -402,21 +408,32 @@ semicolons are technically optional
   leaving it out can actually ruin the parsing of some multi-line statements
 
 [Control Flow]
+'if/else if/else', 'while', 'do/while', and 'switch' work exactly like other c-like languages
+'break' and 'continue' as well
+
+'for' loops have these forms
+  for (let i = 0; i < 10; i++) {} // typical C-style
+  for (const item of arr) {} // like Java range-for but 'of' instead of :
+  for (const index in arr) {} // not recommended because unexpected behavior
+
+  for (const [keyOrIndex, value] of collection) {}
+    works for a lot of collections (eg. map, array)
+    also, can call .keys(), .values(), .entries() members to iterate over those specific things
+    for objects, use Object.keys(obj), Object.values(obj), and Object.entries(obj)
+
+  for await (const item of asyncCollection) {}
+    for asynchronous items (wait for 1 at a time)
+    eg. promises
+
 try {
+  throw new Error("Uh oh!");
 }
 catch (error) {
+  // use instanceof operator to check type of exception
 }
 finally {}
 
-for (let i = 0; i < 5; i++) {}
-for (const x of arr) {} // for in is discouraged because unexpected behavior
-
-function* lazyList(limit: number): IterableIterator<number> {
-    let i = 0;
-    while (i < limit) {
-      yield i++;
-    }
-  }
+Not Available: context management, asserts (have to use libraries)
 
 [Functions]
 function add(x: number, y: number): number {
@@ -471,6 +488,19 @@ return type can be ommited to let it be inferred
 
 never is a special return type that means the function never returns
   eg. if the body throws
+
+Generators
+  function* lazyList(limit: number): IterableIterator<number> {
+      let i = 0;
+      while (i < limit) {
+        yield i++;
+      }
+    }
+  const l = lazyList(5);
+  console.log(l.next().value);
+    OR for (const item of l) {console.log(item);}
+    OR const a = Array.from(l) // to make into eager array
+  can send values into the .next() call just like python for two-way communication
 
 [Functional]
 const addNumbers = (a: number, b: number): number => a + b;
@@ -540,6 +570,8 @@ constructor(name: string, age: number, private breed: string) {
     super(name, age, "Dog");
     // Don't need to do anything with breed here (it's assigned already)
 }
+
+no destructors/finalizers
 
 [Generics]
 functions are normal instead of weird like Java
