@@ -1,7 +1,6 @@
 ** rewrite of this sheet is in progress **
-** steps:
-** 1. go through notebooks again in detail and merge into what's here (mostly replace, but make sure nothing missed)
-** 1b. don't forget the JS notebooks too
+** steps left:
+** 1. Go through Angular and React notebooks and merge in here
 ** 2. sync with Java quick notes to see if any topics missed (from here and notebooks)
 ** 3. sync with python quick notes for the same reason (since JS/TS has some in common with python note in common with Java)
 ** 4. also include: pure JS, HTML, CSS/SASS, Dom, Angular, React, rxjs
@@ -165,6 +164,9 @@ Arrays
 
   a.filter() and a.map()
     both return an array, not some lazy stream like Python
+  
+  a.indexOf()
+    for reference types, looks for reference
   
   [][] for multidimensional arrays
     nested [] just as you'd expect
@@ -1064,6 +1066,18 @@ Ambient Declarations
     however, unlike Python, TS doesn't like you redefining symbols (eg. same class, function, etc.) multiple times at same level in same file
       that is why you have to use IIFE in Jupyter notebook cells
 
+require()
+  'import' is the newer ES6 way to import code
+  'require()' was the way Node did it in the past
+    both TS and JS support this
+  Node now supports 'import', so you don't have to use 'require'
+    but you see it all over the place
+  require() is basically the same thing but it gives back an object containing the imported symbols
+
+3rd party libraries can also be included by CDN URL in the DOM of your page
+  <script src="........."></script>
+  this is common for things like jQuery, boostrap, etc.
+
 [Project Configuration]
 TypeScript compiler = tsc
 
@@ -1208,6 +1222,7 @@ Browser DOM
         document.getElementsByClassName('myClass')
         document.getElementsByTagName('myTag')
         document.querySelectorAll('myTag.myClass')
+        element.children
 
         these return array-like objects that aren't true arrays
           can make into true arrays with Array.from()
@@ -1217,6 +1232,7 @@ Browser DOM
         myDiv.addEventListener('click', (event) => {
           event.preventDefault(); // or stopPropagation, whatever you want
           console.log('clicked!');
+          console.log(e.target);
         });
 
         element.dispatchEvent(event) to dispatch an event yourself
@@ -1230,11 +1246,14 @@ Browser DOM
           if an element is remove from the DOM, it is considered good practice to remove the listeners
           although modern browsers SHOULD be able to figure this out
             if they don't, it would be a memory leak
+          the lambda could remove itself when it's done if it's a one-time thing
+            use its own name as the reference to pass in
     
     Adding DOM Elements
       const newDiv: HTMLDivElement = document.createElement('div');
       newDiv.id = 'new-div';
-      newDiv.innerText = 'This is a new div.';
+      newDiv.textContent = 'This is a new div.';
+      newDiv.className = 'my-class';
 
       document.body.appendChild(newDiv); // to append top level
 
@@ -1365,6 +1384,89 @@ Angular/Protractor
 Selenium
   browser interaction and screenshots
 screendiffs require 3rd party libraries
+
+[JavaScript]
+for the most part you can assume JS is like TS except for the things mentioned here
+  several differences are mentioend throughout this doc and some may not have made it into this section
+in general, JS is much more similar to Python when you remove the TS restrictions and additions
+a few operations that are banned in TS are allowed in JS
+  eg. adding members to instances at runtime, redefining symbols, etc.
+  it is more dynamic and duck-typed like python
+TS adds type annotations and generics, which are both swallowed by the compiler
+  the JS version uses raw types and no annotations
+some JS operations can be done in TS but you have to use things like 'any' to make it happen
+  eg. in JS when you make an array, it doesn't care what you add to the array because no type annotations
+there are no access modifiers on classes
+  or any feature that relies on that, such as Parameter Properties in constructors
+  that is why TS has to make everything public by default
+some OOP features only exist in TS:
+  interfaces
+  abstract
+  enums
+note that a lot of features you might think are added by TS are actually JS
+  eg. classes (which are newer), static, constructor, string interpolation, data structures, map(), etc.
+the old style syntax for doing classes, which you don't need anymore but might see people doing:
+    function Person(name) {
+      this.name = name;
+    }
+    Person.prototype.greet = function() {console.log(this.name);}
+    
+    // Person() calls the function called Person
+    // but the new keyword in front tells JS to treat it as an object and bind 'this'
+    // the prototype of the new object comes from the function itself so that it will behave virtually
+    const alice = new Person('Alice');
+    // because we added greet to the prototype of the class function, it is callable from the instance
+    // this is presumably dynamic like Python
+    alice.greet();
+purely for stylstic convention reasons, for some reason JS people like to assign lambdas to variables
+  rather than write 'function' declarations
+
+[jQuery]
+3rd party library for JS DOM querying
+can reference it via CDN
+available by default in Chrome Devtools
+plural vs. singular elements are handled transparently
+  the same call will apply to either 1 or all elements matching
+
+$(document).ready(() => {})
+  protect the code inside from running before the whole DOM is ready
+
+$('#myId')
+  find an element by CSS selector
+$('#myId').text('new text')
+  change its text
+$('#myId').css('color', 'blue')
+  change a CSS property
+
+$('#myId').click(fn);
+  add event handler
+
+$('#myId').hide(500);
+  hide over the course of 500 milliseconds
+
+$('.myClass').eq(1).css('color', 'blue');
+  only apply to the 2nd element instead of all
+
+let myElement = $('myClass')
+myElement.get()
+  array of HTMLElement
+myElement[0]
+  single HTMLElement
+myElement.get(0)
+  single HTMLElement
+
+$('myClass').append('<div>blabla</div>');
+  and various other ways to append, prepend, etc.
+
+$.ajax({url, type: 'GET', success: fn, error: fn});
+
+** see jQuery notebook for more examples **
+
+TypeScript
+  if you install jquery and @types/jquery, then you can import * as $ from it
+  then you use it as usual
+  but in addition, there are types
+  eg. the return type of $() is JQuery
 
 [Angular]
 templates + styles (encapsulated via shadow DOM and/or extra classes/selectors)
@@ -1497,8 +1599,8 @@ Redux for state management
 function expression 'this' binding (more useful for anonymous classes?)
 declaration merging (interfaces, classes w/ interfaces, for partial classes?  for extension methods?)
 var (function scope, hoisting, global object, re-declaration, discouarged)
-require()
-old prototype style and use in TS vs. JS
 [Symbol.iterator]()  syntax
 iterator protocol
-jquery in JS vs. TS context
+recursive lambdas (in all 3 languages)
+are properties from JS or TS?
+are decorators from JS or TS?
