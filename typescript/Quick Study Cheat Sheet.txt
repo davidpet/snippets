@@ -1,9 +1,8 @@
 ** rewrite of this sheet is in progress **
 ** steps left:
-** 1. Go through Angular and React notebooks and merge in here
 ** 2. sync with Java quick notes to see if any topics missed (from here and notebooks)
 ** 3. sync with python quick notes for the same reason (since JS/TS has some in common with python note in common with Java)
-** 4. possibly expand the web sections: HTML, CSS/SASS
+** 4. possibly expand the web sections in example notebooks: HTML, CSS/SASS, Flexbox/Grid
 ** 5. any other popular libraries (eg. rxjs)
 ** 6. include info on latest versions (and mark current version here)
 ** 7. any outstanding ToDo items at the bottom
@@ -1477,124 +1476,34 @@ Modules
 bootstrapping
 dependency injection
 jasmine testing
+reactive forms
+
+** see Angular notebook for details **
+  the framework is too massively huge to cheat sheet-ify it here
+  has tutorial examples with commit links, etc.
 
 [React]
 React = unidirectional flow, virtual DOM (always being "rebuilt")
 dynamically returning templated HTML code from functions
 Redux for state management
     and built-in state management functions
+virtual DOM used to diff and make less frequent updates to real DOM
+TSX and JSX syntax
 
 [CSS]
-/* Apply to all elements */
-* {
-  box-sizing: border-box;
-}
+** see Angular notebook CSS section for full example **
 
-/* Tag selector */
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
-  margin: 0;
-  padding: 0;
-}
+[SCSS]
+** see Angular notebook SCSS section for full example **
+the main headline feature is the nesting and &
 
-/* ID selector */
-#myButton {
-  background-color: #008cba; /* Blue background */
-  color: white; /* White text */
-  border: none; /* No border */
-  padding: 15px 32px; /* Padding */
-  text-align: center; /* Centered text */
-  text-decoration: none; /* No underline */
-  display: inline-block;
-  font-size: 16px;
-  margin: 4px 2px;
-  cursor: pointer; /* Pointer cursor on hover */
-}
+[Flexbox and Grid]
+** see Angular notebook Flexbox and Grid sections for full examples **
+grid is better for 2D layouts
 
-/* Class selector */
-.myClass {
-  color: red;
-}
-
-/* Descendant selector */
-nav ul {
-  list-style-type: none; /* No bullets */
-  padding: 0;
-}
-
-nav ul li {
-  display: inline; /* Display inline */
-  margin-right: 10px; /* Margin to the right */
-}
-
-/* Child selector */
-nav > ul {
-  border-bottom: 1px solid #ccc;
-}
-
-/* Adjacent sibling selector */
-h1 + p {
-  font-size: 1.2em;
-}
-
-/* General sibling selector */
-h1 ~ p {
-  color: green;
-}
-
-/* Attribute selector */
-input[type="text"] {
-  padding: 5px;
-  border-radius: 4px; /* Rounded borders */
-  border: 1px solid #ccc;
-}
-
-/* Pseudo-class selector */
-a:hover {
-  color: orange;
-}
-
-/* Pseudo-element selector */
-p::first-letter {
-  font-size: 2em;
-  color: red;
-}
-
-/* Media query */
-@media (max-width: 600px) {
-  body {
-    background-color: lightblue;
-  }
-}
-
-[HTML/DOM]
-<form id="myForm">
-        <label for="name">Name:</label><br />
-        <input type="text" id="name" name="name" required /><br />
-        <label for="email">Email:</label><br />
-        <input type="email" id="email" name="email" required /><br />
-        <label for="pwd">Password:</label><br />
-        <input type="password" id="pwd" name="pwd" required /><br />
-        <input type="submit" value="Submit" />
-      </form>
-
-<script>
-      // Prevent form from being submitted
-      document
-        .getElementById("myForm")
-        .addEventListener("submit", function (event) {
-          event.preventDefault();
-          console.log("Form submission prevented.");
-        });
-
-      // Log a message when the button is clicked
-      document
-        .getElementById("myButton")
-        .addEventListener("click", function (event) {
-          console.log("Button clicked.");
-        });
-    </script>
+[HTML]
+** see Angular notebook HTML and HTML Forms sections for full examples **
+key point is <script> tags to put JS code in
 
 [ToDo]
 function expression 'this' binding (more useful for anonymous classes?)
