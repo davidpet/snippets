@@ -3,9 +3,10 @@
 ** 1. Go through Angular and React notebooks and merge in here
 ** 2. sync with Java quick notes to see if any topics missed (from here and notebooks)
 ** 3. sync with python quick notes for the same reason (since JS/TS has some in common with python note in common with Java)
-** 4. also include: pure JS, HTML, CSS/SASS, Dom, Angular, React, rxjs
-** 5. any other popular libraries
+** 4. possibly expand the web sections: HTML, CSS/SASS
+** 5. any other popular libraries (eg. rxjs)
 ** 6. include info on latest versions (and mark current version here)
+** 7. any outstanding ToDo items at the bottom
 
 [Playgrounds]
 https://www.typescriptlang.org/play - TypeScript playground
@@ -1477,6 +1478,12 @@ bootstrapping
 dependency injection
 jasmine testing
 
+[React]
+React = unidirectional flow, virtual DOM (always being "rebuilt")
+dynamically returning templated HTML code from functions
+Redux for state management
+    and built-in state management functions
+
 [CSS]
 /* Apply to all elements */
 * {
@@ -1588,12 +1595,6 @@ p::first-letter {
           console.log("Button clicked.");
         });
     </script>
-
-[React]
-React = unidirectional flow, virtual DOM (always being "rebuilt")
-dynamically returning templated HTML code from functions
-Redux for state management
-    and built-in state management functions
 
 [ToDo]
 function expression 'this' binding (more useful for anonymous classes?)
