@@ -229,9 +229,15 @@ Objects (as structs)
       obj["a"], obj["b"], obj["true"], obj[1] (not a string)
     unquoted string keys in an object may be subject to minification (and their usages as well)
       the minifier may be smart enough to not minify it (but maybe you want it to)
+    even class variables can have quotes around them, but that's weird
   
   Object.keys(o), Object.values(o), Object.entries(o)
     to iterate over fields in an object as if a map
+
+  Copying Objects
+    spread operator
+    let m = {...n, x: 20}; // x will replace the value of n.x if present (or add as new)
+    // m and n are separate, not linked together
 
 Objects (as classes)
   'class' instead of 'interface' and can have constructor, methods, etc.
@@ -430,6 +436,9 @@ semicolons are technically optional
   JS people don't like them
   TS people like them
   leaving it out can actually ruin the parsing of some multi-line statements
+
+[] operator for indexing
+  available on arrays and objects, but not for getting keys/values in a map
 
 [Control Flow]
 'if/else if/else', 'while', 'do/while', and 'switch' work exactly like other c-like languages
@@ -650,49 +659,253 @@ map, reduce, filter
   note that reduce signature looks like arr.reduce(fn, seed) [weird order]
 
 [Classes]
-let x! string;
-    treat as not nullable in a class even though not initialized just yet
-    promising to set before read (eg. in c'tor)
-let x? string;
-    treat as optional in class (undefined if missing
-    same as doing let x: string | undefined
+looks mostly like Java with some differences noted here
+also worth noting that a class is syntactic sugar for making an object (as described in collections)
+  just with function variables for methods and prototype for inheritance
 
-type Person = {
+things in common with Java worth noting here again:
+  all methods are virtual with no need to specify overriding
+  inheritance works the same way (on the surface)
+  use 'new' keyword to make a new instance
+  default constructor w/ no args only if no construtor specified
+  can only extend a class but implement multiple interfaces (no python/c++ diamond behavior)
+
+need to use 'this' in front of all member access from methods (never implicit)
+  but also not passed in as param like in python
+members are 'public' by default because that's how JS works (where there is no access level)
+  no such thing as package-private like Java: just public, private, protected
+methods do not have 'function' keyword, which makes them look more Java-like and less JS-like
+member variables are declared in the body like Java (not in the c'tor like Python)
+  but there is a special construct called Parameter Properties covered below that can act that way
+unlike within code statements, variable declarations in classes don't use 'const' or 'let'
+  act as 'let' by default
+  can be made to act as 'const' with the 'readonly' qualifier
+static variables and methods allowed
+  accesed by ClassName.member
+no destructors/finalizers
+
+instead of being named for the class, the constructor is called 'constructor' and there can only be one
+
+Properties
+  put 'get' in front of a method to make it a readable property
+  put 'set' in front of a void method to make it a writeable property
+  if a 'get' and 'set' method have the same name, they are the same property
+    usually impossible since no overloading
+  you can independently control access to the getter and setter
+  you can access a property from an instance as if it was a variable
+
+Parameter Properties
+  a constructor parameter with an access specifier in front
+  automatically makes the parameter into a member variable of the class (without having to decalre it in the body)
+  eg. used to inject services in Angular
+  JS implements this by doing this.x = x in the c'tor (for example)
+    TS won't let you do that directly because that violates the type safety of classes
+
+Adding Fields Dynamically to Classes at runtime
+  eg. m.x = 10 when x is not a member of the class
+  this is ILLEGAL in TS because if violates type safety
+  but it is LEGAL in JS (just like python) and is used by parameter properties
+
+Syntax Example
+  class MyClass {
+    x: number;
+    private y: number;
+    protected z = 20; // type inferred
+    static a: number = 100;
+
+    private readonly myConstant = "Hello";
+
+    constructor(name: string, age: number, private readonly service: Service) {
+    }
+
+    getSpecies(): void {
+    }
+  }
+
+  class MyDerivedClass extends MyClass implements SomeInterface1, SomeInterface2 {
+    getSpecies(): void {
+      // overrides without having to say so
+    }
+
+    // etc. etc.
+  }
+
+  const m = new MyClass("Bob", 20, myService);
+
+Nullability of Members
+  name?: string;  // shorthand for string | undefined
+  name: string | null;
+  name!: string;  // supposed to be populated by the end of the c'tor
+    treated as non-nullable throughout the class (trusting that you will fill it before it's used)
+
+Construction Order
+  inline variable initializers run like normal code (not compile-time constants)
+  they can reference each other (still have to use 'this')
+  can call instance methods, etc.
+  presumably should only reference variables declared higher in the list? (but fns don't matter)
+
+  super() calls the superclass constructor
+    you are required to do it explicitly if you have a c'tor in a base class
+    but it doesn't have to go first
+    this has some weird caveats to know about
+      base fields aren't available until after super() is called beause that's when it really creates the base
+      you also can't use 'this' until after super() is called for similar reasons
+    the compiler enforces all this for you
+
+Prototype Inheritance
+  because inheritance is impelmented in the JS layer using prototypes, that is the basis for inheritance behavior in TS
+  this has some key differences from inheritance in languages like C++ and Java (and similarities to Python):
+    variable names are virtual too, not just method names
+    private variables of the same name in a derived class are forbidden
+      this is because when it makes the JS equivalent, it will name clash, making it not private after all
+  only 1 thing of each name because it's like a dictionary (no overloading)
+
+ABC
+  can only be inherited by abstract classes unless all abstract methods are overriden
+  cannot instantiate with 'new'
+
+  abstract class MyClass {
+    abstract f(): void;
+  }
+
+  abstract class MyOtherClass implements MyInterface {} // interface introduces abstract methods into the class
+
+Interfaces
+  unlike Java, can have both fields and methods
+  worth noting: unlike a class, which emits JS code, interfaces don't emit any JS code and aren't a JS feature
+    it just helps the compiler to keep you honest before compiling to JS
+  
+  interface Person {
     name: string;
     age: number;
-};
-type BetterPerson = Person;
 
-"public" by default because of JS behavior
-need "this" to access everything (never implicit)
-    but not passed into siganture like in python
-fields can be declared in the body or in the c'tor by providing an access modifier
-    no 'let' or 'const' for fields
-    'readonly' for locking
-no function keyword for methods
-all methods virtual (or static)
-    override keyword (newer) (configurable, on for Angular by default)
-need 'new' keyword to create
-nullable declarations are kind of just on faith
+    greet(): void;  // abstract method
+  }
 
-has interfaces, but can also "implements" a class to treat it as interface
+  can be used like a base class in polymorphism just like other languages
 
-// Instance property with getter and setter
-get home(): string {
-    return this.habitat;
-}
-set home(home: string) {
-    this.setHabitat(home);
-}
+  private members are not allowed
 
-// breed is a 'parameter property' (declared in constructor only)
-// this is often used for services and other injected things
-constructor(name: string, age: number, private breed: string) {
-    super(name, age, "Dog");
-    // Don't need to do anything with breed here (it's assigned already)
-}
+  Partial<Person> gets an interface that looks like Person but all fields are optional
+    like adding ? to all fields that don't have it yet
 
-no destructors/finalizers
+Class as Interface
+  unique feature
+  you can pretend a concrete class is an interface and pass it as 'implements'
+  all the implementation gets sucked out and only the prototypes are used (abstract)
+  classes with private members cannot be used this way
+
+Nested Classes
+  a class can't be defined in another class like in other languages
+  but it can be defined in a function body, so that's a potential workaround
+
+Structural Typing
+  very idiomatic TS concept
+  adds some order to the chaos of JS duck-typing
+  objects that are structurally compatible with other objects can be detected by the compiler
+    but they cannot be detected easily at runtime
+      eg. instanceof is useless for this
+    to actually do it, you'd have to manually check all the properties
+  the basic idea is if the interface of the object you pass in looks like the interface expected,
+    then the compiler will let it through
+    eg. even if the function expects a class and you pass a custom object without using new or the real class
+    the compiler enforces that the structure is right, but you are free to shoot yourself in the foot
+  optional fields expected on the left side of the = can be ommited or supplied on the right side
+  optional fields expected on the right side of the = must not be required on the left side
+  order of members does not matter in structural typing, only names and types
+  if you use structural typing with a class, it's treated like an interfaces
+    you're basically making an object with the right interface but missing the prototype chain
+      it will not behave properly with polymorphic constructs
+
+Object
+  all reference types implicitly inherit from Object (and not primitives)
+  you can do new Object() for an opaque object
+
+  members commonly overriden:
+    toString() and toLocaleString()
+    valueOf()
+      return a primitive value for operations like arithmetic
+      default implementation just returns the reference itself
+    equals()
+      not used by maps and sets (=== instead)
+  
+  no hashing
+    objects are not hashed the way they are in other languages for use in maps and sets
+    the object's reference is treated as the key, and it is unique per instance
+    there is no way to treat it as a value like you could in Java
+    primitives are hashed as you'd expect them to be
+
+  other methods:
+    hasOwnProperty() can tell if a property lives on this object instead of a superclass
+
+  even when you use an interface or structural typing, it is understood all objects have Object members
+    and they do not in any way interfere or participate in structural typing checks
+
+Adding Properties to Objects
+  const m = MyClass();
+  m.x = 10; // ILLEGAL if x is not a member of MyClass (unless pure JS)
+
+  function f() {}
+  f.x = 10; // LEGAL (to support decorators?)
+
+Expandable Object
+  relies on index signature feature
+
+  interface MyObject {
+    [key: string]: any;
+  }
+  const myObject: MyObject = {};
+  myObject.field1 = "hi";
+  console.log(myObject.field);
+  console.log(myObject['field1']);
+
+Not supported: operator overloading, partial classes
+  though index signatures appear on the surface to be operator overloading
+
+override keyword:
+  newer addition to TypeScript
+  usually optional to use, but Angular turns on the compiler option to make it mandatory by default
+  eg. override f(): void {}
+  only for overriding base class methods (not implementing interface methods)
+
+Index Signatures
+  pure JS allows you to use m.x and m['x'] to add arbitrary variables to any reference object
+    arrays are special in that a[1] and a.toString and a['toString'] internally all use the same [] operator
+    maps technically have [] but it is only the one from Object (doesn't participate in the key-value pairs of the map construct)
+  TS prevents m.x from working if x is not defined on the class, for type safety
+    m['x'] may still work, depending on compiler settings (possible to make it fail compiler based on the string inside)
+    when the check is not enabled, m['x'] would return undefined if not there
+  index signatures are a way to turn some of the JS flexibility back on from within TS
+    it is a pure compile-time feature that just affects what you're allowed to do with regard to the above
+    an index signature is defined on an interface or class to specify what kinds of types can be keys and values for []
+      implicitly understood that m.x is m['x'] in this case
+      eg. [index: string]: string; // m.x = 'hi' allowed, m.x = 100 disallowed
+      eg. [index: string]: string|number; // type unions allowed
+      eg. [index: string|number]: string|number;
+    an index signature never has "implementation" because it's just to guard uses of the object
+    you could use 'any' as a type to make it fully JS-like
+    you can use 'readonly' before the indexer to make it not allow assignment
+    other variables defined in the class, subclasses, or superclasses, will only be checked if the key type matches
+      eg. [index: number] will not complain about a member x: string
+      otherwise, the variables will cause compile error if the left side matches but right side does not
+    in structural typing, it is more strict
+      any properties passed in must pass the indexer check regardless of whether the left type matches
+    members of Object are not checked against indexers because they're fundamental to the language
+
+Anonymous Classes
+  function f() {
+        return {x: 10, y: 20, z: 30, volume: function() {return this.x * this.y * this.z;}};
+  }
+
+Polymorphism
+  assigning a derived class to a base class reference works as you'd expect in any language
+  going the other way requires the 'as' operator to assert to TS that you're sure it's right
+    unless you turn off strict checks, which is a bad idea
+  you can also use type narrowing with 'instanceof' to assign it in a block without needing 'as'
+  VERY IMPORTANT: if an object was assigned via structural typing, it is missing the inheritance chain
+    an object not created via 'new' on the derived class will not pass 'instanceof' checks
+    and lots of other things will go wrong - do not mix the concepts!
+  remember that structural typing treats classes like interfaces!
 
 [Generics]
 compiles down to using raw types because JS doesn't have generics (but does have the containers, as raw types)
@@ -890,5 +1103,4 @@ Redux for state management
     and built-in state management functions
 
 [ToDo]
-index signatures
-function expression 'this' binding
+function expression 'this' binding (more useful for anonymous classes?)
