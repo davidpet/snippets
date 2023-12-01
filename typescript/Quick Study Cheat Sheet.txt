@@ -931,53 +931,109 @@ a generic with void as a type arg is sort of special
   eg. Box<void> can be constructed as Box(undefined) or Box() assuming c'tor takes T arg
   this is very useful in rxjs for subjects that need to signal without emitting a specific value
 
-[Imports]
-export const message = 'hello';
+[Imports/Modules]
+Exporting
+  'export' in front of any variable, class, etc. you want to export
+    eg. export const PI = 3.141519;
+    eg. export class MyClass {}
+    just making them public is not enough to make them exportable
+      though they still exist and can be seen by the exportd functions from within here
+  you can also declare exports at the top instead of inline throughout the file
+    export {MyClass, PI};
+    export {MyClass as MyType}; // provide a 2nd name to use in addition to MyClass which was exported already
+      you can rename variables, classes, etc.
+      if you already exported them, then you are giving them two names (eg. for different kinds of clients)
+Barreling
+  you can export symbols from another file and have them pretend to be part of this file
+    no indirection for the user
+    eg. export * from './otherfile';
+  in addition, you can add a layer of indirection if you want
+    export * as subfile from './otherfile';
+      then client sees it as subfile.MyClass, etc. after importing from you
+Default Export
+  export default class MyClass {}
+    only 1 default allowed per module
+  the difference is you can drop the {} on import for the default symbol only
+    import MyClass from './mymodule';
+    import {OtherClass} from './mymodule';
 
-// The path is relative to this TS file,
-// not the working directory!
-// The ./ is required in this case!
-import {message} from './importable';
+Importing From TS Files
+  in another TS file, import by relative path from the file itself (not working directory or project)
+    eg. import {PI} from './myconstants';
+        console.log(PI);
 
-import {message as msg} from './importable';
+    note the following:
+      {} around the names to import (unless importing the default export)
+      quote the path
+      use ./ for relative path (necessary)
+      no file extension on the TS file importing from
+    
+    eg. import {PI} from './subfolder/myconstants';
+Importing from Node Modules
+  import {SomeSymbol} from 'somepackage';
+    the main difference here is the lack of ./
+    instead of relative import, it's an absolute import
+    somepackage is expected to be npm installed into the folder containing this TS file
+      or one of its parents
+Multiple Imports
+  import {x, y} from './constants';
+Renaming
+  import {PI as myPi} from './constants';
+  console.log(myPi);
+  import {x as myX, y as myX} from './constants';
+Import All Importable
+  import * as Constants from './constants';
+  console.log(Constants.PI);
+Import Type
+  not technically required but added in later TS and recommended for clarity
+  import type {MyClass} from './types';
+  import {type MyClass, PI} from './types'; // mixed classes and variables
 
-import * as importable from './importable'
+Statefulness of Imports
+  you can't directly assign a variable that was imported to change it
+    eg. import {x} from './myfile'; x = 100; // ILLEGAL
+  but objects referenced via imports are living stateful objects that you can change
+    eg. import {m} from ../myfile'; m.x = 100; // FINE
+  all the various places that import or rename that variable will see the change!
+  the top-level code from the imported module is only run once on the first import
+    then the state just continues to live and get returned by other modules that import it
 
-console.log(importable.message);
+old concepts/keywords you may see (discouraged in new code):
+  namespace
+  module
 
-import {MyType} from './importable2';
+Ambient Declarations
+  similar concept to a header in C++
+  just telling the compiler how to use a JS library
+    the contents of an ambient declaration go away in the emitted JS, but it helps you safely use the library
+  you compile against the ambient declaration and then make sure the JS library behind it is there at runtime
+    via webpack, etc.
+  typically in a .d.ts file named for the JS library
+    many JS libraries come bundled with .d.ts files, and many have them available as separate packages
+  use the 'declare' keyword to make a declaration ambient
 
-const m = new MyType();
+  Examples
+    declare const someVariable: string;  // we can code against a string variable someVariable
+    declare function someFunction(a: number): void; // can call this and assume it will exist
+    declare class MyClass {constructor(arg: string); method(): void;} // all abstract, assume will work out
 
-export * from './importable4';
-export * as otherThing from './importable4';
+    code that makes use of someVariable, someFunction, and MyClass will have type checking according to the above
+    then the emitted JS code will use those symbols in the normal JS type unsafe way
+    then any JS code included into the bundled JS for the app will have those symbols defined so that the code works
 
-Ambient Declarations ('declare')
-  // This is only here for demonstration.
-  // If you try to run the file, it will
-  // fail because there are no defintions
-  // for the ambient declarations here.
+  the 'declare' keyword is also used in a hack in Angular to prevent issues with minification in reactive forms
+    I'm not sure the details of how it works
+    you declare your @ViewChild FormGroup variable in the angular component class as 'declare' and it works out
 
-  // Declare an ambient variable
-  declare const myVariable: string;
+  Definitely Typed
+    a repository of community-provided .d.ts files for common JS libraries
+    just do 'npm install @types/the-package' to install TS ambient declarations for JS library the-package
+    eg. @types/jquery
+    eg. @types/node
+    and of course you need to install the real JS libraries for those types to work
+    eg. jquery, node in above
 
-  // Declare an ambient function
-  declare function myFunction(arg: number): void;
-
-  // Declare an ambient class
-  declare class MyClass {
-    constructor(arg: string);
-    method(): void;
-  }
-
-  // Use the ambient variable, function, and class
-  console.log(myVariable);
-  myFunction(42);
-  const myInstance = new MyClass('example');
-  myInstance.method();
-
-ambient declarations (eg. in a .d.ts for a library) let you compile safely
-    then the JS code produced can be patched with other JS code to call those Libraries
+    some JS libraries will already come with .d.ts files becuase they're commonly used by TS users
 
 [stdlib]
 ** no imports needed **
