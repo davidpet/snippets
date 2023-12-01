@@ -61,8 +61,9 @@ objects are mutable reference types (as in most languages)
   let obj2: {x: number, y: number} = obj;
   obj2.x = 100;  // this changes obj1 (a reference, not a copy)
 structural typing does not imply copying - just matching
-strings are immutable references like in Java, C#, etc.
-collections, including arrays, are also mutable reference types
+strings are immutable like in Java, C#, etc.
+  but they are not reference types!
+collections, including arrays, are mutable reference types
 
 Nullability
   let x: number;    // no value specified
@@ -94,62 +95,209 @@ Enums
     }
   let playerDirection: Direction = Direction.Up;
 
+Interning
+  only applies to strings, not numbers or anything else
+  if you create a String() instead of string(), === will do reference comparison
+    and be false even for same literal string
+  otherwise, === will be true because of the shared pool of strings
+    you don't usually need to worry about that
+
 [Collections]
-let a: number[] = [1, 2, 3, 4, 5];
-let a: Array<number> = [1, 2, 3, 4, 5];
-a.length
-a.push(val)
-a.pop()
-const [first, second, ...rest] = a;
-const a = [...firstList, ...secondList];
-filter and map (returns array)
-[][]
+Literals
+  only array and object have literals ([] and {})
 
-let o: {a: number, b: string} = {a: 10, b: 'hi'};
+Arrays
+  let a: number[] = [1, 2, 3, 4, 5];
+  let a: Array<number> = [1, 2, 3, 4, 5];
 
-let tuple: [number, string] = [10, 'hi'];
-    tuple[0] and tuple[1]
-    tuples are mutable (not like python)
+  a[0] // read-write
+  a.length
 
-let s: Set<number> = new Set([1, 2, 3, 4, 5]);
-    add(), has(), delete(), size()
-let m: Map<string, number> = new Map([
-    ["a", 10,],
-    ["b", 20,],
-])
-    set(), get(), has(), delete(), size(), clear()
-    iterate over [key, value]
+  a.push(val) // append to end
+  val = a.pop() // remove from end [treat like stack]
 
+  b = a.slice(start, stop); // inclusive start, exclusive stop
+    b is a COPY of a range of a
 
-let a: ReadonlyArray<number> = [1, 2, 3, 4, 5];
-also ReadonlyMap, etc.
-not truly readonly, just enforces the usage (like C++ const)
+  array is iterable via 'for...of' (and normal for loop w/ length) construct
+  can also use a.forEach((num) => {})
 
-spread operator (see Operators)
+  const a = [...firstList, ...secondList]; // spread operator (in-place)
+
+  const [first, second, ...rest] = a; // destructuring
+    rest is another array here
+    use _, __, etc. for don't care values
+      const [first, _, ...rest] = a; // ignoring 2nd value
+
+  a.filter() and a.map()
+    both return an array, not some lazy stream like Python
+  
+  [][] for multidimensional arrays
+    nested [] just as you'd expect
+
+Tuples
+  similar to array, but fixed length and not homogeneous type
+  let tuple: [number, string, boolean] = [10, 'hi', true];
+      tuple[0] (read-write)
+        not immutable like in Python
+  tuple.length
+  can destructure just like an array
+    const [a, b, c] = tuple;
+  can use 'for...of' like with arrays
+
+Sets
+  let s: Set<number> = new Set([1, 2, 3, 4, 5]);
+      add(), has(), delete(), size()
+  const s = new Set<number>();
+
+  s.add(value);
+  s.size // not a function for some reason
+  s.has(value)
+  s.delete(value)
+  s.forEach((value) => {console.log(value);});
+  s.forEach((value, index) => {}) // JS knows based on the lambda passed in
+  use 'for...of' construct like with arrays
+
+Maps
+  let m: Map<string, number> = new Map([
+      ["a", 10,],
+      ["b", 20,],
+  ])
+  const m2 = new Map<string, number>();
+
+  m.set(key, value)
+  m.get(key)
+    m.get(key) || defaultValue
+  m.has(key)
+  m.delete(key)
+  m.size()  // # of keys
+  m.clear()
+
+  for (const [key, value] of m) {
+    console.log(key);
+    console.log(value);
+  }
+
+Objects (as structs)
+  let o: {a: number, b: string} = {a: 10, b: 'hi'};
+
+  type Entry = { // note similarity to C struct syntax (plus =)
+    a: number;
+    b: string;
+  };
+  let o: Entry = {a: 10, b: 'hi'};
+
+  interface Entry {
+    a: number;
+    b: string;
+  }
+  let o: Entry = {a: 10, b: 'hi'};  // equivalent to the 'type' version
+
+  let o = {a: 1, b: 2, c: 3}; // we will ignore c
+  let {a, b} = o;  // destructure into variables called a and b with those values from the object
+  let {a: x, b: y} = o; // renaming the variables to x and y locally
+
+  keys can be quoted or unquoted (or not even strings at all)
+    const obj = {a: 1, "b": 2, true: false, 1: "One",};
+    obj.a, obj.b, obj.true (actually a string key), no way to do obj.1
+    to access an object field using a string (or other type of thing) as the key:
+      obj["a"], obj["b"], obj["true"], obj[1] (not a string)
+    unquoted string keys in an object may be subject to minification (and their usages as well)
+      the minifier may be smart enough to not minify it (but maybe you want it to)
+  
+Objects (as classes)
+  'class' instead of 'interface' and can have constructor, methods, etc.
+  created with 'new' instead of structurally like with structs
+  covered in detail in "Classes" section below
+
+Readonly
+  let a: ReadonlyArray<number> = [1, 2, 3, 4, 5];
+    also ReadonlyMap, etc.
+  not truly readonly, just enforces the usage (like C++ const)
 
 [Strings]
+strings are immutable (mutation functions return new copy)
+  but they are not reference types like in other languages!
+there is no char type - a character in a string is a single-item string (same type)
+strings are based on unicode and are not null-terminated
+
 s + t + 3
   concatenates two strings and a number (converted to string)
 
-`Hello, {name}!` // should be variable in current scope
 '' and "" are both for string (char is just a single character string, not special thing)
+`Hello, {name}!` // 'name' should be variable in current scope
+  backtick quote
+  variable can be a number too!
+  the thing in {} can also be a TS expression instead of just a name!
+`` is a multiline string (backtick quote)
+  if you don't have a newline it will just be single line, but you can have newlines in it
+    no need to escape the newlines
+to use a normal string with an object of params, you have to do it yourself using string.replace()
+  there is no built-in way, but many frameworks have it
+there are no raw strings
 
 s.length
-s[0], s.charAt()
-s = s.toUpperCase()
+s[0], s.charAt() // read-only
+  these are single-character strings!
+  there is no char type
+s.substring(start, stop) and s.slice(start, stop) // equivalent, just like array slicing
+s.toUpperCase(), so.toLowerCase()
+s.split(delim) gets a string[]
+  can convert s to string[] of single-character strings:
+    s.split('') // empty-string
+s.replace(old, new)
+  old can be a string or a regex pattern
+s.includes(substr)
+s.startsWith(substr)
+s.endsWith(substr)
+
+for...of iterates over characters (single-length strings)
+
+Conversions
+  s = n.toFixed(2) // format a number as a fixed-point decimal string
+  parseInt() and parseFloat() to get numbers from strings
+  +s // number to string via unary plus operator
+  JSON.stringify() to make object into json string
+  JSON.parse() to make json string into object
+  n.toString() to get string from number
+  o.toString() to get string from object (as it defines for itself)
+    arrays do not have this
+    set and map do not implement it properly
+
+Base64
+  btoa(original)
+    gives a base64 encoded string
+  atob(encoded)
+    gives back original string from base64 encoding
 
 console.log()
+  console.log(a, b) logs both with space in between
+  eg. console.log("field:", value);
+  console.log(o) works on objects (will show keys-values) and built-in types
+    much better than toString() and such
+  output goes into debug console (eg. Chrome Devtools)
+  console.log() for empty line
 console.error()
+  like console.log() but more serious (shows up red)
 console.warn()
+  less series than console.error()
 console.info()
+  similar to console.log()
+there are color escape codes available too
 
-s = n.toFixed(2) // format a number as a fixed-point decimal string
-
-/regex syntax/
-regex.test(), matches(), etc.
-str.replace(regex, otherText)
-
-JSON.stringify(), JSON.parse()
+Regular Expressions
+  const pattern = /\d+/g
+    makes a regular expression object directly using perl-like syntax
+    no need for raw strings because already raw (unquoted)
+    the // quotes it, but global flag comes after /
+  pattern.test(text)
+    true if a match anywhere in text
+  matches = text.match(pattern)
+    if you use /g flag, gets multiple matches as array of strings
+    if you don't use /g flag, gets tuple with info about 1 match
+  text.replace(pattern, replacement)
+    replace all occurences of pattern with replacement
+    can use $1, etc. for capture groups
 
 [Operators]
 all the usual arithmetic, arithmetic assignment, bitwise, and comparison operators from c-like language
@@ -216,7 +364,7 @@ typeof x
   note it's not a function call (no parenth)
     eg. typeof x === "string"
   because it's so primitive, it doesn't work for polymorphism in class hierachy
-    all reference types except string are seen as 'object', including arrays
+    all reference types are seen as 'object', including arrays
     even null is 'object' (but 'undefined' is 'undefined')
   number, boolean, and string work as you'd expect (it's very useful for these specific types)
 

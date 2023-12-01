@@ -17,9 +17,11 @@ console.log(fruits.length); // Output: 3
 
 // Array methods
 numbers.push(6); // Add an element to the end
-fruits.pop(); // Remove the last element
+console.log("pop: " + fruits.pop()); // Remove the last element
 const slicedNumbers = numbers.slice(1, 4); // Slice elements from index 1 to 3
-console.log(slicedNumbers)
+console.log("sliced: " + slicedNumbers);
+slicedNumbers[0] = 100;
+console.log(numbers); // the 100 doesn't show up - the slice is a COPY!
 
 // Iterating over arrays
 for (let i = 0; i < numbers.length; i++) {
@@ -30,8 +32,13 @@ for (const fruit of fruits) {
   console.log(fruit);
 }
 
+console.log("nums");
 numbers.forEach((num) => {
   console.log(num);
+});
+console.log("indices");
+numbers.forEach((num, i) => { // it knows the difference based on your lambda
+  console.log(i);
 });
 
 // Array spread operator
