@@ -1605,3 +1605,6 @@ iterator protocol
 recursive lambdas (in all 3 languages)
 are properties from JS or TS?
 are decorators from JS or TS?
+https://www.npmjs.com/package/typescript-collections
+https://www.reddit.com/r/leetcode/comments/wuxw3s/how_do_you_make_a_priority_queue_in_javascript/
+https://www.collectionsjs.com/sorted-map
