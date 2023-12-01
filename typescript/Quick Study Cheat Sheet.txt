@@ -908,9 +908,28 @@ Polymorphism
   remember that structural typing treats classes like interfaces!
 
 [Generics]
-compiles down to using raw types because JS doesn't have generics (but does have the containers, as raw types)
-functions are normal instead of weird like Java
-can take primitives as well as reference types
+can be used with any type args, not just reference types
+type arg goes to the right of name for both functions and classes
+elemnents of the type must be treated as Object
+  primitives will be auto-boxed as needed for you
+
+functions can infer types or be called explicitly as f<number>()
+classes can infer or give explicitly too
+
+<T extends MyInterface> to be able to use members of MyInterface in the generic
+
+JS has no concept of generics, and the compiled JS code just uses the raw types
+  eg. const m = new Map(); // can add whatever key and value types you want
+
+type annotations must use the generic type (eg. Map<string, string>) [which often can be inferred]
+the right-side of assignment (eg. 'new' operator) can use the raw type or the specific type
+  if specific, you can't conflict with what you put on the left
+if you left the left side infer and use the raw type on the right side, it acts like a raw type in Java
+  TS will just believe you when you assign it to type param version
+
+a generic with void as a type arg is sort of special
+  eg. Box<void> can be constructed as Box(undefined) or Box() assuming c'tor takes T arg
+  this is very useful in rxjs for subjects that need to signal without emitting a specific value
 
 [Imports]
 export const message = 'hello';
