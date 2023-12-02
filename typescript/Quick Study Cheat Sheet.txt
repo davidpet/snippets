@@ -1509,8 +1509,10 @@ key point is <script> tags to put JS code in
 function expression 'this' binding (more useful for anonymous classes?)
 declaration merging (interfaces, classes w/ interfaces, for partial classes?  for extension methods?)
 var (function scope, hoisting, global object, re-declaration, discouarged)
-[Symbol.iterator]()  syntax
-iterator protocol
+Symbols and symbol
+well-known symbols like Symbol.iterator
+[] syntax for property names as in [Symbol.iterator] as function name
+iterables and iterator protocols (protocol just description, not language feature)
 recursive lambdas (in all 3 languages)
 are properties from JS or TS?
 are decorators from JS or TS?
