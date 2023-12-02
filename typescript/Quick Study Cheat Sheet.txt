@@ -135,6 +135,23 @@ JS vs. TS Types
       like using raw type in Java
     TS adds generics functionality to provide safety when you develop and compile your code
 
+Symbol/symbol
+  symbol is a primitive type (ES6) referring to a globally unique object
+  Symbol() gives you a new symbol
+    (looks like a class but it's not because you don't use 'new')
+  Symbol('this is my symbol')
+    can provide a string for debug output purposes
+    but two Symbol() calls with the same arg will give two different unique symbols
+  Symbol has members you can use that are known as "well-known symbols"
+    Symbol.iterator, Symbol.search, etc.
+  symbol (lowercase) is the type you would use to declare a symbol as a variable
+    then call Symbol() without 'new' to create it
+  a symbol can be used as a key in a map
+  it can also be used as a key in an object, by using the computed property syntax
+    eg. private [mySymbol]: number;
+  one special behavior of symbol keys is they are ignored by Object.keys()
+    so in a way it's kind of a hidden property
+
 [Collections]
 Literals
   only array and object have literals ([] and {})
@@ -175,6 +192,14 @@ Arrays
     the thing you pass in must support indexing and length like an array
     or alternatively, must be something iterable
     this is also another way to shallow-copy an array
+
+  inference of mixed types
+    const a = [1, 'hi', true];
+      type is (number|string|boolean)[]
+    const a = [new MyClass(), new MySubClass()];
+      type is MyClass[]
+    const a = [new MyClass(), new MySubClass(), new Object()];
+      type is Object[]
 
 Tuples
   similar to array, but fixed length and not homogeneous type
@@ -248,19 +273,43 @@ Objects (as structs)
     unquoted string keys in an object may be subject to minification (and their usages as well)
       the minifier may be smart enough to not minify it (but maybe you want it to)
     even class variables can have quotes around them, but that's weird
+    quoted keys can have spaces in them!
   
   Object.keys(o), Object.values(o), Object.entries(o)
     to iterate over fields in an object as if a map
+    does not include functions or symbol keys
 
   Copying Objects
     spread operator
     let m = {...n, x: 20}; // x will replace the value of n.x if present (or add as new)
     // m and n are separate, not linked together
 
+  Computed Properties
+    instead of providing a name or a quoted name for a key
+    you can put [] around some TS expression to have the key computed at runtime
+    the key does not become a string (unless that's what you compute)
+      to get the value back later, you have to use the computed thing again
+    besides the [] around the key, the rest of the syntax is the same as normal
+      works for variables, functions, etc.
+      works for interfaces, anonymous objects, classes, etc.
+    Objects.keys() will get all the keys in their original types
+      but it will purposely ignore keys that are of type symbol
+
+    const m = {
+        ['x']: 100, // retrievable as m.x or m['x']
+        [20]: 200,  // retrievable as m[20]
+        [30]: 300,
+        [40](a: number) { return a*a; }, // callable as m[40](someNumber)
+        [t + 'Bob']: 400, // retrievable as m['Hi, Bob'] or m[t + 'Bob']
+        'a b c ': 500, // retrievable as m['a b c']
+    };
+
 Objects (as classes)
   'class' instead of 'interface' and can have constructor, methods, etc.
   created with 'new' instead of structurally like with structs
   covered in detail in "Classes" section below
+  a lot of the ideas about objects as structs above apply
+    the end result of creating an instance is that kind of object anyway
 
 Readonly
   let a: ReadonlyArray<number> = [1, 2, 3, 4, 5];
@@ -475,6 +524,10 @@ semicolons are technically optional
     works for a lot of collections (eg. map, array)
     also, can call .keys(), .values(), .entries() members to iterate over those specific things
     for objects, use Object.keys(obj), Object.values(obj), and Object.entries(obj)
+      note that iterating object properties has the following quirks worth mentioning:
+          if you define a variable without setting it, it will not show up here
+          if you set a variable to undefined, which is technically (mostly) the same, it will show up here!
+          a function will not show up here, but a lambda or function expression variable will!
 
   for await (const item of asyncCollection) {}
     for asynchronous items (wait for 1 at a time)
@@ -918,6 +971,8 @@ Anonymous Classes
   function f() {
         return {x: 10, y: 20, z: 30, volume: function() {return this.x * this.y * this.z;}};
   }
+  NOTE: anonymous classes will close over variables just like lambdas will
+    useful for iterator protocol
 
 Polymorphism
   assigning a derived class to a base class reference works as you'd expect in any language
@@ -928,6 +983,28 @@ Polymorphism
     an object not created via 'new' on the derived class will not pass 'instanceof' checks
     and lots of other things will go wrong - do not mix the concepts!
   remember that structural typing treats classes like interfaces!
+
+Iterable Protocol
+  to make an object iterable using for...of without having to use Object.keys()
+    eg. to make your generic container give only the values you want when used that way
+  worth noting that this is all from ES6 (pure JS), not a weird TS thing
+  to make a class/object/interface iterable, it must have this method:
+    [Symbol.iterator]() {}
+      note the use of a computed property using a well-defined symbol
+    the object returned by that method should have a next() method
+      this is your iterator
+      it might be an anonymous class that closes around some data
+      or it could be a whole other custom class
+    next() returns IteratorResult<T>
+      this is a TypeScript built-in interface just there to help you structure your result properly
+      the actual expected structure of the object is {value: T|null, done: boolean}
+      you return values and false while you still have values, then you return null and true when you have no more
+    alternatively, you could do *[Symbol.iterator]() {} and use a generator method with 'yield'
+      then don't have to do the anonymous object
+
+Generator Methods
+  work same way as generator functions, but the * goes in front of the name because there is no 'function' keyword
+  eg. *myfn(): IteratorResult<number> {}
 
 [Generics]
 can be used with any type args, not just reference types
@@ -1405,6 +1482,11 @@ some OOP features only exist in TS:
   enums
 note that a lot of features you might think are added by TS are actually JS
   eg. classes (which are newer), static, constructor, string interpolation, data structures, map(), etc.
+properties insisde classes can be set either in the body (with no type, like you do in TS with type inference)
+  or in constructor since JS lets you add properties at runtime (python style)
+  even just saying this: x; // is a statement, though x will be undefined
+non-existent variables being read from an object will not throw - they will read as undefined
+  TS normally doesn't allow you to compile that
 the old style syntax for doing classes, which you don't need anymore but might see people doing:
     function Person(name) {
       this.name = name;
@@ -1509,10 +1591,6 @@ key point is <script> tags to put JS code in
 function expression 'this' binding (more useful for anonymous classes?)
 declaration merging (interfaces, classes w/ interfaces, for partial classes?  for extension methods?)
 var (function scope, hoisting, global object, re-declaration, discouarged)
-Symbols and symbol
-well-known symbols like Symbol.iterator
-[] syntax for property names as in [Symbol.iterator] as function name
-iterables and iterator protocols (protocol just description, not language feature)
 recursive lambdas (in all 3 languages)
 are properties from JS or TS?
 are decorators from JS or TS?
@@ -1524,4 +1602,6 @@ some() and every()
 localStorage.setItem(key, value)
 JSON.stringify() sedcond param = key list
 comma vs. ; in {} syntax (for clarity)
+= vs. : in {} syntax (for clarity)
+function expression vs. just making a function in {} syntax (for clarity)
 demonstrations of this in anonymous objects and various {} scenarios since confusing
