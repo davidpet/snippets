@@ -3,7 +3,7 @@
 ** 2. sync with Java quick notes to see if any topics missed (from here and notebooks)
 ** 3. sync with python quick notes for the same reason (since JS/TS has some in common with python note in common with Java)
 ** 4. possibly expand the web sections in example notebooks: HTML, CSS/SASS, Flexbox/Grid
-** 5. any other popular libraries (eg. rxjs)
+** 5. any other popular libraries (eg. rxjs, lodash)
 ** 6. include info on latest versions (and mark current version here)
 ** 7. any outstanding ToDo items at the bottom
 
@@ -875,6 +875,13 @@ Lazy Sequences
   use generators that yield from other generators
   the yield stops the for loop from being eager
   3rd party options include lodash and rxjs
+
+Recursion
+  functions/methods call themselves by name
+  no TCO
+  lambdas and function expressions can call themselves too
+    using the current variable name being assigned
+    eg. const f = () => {f();};
 
 [Classes]
 looks mostly like Java with some differences noted here
@@ -1773,5 +1780,5 @@ grid is better for 2D layouts
 key point is <script> tags to put JS code in
 
 [ToDo]
-recursive lambdas (in all 3 languages)
-inheritance and prototypes
+deep details of prototype inheritance
+  eg. multiple inheritance
