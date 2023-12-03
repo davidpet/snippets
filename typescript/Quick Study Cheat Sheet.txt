@@ -152,6 +152,18 @@ Symbol/symbol
   one special behavior of symbol keys is they are ignored by Object.keys()
     so in a way it's kind of a hidden property
 
+var
+  var is the old-fashioned way of declaring variables (before let and const came along)
+  you should avoid it in new code, but may see it in legacy code
+  var is like let with these differences:
+    function scoped like python
+      eg. if you declare in a condition, you can see it outside the condition
+    can read it anywhere in the function, even if not declared yet
+      called "hoisting"
+      value is undefined if not set yet
+    window automatically gets any top-level vars (but not let or const)
+    can redeclare same symbol with var again with no issue
+
 [Collections]
 Literals
   only array and object have literals ([] and {})
@@ -159,13 +171,23 @@ Literals
 Arrays
   let a: number[] = [1, 2, 3, 4, 5];
   let a: Array<number> = [1, 2, 3, 4, 5];
+  let a = [1, 2, 3, 4, 5];
+  let a: number = []; // no type inference if empty
 
   a[0] // read-write
+    no negative indices like Python
   a.length
 
-  a.push(val) // append to end
-  val = a.pop() // remove from end [treat like stack]
+  a.push(val) // append to end (O(1) like Java ArrayList)
+  a.push(val1, val2, val3) // append multiple to end
+  val = a.pop() // remove from end (O(1) like Java ArrayList)
+    undefined if empty
 
+  a.unshift(val) // append to front (O(n))
+  a.unshift(val1, val2, val3) // append multiple to front, keeping this order
+  val = a.shift(val) // remove from front (O(n))
+    undefined if empty
+  
   b = a.slice(start, stop); // inclusive start, exclusive stop
     b is a COPY of a range of a
 
@@ -201,6 +223,19 @@ Arrays
     const a = [new MyClass(), new MySubClass(), new Object()];
       type is Object[]
 
+  Reification
+    const a = [1, 2, 3];
+    a[4] = 5;
+    console.log(a[3]);  // undefined
+    console.log(a.length);  // 5
+
+    const b = [1, 2, 3, , 4]; // same thing as above
+
+    JS stores arrays like this sparsely
+
+  const s = arr.join(',');
+    joining array elements into string with delim
+  
 Tuples
   similar to array, but fixed length and not homogeneous type
   let tuple: [number, string, boolean] = [10, 'hi', true];
@@ -316,6 +351,71 @@ Readonly
     also ReadonlyMap, etc.
   not truly readonly, just enforces the usage (like C++ const)
 
+Stack, Queue, Deque
+  no explicit built-in structures for these, but you can use methods of Array
+    or roll your own, or install 3rd party libraries like 'deque' from npm
+    for queue and deque, the efficiency will be bad if you use js Array
+  Stack
+    use push() and pop() [O(1)]
+  Queue
+    use push() and shift() [O(n)]
+  Deque
+    use push(), pop(), shift(), and unshift() to manage both ends [O(n)]
+
+WeakMap and WeakSet
+  like Map and Set
+  but don't prevent garbage collection of their keys
+  auto-updated when it happens
+  no enumeration or size because of dynamic nature
+
+Summary of Class-Like Objects and Their Differences
+  Type Literals = TS feature, declared with 'type' or as an anonymous type on a variable declaration (left side)
+  Interface = TS feature, declared with 'interface' construct
+
+  Class = JS feature, declared with 'class' keyword
+  Anonymous Object/Class = JS feature, assigned as a {} literal
+
+  Method Signature = the normal way of defining a function (eg. f(); or f() {})
+  Function Type Property = the lambda/function expression/method reference way (eg. f: () => void;)
+
+  Function Expressions = alternative to lambda where you put the word 'function'
+    only for the right side of assignments or passed into places
+    the type (left side of assignment) looks the same whether it is a lambda or function expression
+
+  the TS specific ones are type only, so you can specify either method signature or function type property
+  the JS ones let you specify all 3 kinds of functions (method signature, lambda, function expression)
+  class lets you specify the type (method signature or function type property) while anonymous objects do not
+
+  the TS specific ones let you separate members with either , or ;
+    ; is more typical, although inline type literals may have , to match the style of the right side of =
+  classes need ; to separate, not comma
+    and function bodies {} are exempt, even if they are part of lambdas
+  anonymous objects always have to be separated with ,
+    even if there is a function body {}
+
+  : is usually for types and = is usually for values, with some exceptions:
+    on function names, colon gives a return type instead (optional)
+    TS specific ones are types only, so = is not used
+    anonymous objects are special - only use : and no =
+      and values but no types, except optionally on method return types
+
+  'this' is only relevant to classes and anonymous objects because the others have no bodies
+    'this' is bound to the class instance inside a class, shadowing the global object
+      unless the method is static
+      that is true for all 3 ways to define functions as members of the class
+      it is also true for lambdas defined in the bodies of class methods
+        this is to allow you to return a lambda that continues to interact with the instance that created it
+    inside an anonymous object definition, things get more differentiated
+      a lambda/arrow function will bind 'this' to the enclosing scope of the anonymous object
+        instead of treating the lambda as a method of the class, it will treat it as a method of whatever is making the class
+      a method of function expression, on the other hand, will bind 'this' to the anonymous object itself
+        allowing it to act as a method of the anonymous object
+    outside of classes and anonymous objects, `this` will just be the global object (eg. window)
+      unless explicitly bound
+    there is an additional caveat that when a function or function expression is inside the body of a function,
+      the 'this' binding will depend on the call site rather than the definition site
+      this lets you return a lambda from a method and have it act as a method of the class that uses it
+
 [Strings]
 strings are immutable (mutation functions return new copy)
   but they are not reference types like in other languages!
@@ -401,6 +501,11 @@ Regular Expressions
   text.replace(pattern, replacement)
     replace all occurences of pattern with replacement
     can use $1, etc. for capture groups
+
+joining is done by Array
+  arr.join(',')
+there is no StringBuilder type object
+  use arrays and join(), or template strings
 
 [Operators]
 all the usual arithmetic, arithmetic assignment, bitwise, and comparison operators from c-like language
@@ -629,7 +734,8 @@ never is a special return type that means the function never returns
 [Functional]
 "fat arrows" with all the usual combos
   multiline body, implicit return, type inference on args, etc.
-  you can't leave out the () though
+  you can't usually leave out the () though
+    only in the case of 1 param with inferred type
 
 const addNumbers = (a: number, b: number): number => a + b;
 let greetFunc: (name: string) => void;
@@ -732,6 +838,30 @@ Applying Arguments Positionally
 map, reduce, filter
   map, reduce, and filter are array methods that return new arrays
   note that reduce signature looks like arr.reduce(fn, seed) [weird order]
+
+some, every
+  boolean methods of array that takes predicate
+  some = usually called any in other languages
+  every = usually called all in other languages
+  eg. arr.every(n => n % 2 == 0)
+
+Method References
+  a method can be assigned to variable exactly as you'd call it
+    eg. const f: () => void = instance.f;
+    eg. const f: () => void = MyClass.f;
+  assigning the method via an instance or via the class mean the same thing here
+    both are considered UNBOUND
+  to make either one BOUND, call .bind() on it
+    eg. const f = instance.f.bind(instance);
+  because JS functions only bind via 'this' binding, any function can become a method this way
+    and static vs. instance just means whether 'this' is bound to the instance
+  the type of a variable holding a method reference is the same as the equivalent function or lambda
+    the 'this' part of it does not factor into the type
+
+Lazy Sequences
+  use generators that yield from other generators
+  the yield stops the for loop from being eager
+  3rd party options include lodash and rxjs
 
 [Classes]
 looks mostly like Java with some differences noted here
@@ -1005,6 +1135,21 @@ Iterable Protocol
 Generator Methods
   work same way as generator functions, but the * goes in front of the name because there is no 'function' keyword
   eg. *myfn(): IteratorResult<number> {}
+
+Declaration Merging
+  an interface with the same name as an existing interface or class adds members to that interface or class
+    eg. you can use that to add properties to DOM objects like 'window' so TS will let you set them
+  members are unioned together - duplicates ok if they don't conflict (eg. same name and type)
+  if an interface merges with a class, it adds undefined members that you can assign
+  classes can't merge with classes (otherwise, that would be partial classes)
+  enums can also merge together, though they repeat ordinals if not otherwise specified
+    but can add methods to an enum, for instsance
+  this can be used to do extension methods
+    add the method's signature via an interface of same name as target class
+    then assign TheClass.prototype.theMethod to a function
+    this will add the extension method on existing or new instances of the class
+    since modifying prototypes like that is not recommended, you could alternatively, do it in a facotry
+      wrap creation of new instances and set the function on instances instead
 
 [Generics]
 can be used with any type args, not just reference types
@@ -1434,6 +1579,9 @@ important thing to know is there are decorators you can import (without the @) a
   eg. @ViewChild() formGroup: FormGroup;
     Angular people like to use () even when no args, for consistency with the ones that have args
   eg. @SomeDecorator(option1, option2) x: MyClass;
+NOTE: this is a uniquely TypeScript feature
+  the emitted JS defines the thing being decorated first and then redefines it by a calling the wrapper function
+    even though TS won't let you do something like that yourself, it uses it when needed to implement things
 
 [JSDoc]
 ** see JSDoc notebook for full working example **
@@ -1476,12 +1624,14 @@ some JS operations can be done in TS but you have to use things like 'any' to ma
 there are no access modifiers on classes
   or any feature that relies on that, such as Parameter Properties in constructors
   that is why TS has to make everything public by default
+there is no 'readonly' modifier for properties
 some OOP features only exist in TS:
   interfaces
   abstract
   enums
 note that a lot of features you might think are added by TS are actually JS
-  eg. classes (which are newer), static, constructor, string interpolation, data structures, map(), etc.
+  eg. classes (which are newer), static, constructor, string interpolation, data structures, map(),
+      get/set properties, etc.
 properties insisde classes can be set either in the body (with no type, like you do in TS with type inference)
   or in constructor since JS lets you add properties at runtime (python style)
   even just saying this: x; // is a statement, though x will be undefined
@@ -1588,20 +1738,12 @@ grid is better for 2D layouts
 key point is <script> tags to put JS code in
 
 [ToDo]
-function expression 'this' binding (more useful for anonymous classes?)
-declaration merging (interfaces, classes w/ interfaces, for partial classes?  for extension methods?)
-var (function scope, hoisting, global object, re-declaration, discouarged)
 recursive lambdas (in all 3 languages)
-are properties from JS or TS?
-are decorators from JS or TS?
 https://www.npmjs.com/package/typescript-collections
 https://www.reddit.com/r/leetcode/comments/wuxw3s/how_do_you_make_a_priority_queue_in_javascript/
 https://www.collectionsjs.com/sorted-map
-array reification like Perl?
-some() and every()
+other npm packages: heap, double-ended-queue
 localStorage.setItem(key, value)
-JSON.stringify() sedcond param = key list
-comma vs. ; in {} syntax (for clarity)
-= vs. : in {} syntax (for clarity)
-function expression vs. just making a function in {} syntax (for clarity)
-demonstrations of this in anonymous objects and various {} scenarios since confusing
+JSON.stringify() second param = key list
+inheritance and prototypes
+python same issue with calling methods on literals?
