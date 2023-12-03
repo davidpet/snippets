@@ -401,7 +401,7 @@ Summary of Class-Like Objects and Their Differences
 
   'this' is only relevant to classes and anonymous objects because the others have no bodies
     'this' is bound to the class instance inside a class, shadowing the global object
-      unless the method is static
+      unless the method is static (then it binds to the class)
       that is true for all 3 ways to define functions as members of the class
       it is also true for lambdas defined in the bodies of class methods
         this is to allow you to return a lambda that continues to interact with the instance that created it
@@ -861,13 +861,18 @@ some, every
 Method References
   a method can be assigned to variable exactly as you'd call it
     eg. const f: () => void = instance.f;
-    eg. const f: () => void = MyClass.f;
+    eg. const g: () => void = MyClass.g;
   assigning the method via an instance or via the class mean the same thing here
     both are considered UNBOUND
   to make either one BOUND, call .bind() on it
     eg. const f = instance.f.bind(instance);
+  but a key weirdness is that static and instance methods are totally separate
+    you can only get instance method references from instances
+    you can only get static method references from the class
+    both are unbound until you bind()
+    static method references want you to bind() to the class itself, rather than instance
   because JS functions only bind via 'this' binding, any function can become a method this way
-    and static vs. instance just means whether 'this' is bound to the instance
+    and static vs. instance just means whether 'this' is bound to the instance or class (or nothing if ignored)
   the type of a variable holding a method reference is the same as the equivalent function or lambda
     the 'this' part of it does not factor into the type
 
@@ -910,6 +915,12 @@ static variables and methods allowed
 no destructors/finalizers
 
 instead of being named for the class, the constructor is called 'constructor' and there can only be one
+
+Static Members
+  you cannot use an instance to refer to static members at all
+    this is unique to JS compared to other languages
+  a static method has 'this' bound to the class itself, like a python classmethod
+  you can't take a method reference for an instance method from the class - it must come from the instance
 
 Properties
   put 'get' in front of a method to make it a readable property
