@@ -416,6 +416,18 @@ Summary of Class-Like Objects and Their Differences
       the 'this' binding will depend on the call site rather than the definition site
       this lets you return a lambda from a method and have it act as a method of the class that uses it
 
+Data Structures Missing from JS/TS: (either make your own or use 3rd party library)
+  efficient queue and deque
+    3rd party libraries: double-ended-queue, typescript-collections, collections (js)
+  prioroity queue/heap
+    3rd party libraries: heap, typescript-collections, collections (js)
+  sorted map and set
+    3rd party libraries: typescript-collections, collections (js)
+  linked list
+    3rd party libraries: typescript-collections, collections (js)
+  trie
+    no major language seems to have this - just get used to making your own (it's simple)
+
 [Strings]
 strings are immutable (mutation functions return new copy)
   but they are not reference types like in other languages!
@@ -460,6 +472,7 @@ Conversions
   +s // number to string via unary plus operator
   JSON.stringify() to make object into json string
     JSON.stringify(o, null, 2) to pretty-print with 2 spaces per indent
+    JSON.stringify(o, [key1, key2], 2) to only include certain set of keys
   JSON.parse() to make json string into object
   n.toString() to get string from number
   o.toString() to get string from object (as it defines for itself)
@@ -1499,6 +1512,28 @@ Browser DOM
     replace(url: string) to navigate to another page without adding a back button entry
     assign(url: string) to navigate to another page with a back button entry
       you can also change location.href and do location.reload()
+    
+    if you change 'href', it will navigate to the new page after the current code finishes
+      you can do reload() to do it right away - then no more of your code will execute
+      if you do setTimeout(), your handler might run if the delay is short (or might not)
+      all your code is cleared out when the new page is up
+
+  localStorage: persistent key-value storage for your application
+    per "origin" (protocol + domain inc. subdomains + port)
+    no expiration, but limited to 5 MB (after which will throw when trying to add new)
+
+    localStorage.setItem(key, value);
+    const value = localStorage.getItem(key);
+    localStorage.removeItem(key);
+    localStorage.clear();
+
+  Cookies
+    a cookie is a string that's stored for the current "origin"
+      it is sent with all future requestes, including page loads, ajax, etc.
+    it can be set or retrieved as document.cookie
+    the fields within the string specify expiration date, whether secure or not (HTTPS only), etc.
+    you delete a cookie by setting its expiration date to the past
+    ** see Standard Library notebook for examples **
 
 Math: static math functions you can call on numbers
   abs()
@@ -1739,11 +1774,4 @@ key point is <script> tags to put JS code in
 
 [ToDo]
 recursive lambdas (in all 3 languages)
-https://www.npmjs.com/package/typescript-collections
-https://www.reddit.com/r/leetcode/comments/wuxw3s/how_do_you_make_a_priority_queue_in_javascript/
-https://www.collectionsjs.com/sorted-map
-other npm packages: heap, double-ended-queue
-localStorage.setItem(key, value)
-JSON.stringify() second param = key list
 inheritance and prototypes
-python same issue with calling methods on literals?
