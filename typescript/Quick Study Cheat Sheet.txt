@@ -1,9 +1,4 @@
-** rewrite of this sheet is in progress **
-** steps left:
-** 4. possibly expand the web sections in example notebooks: HTML, CSS/SASS, Flexbox/Grid
-** 5. any other popular libraries (eg. rxjs, lodash, nodejs)
-** 6. include info on latest versions (and mark current version here)
-** 7. any outstanding ToDo items at the bottom
+** most of these notes are summarized from notebooks, except for the interview stuff at the bottom & documentation & playgrounds at top **
 
 [Documentation]
 MDN for JavaScript
@@ -2074,3 +2069,10 @@ other useful NodeJS stuff (like client/server stuff)
 worker threads
 type guard on return type (function f(x: any): x is string)
 discriminated/tagged unions
+CSS box model
+CSS space filling algorithm
+CSS animation
+rxjs
+lodash
+latest JS+TS versions for this doc (and notebooks)
+any new JS+TS version features not mentioned or known in this doc (and notebooks)
