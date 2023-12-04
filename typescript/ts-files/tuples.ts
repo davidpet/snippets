@@ -30,3 +30,7 @@ console.log(quantity); // Output: 10
 const [fruit2, _, quantity2] = tuple2;
 console.log(fruit2);
 console.log(quantity2);
+
+// Tuples are a TS feature
+// They are actually arrays underneath
+// const t = new Tuple(); // not a real class

@@ -7,6 +7,11 @@
 ** 6. include info on latest versions (and mark current version here)
 ** 7. any outstanding ToDo items at the bottom
 
+[Documentation]
+MDN for JavaScript
+  for primitives, look at the boxed version for members
+typescriptlang.org for TypeScript
+
 [Playgrounds]
 https://www.typescriptlang.org/play - TypeScript playground
   not just for testing TypeScript code
@@ -169,15 +174,22 @@ var
 [Collections]
 Literals
   only array and object have literals ([] and {})
+  trailing commas allowed everywhere
 
 Arrays
   let a: number[] = [1, 2, 3, 4, 5];
   let a: Array<number> = [1, 2, 3, 4, 5];
   let a = [1, 2, 3, 4, 5];
   let a: number = []; // no type inference if empty
+  let a: number[] = new Array(10).fill(5);
+    new array of 10 5s
 
   a[0] // read-write
     no negative indices like Python
+    but methods of array that take indices do allow that (eg. splice, slice, etc.)
+  a.at(0)
+    same thing, but as a method
+    also allows negatives!
   a.length
 
   a.push(val) // append to end (O(1) like Java ArrayList)
@@ -192,11 +204,15 @@ Arrays
   
   b = a.slice(start, stop); // inclusive start, exclusive stop
     b is a COPY of a range of a
+    negative indexing allowed
 
   array is iterable via 'for...of' (and normal for loop w/ length) construct
   can also use a.forEach((num) => {})
 
   const a = [...firstList, ...secondList]; // spread operator (in-place)
+  const a = firstList.concat(secondList);  // another way to do the same thing
+  const a = [1, 2, ...middleList, 3, 4];   // adding in the middle
+  NOTE: the spread operator will work on any iterable, not just other arrays
 
   const [first, second, ...rest] = a; // destructuring
     rest is another array here
@@ -206,16 +222,65 @@ Arrays
   a.filter() and a.map()
     both return an array, not some lazy stream like Python
   
-  a.indexOf()
+  a.indexOf(item)
     for reference types, looks for reference
+  a.lastIndexOf(item)
+  a.includes(item)
+  a.includes(item, fromIndex)
+
+  reverse() and toReversed()
   
   [][] for multidimensional arrays
     nested [] just as you'd expect
+
+  a.sort() for mutable, a.toSorted() for immutable copy
+    either can take a comparison fn
+    default sort is weird - converts to strings and does lexographic
 
   Array.from() can make an array-like thing into a true array
     the thing you pass in must support indexing and length like an array
     or alternatively, must be something iterable
     this is also another way to shallow-copy an array
+    also can take a mapping function that can either take just a value or value and index
+  Array.of() makes an array out of individual items as arguments
+
+  a.keys() gives an iterable over the indices
+    Array.from(a.keys()) is a way to get a RANGE
+      eg. Array.from(new Array(10).keys())
+  b = a.splice(start);
+    a becomes all the elements before start
+    b becomes the rest of the elements starting with start
+    negative indexing is allowed
+  b = a.splice(start, count);
+    same thing but removing from the middle of the array instead of the end
+    use 1 to remove a single item
+  b = a.splice(start, count, item1, item2...)
+    same thing but also adding one or more elements in-place to a
+    the # of items does not need to match the # of things removed
+  a.splice(start, 0, item1, item2, ...)
+    inserting in the middle (empty array returned)
+  aSpliced = a.toSpliced(....)
+    toSpliced() returns a modified copy of a with the same args as splice()
+    the usual thing returned by splice() is not returned in that case
+
+  a.with(index, value) is the copying version of a[index] = value
+
+  a.fill(100)
+    fill whole array with 100
+  a.fill(100, startingFrom)
+    fill starting from an index
+  a.fill(100, startingFrom, stoppingAt)
+    fill a range with exclusive upper-bound
+    if you try to fill beyond the end, it will just stop at the end
+  aSameReference = a.fill(100)
+    fill() returns the array itself which is modified in-place
+    this makes it friendly to this way of making a new array:
+      new Array(5).fill(100)
+
+  a.flat() returns a flattened copy of 2D array
+    only works 1 level 
+  to repeat an array's elements n times:
+    (new Array(n)).fill(arr).flat()
 
   inference of mixed types
     const a = [1, 'hi', true];
@@ -238,8 +303,17 @@ Arrays
   const s = arr.join(',');
     joining array elements into string with delim
   
+  no built-in value comparison vs. === or .equals()
+    either do a loop or do JSON.stringify() and compare the result
+
+  Missing:
+    binary search for sorted arrays
+
 Tuples
   similar to array, but fixed length and not homogeneous type
+    this actually an illusion created by TypeScript
+    there is no class called Tuple
+    it is actually an array underneath
   let tuple: [number, string, boolean] = [10, 'hi', true];
       tuple[0] (read-write)
         not immutable like in Python
@@ -261,6 +335,8 @@ Sets
   s.forEach((value, index) => {}) // JS knows based on the lambda passed in
   use 'for...of' construct like with arrays
 
+  Missing: set operations like intersection, union, etc.
+    they are in the process of being added but it is still experimental
 Maps
   let m: Map<string, number> = new Map([
       ["a", 10,],
@@ -282,6 +358,10 @@ Maps
     console.log(value);
   }
   also can use m.keys(), m.values(), m.entries()
+
+  Map.groupBy(list, fn)
+    to get a counts dictionary, you have to do it yourself
+      eg. with reduce()
 
 Objects (as structs)
   let o: {a: number, b: string} = {a: 10, b: 'hi'};
@@ -340,6 +420,8 @@ Objects (as structs)
         [t + 'Bob']: 400, // retrievable as m['Hi, Bob'] or m[t + 'Bob']
         'a b c ': 500, // retrievable as m['a b c']
     };
+
+    obj[key] || defaultValue
 
 Objects (as classes)
   'class' instead of 'interface' and can have constructor, methods, etc.
@@ -429,8 +511,48 @@ Data Structures Missing from JS/TS: (either make your own or use 3rd party libra
     3rd party libraries: typescript-collections, collections (js)
   trie
     no major language seems to have this - just get used to making your own (it's simple)
+  bitfields
+  StringBuilder
+
+Conversions
+  Array.from(set)
+  new Set(arr)
+Min/Max
+  use Math.min() and Math.max() and the spread operator
+
+Thread Safety
+  not an issue because no true multithreading in same address space
+
+Implementing Objects for Collections
+  objects are hashed and compared by reference instead of value when used as keys
+  for sorting, you have to provide your own comparison function
+
+Swap
+  use tuple destructuring
+  [x,y] = [y,x]
+  works for array elements too
+
+Iterables
+  many operations that take an array will actually take any iterable
+  you make something iterable by implementing the Iterable Protocol
+    see "Classes" for details
+
+Deep Copying
+  n = JSON.parse(JSON.stringify(m));
+
+Custom Printing of Elements
+  console.log() will only print the raw objects
+  but console.log(container.toString()) will use the toString() of the elements
+
+Operations Missing:
+  binary search
+  shuffle
+  using object as a key by value (instead of reference)
 
 [Strings]
+// and /* */ for comments
+\n for line endings
+
 strings are immutable (mutation functions return new copy)
   but they are not reference types like in other languages!
 there is no char type - a character in a string is a single-item string (same type)
@@ -438,6 +560,17 @@ strings are based on unicode and are not null-terminated
 
 s + t + 3
   concatenates two strings and a number (converted to string)
+concatenation is weird in JS compared to other languages
+  the + operator will take any opportunity to automatically convert something to a string
+    even if none of the operands are a string
+  for objects it will automatically use toString() if available
+  eg. const s = 3 + o; // o is an object
+    s will be 3WhateverReturnedByOMethod
+  eg. const s = [1, 2] + [3, 4]
+    because arrays don't support +
+    this will be 1, 23, 4
+  TypeScript complains about a lot of these operations though
+    you can still get the behavior if you use 'as any' on the objects it complains about
 
 '' and "" are both for string (char is just a single character string, not special thing)
 `Hello, {name}!` // 'name' should be variable in current scope
@@ -450,6 +583,7 @@ s + t + 3
 to use a normal string with an object of params, you have to do it yourself using string.replace()
   there is no built-in way, but many frameworks have it
 there are no raw strings
+there are no format specifiers
 
 s.length
 s[0], s.charAt() // read-only
@@ -465,6 +599,14 @@ s.replace(old, new)
 s.includes(substr)
 s.startsWith(substr)
 s.endsWith(substr)
+s.indexOf(), s.lastIndexOf()
+  optional startIndex 2nd params
+s.trim(), s.trimStart(), s.trimEnd()
+s.repeat(n)
+  repeat a string n times
+methods that search from the start or end of a string can often take a start index
+  so that you don't have to break the string apart just for that
+for things like checking if letter, use regex
 
 for...of iterates over characters (single-length strings)
 
@@ -495,6 +637,9 @@ console.log()
   output goes into debug console (eg. Chrome Devtools)
   console.log() for empty line
     can also use \n in strings
+
+  note that console.log() prints the objects raw
+    it won't call toString() for you
 console.error()
   like console.log() but more serious (shows up red)
 console.warn()
@@ -519,13 +664,21 @@ Regular Expressions
 
 joining is done by Array
   arr.join(',')
+  arr.join() with no arg defaults to comma
+  arr.join('') with empty string will join with no separator
 there is no StringBuilder type object
   use arrays and join(), or template strings
+to do something like sort a string, use Array.from() and then arr.join('')
+
+Case Insensitivity: convert both to lowercase first
+  maybe also toLocaleString() and normalize() depending on requirements
 
 [Operators]
 all the usual arithmetic, arithmetic assignment, bitwise, and comparison operators from c-like language
   and ternary operator
   and pre and post increment/decrement
+  / will give a fractional number if applicable
+    use Math.floor() if want floor division like other C-like languages
 &&, ||, ! for conditions
 
 type narrowing (a unique feature of TS)
@@ -661,7 +814,19 @@ catch (error) {
 }
 finally {}
 
+Built-in Exceptions
+  Error
+    best practice is inherit from this
+    though technically you can throw anything
+  ReferenceError
+  TypeError
+  RangeError (for index issues)
+Exception Members
+  typically at least 'message' and 'name'
+
 Not Available: context management, asserts (have to use libraries)
+  constructors will typically set message based on a string passed in
+  eg. new Error(message)
 
 [Functions]
 types look a lot like python type annotations (but compiler actually cares)
