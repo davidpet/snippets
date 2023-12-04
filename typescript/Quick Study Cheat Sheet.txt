@@ -1,7 +1,5 @@
 ** rewrite of this sheet is in progress **
 ** steps left:
-** 2. sync with Java quick notes to see if any topics missed (from here and notebooks)
-** 3. sync with python quick notes for the same reason (since JS/TS has some in common with python note in common with Java)
 ** 4. possibly expand the web sections in example notebooks: HTML, CSS/SASS, Flexbox/Grid
 ** 5. any other popular libraries (eg. rxjs, lodash, nodejs)
 ** 6. include info on latest versions (and mark current version here)
@@ -1817,7 +1815,7 @@ Math: static math functions you can call on numbers
   abs()
   ceil(), floor(), round()
   max(), min() [variadic]
-  random() [0,1)
+  random() [0,1) [scale and round if need integer range]
   sqrt()
   pow(base, exp)
   sine(), cos()
@@ -1883,6 +1881,10 @@ Ajax
 
 JSON
   JSON.stringify() and JSON.parse() as described in Strings above
+
+Multithreading
+  JS doesn't really have the typical fork/join type multithreading
+  though it does have a concept called worker theads (TBD later)
 
 [Decorators]
 similar to Python, you can make a function that takes a decloaration and wraps it
@@ -2058,6 +2060,9 @@ be able to implement missing data structures quickly for problems
   some platforms might let you use some other popular libraries
   for interviews, probably fine to just pretend the Java ones exist here
     be able to implement in case they ask
+a lot less collections than other languages
+  either implmeent yourself quickly or assume you have the Java ones (and call it out)
+as usual, be able to do your own linked list nodes, binary search, etc.
 
 [ToDo]
 constructor signature
@@ -2066,3 +2071,6 @@ Object.seal()
 NodeJs execution (scripts vs. module, checking main, args, etc.)
   doesn't apply to browser execution
 other useful NodeJS stuff (like client/server stuff)
+worker threads
+type guard on return type (function f(x: any): x is string)
+discriminated/tagged unions
