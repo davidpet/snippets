@@ -3,7 +3,7 @@
 ** 2. sync with Java quick notes to see if any topics missed (from here and notebooks)
 ** 3. sync with python quick notes for the same reason (since JS/TS has some in common with python note in common with Java)
 ** 4. possibly expand the web sections in example notebooks: HTML, CSS/SASS, Flexbox/Grid
-** 5. any other popular libraries (eg. rxjs, lodash)
+** 5. any other popular libraries (eg. rxjs, lodash, nodejs)
 ** 6. include info on latest versions (and mark current version here)
 ** 7. any outstanding ToDo items at the bottom
 
@@ -899,6 +899,8 @@ Generators
     OR for (const item of l) {console.log(item);}
     OR const a = Array.from(l) // to make into eager array
   can send values into the .next() call just like python for two-way communication
+  yield* to yield multiple values from another generator in-place
+    eg. so you can use a loop to concat
 
 nested functions allowed but uncommon due to multiline lambdas
     unlike Python
@@ -910,6 +912,9 @@ return type can be ommited to let it be inferred
 
 never is a special return type that means the function never returns
   eg. if the body throws
+
+Not available: throws, ref and out, overloading, macros, extension methods
+  though you can simulate extension methods by modifying classes or instances
 
 [Functional]
 "fat arrows" with all the usual combos
@@ -1055,6 +1060,10 @@ Recursion
     using the current variable name being assigned
     eg. const f = () => {f();};
 
+Not available: pre-defined lambda types, pre-defined functions for common operations,
+               purely lazy stream operations (have to use generator),
+               a lot of functional operators (due to lack of stream operations),
+
 [Classes]
 looks mostly like Java with some differences noted here
 also worth noting that a class is syntactic sugar for making an object (as described in collections)
@@ -1066,6 +1075,8 @@ things in common with Java worth noting here again:
   use 'new' keyword to make a new instance
   default constructor w/ no args only if no construtor specified
   can only extend a class but implement multiple interfaces (no python/c++ diamond behavior)
+  covariant return types
+  increasing access level in subclasses
 
 need to use 'this' in front of all member access from methods (never implicit)
   but also not passed in as param like in python
@@ -1177,7 +1188,8 @@ Interfaces
   unlike Java, can have both fields and methods
   worth noting: unlike a class, which emits JS code, interfaces don't emit any JS code and aren't a JS feature
     it just helps the compiler to keep you honest before compiling to JS
-  
+  name collisions = not a problem as long as compatible (all the same method)
+
   interface Person {
     name: string;
     age: number;
@@ -1408,16 +1420,25 @@ Prototypes In-Depth
   interfaces and type literals don't participate in any of this becuase they are only for the TS compiler
   TS considers function prototype properties to be 'any' but is more restrictive on MyClass.prototype
 
+Not supported: operator overloading, partial classes, value types, method/constructor overloading,
+               classes nested in other classes (but nested in body is fine),
+               finalizers/destructors/disposable, friend classes (in TS),
+               c'tor initializer blocks or lists,
+               constants or defaults or statics on interfaces like in Java,
+               method and variable with same name (due to how names work),
+               sealed/final
+
 [Generics]
 can be used with any type args, not just reference types
 type arg goes to the right of name for both functions and classes
-elemnents of the type must be treated as Object
+elements of the type must be treated as Object
   primitives will be auto-boxed as needed for you
 
 functions can infer types or be called explicitly as f<number>()
 classes can infer or give explicitly too
 
 <T extends MyInterface> to be able to use members of MyInterface in the generic
+<T extends MyInterface & TheirInterface>
 
 JS has no concept of generics, and the compiled JS code just uses the raw types
   eg. const m = new Map(); // can add whatever key and value types you want
@@ -1431,6 +1452,11 @@ if you left the left side infer and use the raw type on the right side, it acts 
 a generic with void as a type arg is sort of special
   eg. Box<void> can be constructed as Box(undefined) or Box() assuming c'tor takes T arg
   this is very useful in rxjs for subjects that need to signal without emitting a specific value
+
+no need for wildcards - generics are much looser in TS and are already covariant/contravariant
+
+you cannot do something like T() to create a new value
+  TS maintains T as just a type, not a class object
 
 [Imports/Modules]
 Exporting
@@ -2024,5 +2050,19 @@ grid is better for 2D layouts
 ** see Angular notebook HTML and HTML Forms sections for full examples **
 key point is <script> tags to put JS code in
 
+[Interview Tips]
+be able to implement stream operations like concat(), zip(), etc.
+  use generators
+  useful to have these in problems & interviews
+be able to implement missing data structures quickly for problems
+  some platforms might let you use some other popular libraries
+  for interviews, probably fine to just pretend the Java ones exist here
+    be able to implement in case they ask
+
 [ToDo]
-???
+constructor signature
+constructor as method reference
+Object.seal()
+NodeJs execution (scripts vs. module, checking main, args, etc.)
+  doesn't apply to browser execution
+other useful NodeJS stuff (like client/server stuff)
