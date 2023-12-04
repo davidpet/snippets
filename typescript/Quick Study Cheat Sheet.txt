@@ -2060,20 +2060,25 @@ a lot less collections than other languages
 as usual, be able to do your own linked list nodes, binary search, etc.
 
 [ToDo]
-constructor signature
-constructor as method reference
+*constructor signature
+*constructor as method reference
+*type guard on return type (function f(x: any): x is string)
+*callable objects? (probably not since no operator overloading)
+*discriminated/tagged unions
+
 Object.seal()
-NodeJs execution (scripts vs. module, checking main, args, etc.)
-  doesn't apply to browser execution
-other useful NodeJS stuff (like client/server stuff)
 worker threads
-type guard on return type (function f(x: any): x is string)
-discriminated/tagged unions
+background apps (or whatever it's called)
+
+latest JS+TS versions for this doc (and notebooks)
+any new JS+TS version features not mentioned or known in this doc (and notebooks)
+
 CSS box model
 CSS space filling algorithm
 CSS animation
+
 rxjs
 lodash
-latest JS+TS versions for this doc (and notebooks)
-any new JS+TS version features not mentioned or known in this doc (and notebooks)
-callable objects? (probably not since no operator overloading)
+NodeJs execution (scripts vs. module, checking main, args, etc.)
+  doesn't apply to browser execution
+other useful NodeJS stuff (like client/server stuff)
