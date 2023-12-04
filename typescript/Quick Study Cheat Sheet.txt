@@ -2076,3 +2076,4 @@ rxjs
 lodash
 latest JS+TS versions for this doc (and notebooks)
 any new JS+TS version features not mentioned or known in this doc (and notebooks)
+callable objects? (probably not since no operator overloading)
