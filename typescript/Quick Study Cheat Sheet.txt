@@ -46,6 +46,8 @@ let a: any = 5;
   often used for compatibility with JavaScript code where anything goes
   a could be reassigned a different type of object arbitrarily
   you can do whatever operations you want on it, like you're in JavaScript land
+  also, you can arbitrarily set and read properties of a without compiler errors
+    a way to go straight to the JS system with a particular object
 let a: unknown = 5;
   similar to any, but you can't do any operations on it that are type-specific
   you have to convert to a type first (eg. via type narrowing)
@@ -1182,6 +1184,65 @@ Declaration Merging
     since modifying prototypes like that is not recommended, you could alternatively, do it in a facotry
       wrap creation of new instances and set the function on instances instead
 
+Prototypes In-Depth
+  an instance of a class or a subclass of a class are both more specialized than the class
+  they can both be represented by a chain of prototypical objects from Object to the instanceo
+  all objects in JavaScript have a hidden prototype object (accessed via Object.getPrototypeOf(obj))
+    internally the property is [[prototype]] and you may see that in Chrome Devtools
+      [[ ]] means internal property you can't see in code
+  when you access a field (either a variable or method) via . or []
+    JS will first look on the object itself
+    then retreive its prototype and check on that object, and so on down the chain until null
+    if not found, then returns undefined
+  the prototype chain is 1-dimensional
+    no diamond inheritance
+    the chain is kind of parallel to the inheritance chain
+      or one ahead of it depending on how you look at it
+  class instances have the class as their prototype
+  classes have their superclass as their prototype (all the way down to Object.prototype)
+    Object.prototype's prototype is null
+  anonymous objects have Object.prototype as their prototype
+    meaning they are instances of Object with stuff added dynamically
+  functions have Function.prototype as their prototype
+  const o = Object.create(prototype);
+    creates an object using a given object as its prototype
+  prototypes are object references, not copies, so modifications are dynamic
+    all existing instances or subclasses affected right away
+    that is also what makes it dangerous to modify a well-known prototype like the one for Array or Object
+  all functions, including lambdas, have a prototype property
+    this is separate from the hidden prototype of the function itself
+    the prototype property is initially populated with an object that has 'constructor' set to the function itself
+      this is an independent new object, not a reference to something common
+    by modifying the function's prototype, you can add members that will be used when an object is created via 'new'
+  the 'new' operator essentially does this:
+    const o = Object.create(MyClass.prototype); // where MyClass is a constructor function
+    MyClass.call(o, ...other args...); // call constructor with 'this' bound to the new thing
+  to make a class the old way:
+    make a constructor function and add members to its prototype property
+      eg. function MyClass() {}; MyClass.f = () => {}; MyClass.x = 100;
+    use the 'new' operator with that constructor function
+      eg. const o = new MyClass();
+  to make a subclass the old way:
+    the subclass constructor function should call the base class function using .call() to bind 'this' to 'this'
+    the default prototype of the subclass function should be replaced with Object.create(MyBaseClass.prototype)
+    MyDerivedClass.prototype.constructor should be set to MyDerivedClass (since it doesn't have one yet)
+  static members are set on the function itself instead of in the prototype
+  ES6 classes are syntatic sugar to wrap this mechanism
+    class -> constructor function
+    constructor -> args and body of that function
+    members of the class -> set on the prototype (or on 'this' in the constructor body)
+    statics -> properties on the constructor function
+  there is some additional weirdness with enumeration of object properties
+    enumerating properties of an ES6 class includes base members
+    but enumerating properties of object made via Object.create() doesn't include members of the prototype
+    there are additional methods on Object to configure individual properties
+      such as whether they're enumerable, etc.
+      ES6 classes hide that ugliness from you
+  primitives can't be prototpyes - only objects
+  the 'constructor' property of a function's prototype is used by 'instanceof'
+  interfaces and type literals don't participate in any of this becuase they are only for the TS compiler
+  TS considers function prototype properties to be 'any' but is more restrictive on MyClass.prototype
+
 [Generics]
 can be used with any type args, not just reference types
 type arg goes to the right of name for both functions and classes
@@ -1502,6 +1563,14 @@ Browser DOM
           the lambda could remove itself when it's done if it's a one-time thing
             use its own name as the reference to pass in
     
+    Load Events
+      document 'DOMContentLoaded' fires when the DOM is in-place (but before styles, etc. and other resources)
+      window 'loaded' fires when all dependencies are loaded
+      to gaurantee your events don't fire until one or both of those,
+        put the addEventListener call in the appropriate handler
+      a click handler could fire before either of those otherwise
+        eg. if browser renders part of the DOM first and the button is there
+
     Adding DOM Elements
       const newDiv: HTMLDivElement = document.createElement('div');
       newDiv.id = 'new-div';
@@ -1791,5 +1860,4 @@ grid is better for 2D layouts
 key point is <script> tags to put JS code in
 
 [ToDo]
-deep details of prototype inheritance
-  eg. multiple inheritance
+???
