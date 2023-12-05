@@ -7,3 +7,5 @@ The `&` binds to the right to the variable itself, not the type.  But `const` bi
 There is no such thing as having multiple `&` in a chain like with pointers, except for the special case of `&&` which is an __rvalue reference__.  This can be used on an rvalue (temporary object) to let the temporary object keep living within the current scope.  It is not usually used the way it's shown here but rather as a function parameter overload to allow you to take posession of resources inside a temporary object without making a copy (__move semantics__).
 
 NOTE: references and pointers do not keep an object alive like in a garbage collected system.  They can become invalid without knowing it if used dangerously.
+
+NOTE: the `sizeof()` a reference is the size of the referenced type, not the secret pointer storage.

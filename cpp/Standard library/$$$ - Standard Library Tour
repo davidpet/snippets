@@ -55,6 +55,8 @@ The C++ Standard Library is vast, encompassing utilities for I/O, strings, conta
 ### **9. C Library**
 - **Headers**: `<cstdio>`, `<cstdlib>`, etc.
 - Most of the C Standard Library functions and types, wrapped in the `std` namespace.
+- Some of them become available not wrapped in `std`, but still alias it in `std`.
+- often the `std` ones are slightly more typesafe, and thus recommended.
 
 ### **10. Error Handling**
 - **Headers**: `<exception>`

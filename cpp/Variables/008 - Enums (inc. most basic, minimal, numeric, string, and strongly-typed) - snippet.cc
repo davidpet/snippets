@@ -11,7 +11,7 @@ enum Color {
 // Changing values
 enum Color2 {
     YELLOW = 5,
-    BLACK = 2
+    BLACK = 2 // would be 6 if didn't reassign it
 };
 
 // Enum with explicit values

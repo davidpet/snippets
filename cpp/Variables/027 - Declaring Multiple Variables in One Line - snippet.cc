@@ -18,4 +18,7 @@ int main() {
     // However, you can declare multiple variables of different types in one line using auto keyword (since C++11)
     auto i = 4, *j = &i;
     std::cout << "i: " << i << ", *j: " << *j << std::endl; // Expected output: i: 4, *j: 4
+
+    // crazy mixing
+    int *x, y, *&z = x;
 }

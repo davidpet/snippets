@@ -11,3 +11,4 @@ To make any integral type `unsigned`, just use the `unsigned keyword` with it.  
 You can append `f` to specify float instead of double literal.  Scientific notation (eg. `1e-3`) is supported.
 
 NOTE: there's something called a `long double` which seems to be the same thing as `double`.
+NOTE: `char` can be unsigned as well, as it can be treated as a __number of character__.

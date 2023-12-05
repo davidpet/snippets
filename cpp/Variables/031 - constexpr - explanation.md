@@ -49,3 +49,5 @@ constexpr Point origin(0, 0);
 The primary advantage of using `constexpr` is performance. By computing values at compile-time rather than runtime, the generated machine code can be more efficient. It's especially useful for mathematical computations, lookup tables, or any value that doesn't change during the execution of the program.
 
 The use of `constexpr` allows for powerful compile-time computations in C++, which can lead to more optimized generated code. While it can be tempting to make everything `constexpr`, it's essential to understand its trade-offs and use it judiciously.
+
+NOTE: `constexpr` makes the variable `const` implicitly, so that it cannot be modified at runtime.

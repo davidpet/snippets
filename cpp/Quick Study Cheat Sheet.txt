@@ -5,8 +5,11 @@
 ** 3. sync with python quick notes for the same reason (probably less to find from there, but some stuff like operator overloading will match)
 ** 4. see if any new versions since last time (and mark current version here)
 
-This is not a comprehensive list of C++ features (that would be too big).
-It is just a list of some of the key UNIQUE things about C++ worth keeping in mind, especially after not using it a while.
+** because C++ is unique in many ways, this sheet has a lot of topics the other languages don't **
+** the "unique aspects of C++" portions are in this sheet and not in notebooks diretly **
+
+[Playground]
+https://cpp.sh/ - to try things out quickly to answer questions
 
 [General]
 more complex with a lot more parsing edge cases than other languages
@@ -23,78 +26,691 @@ forward declarations
 directives & macros (preprocessor)
 
 [Variables]
-stack vs. heap allocation of all types
-    automatic variables for stack
-    potential memory leaks for heap (have to use smart pointers or call delete)
-just making a variable causes automatic allocation, constructor call, etc.
-just making a global variable causes code to execute before main
-    with possibly undefined order due to things like DLL loading, lack of order guarantees between modules, etc.
-operators can end up calling a lot of code secretly due to operator overloading
-= can be a constructor call or assignment operator call depending on context
-pointers and references (and nothing like the concept of reference from other languags)
-direct, unamanged access to blocks of memory
-no reference vs. value type - everything is value type and will get lots of expensive copying if not careful
-unsigned integers
-    not strictly unique, but a lot of languages don't have (Java, Python, TypeScript, etc.)
+Unique Aspects of C++
+    stack vs. heap allocation of all types
+        automatic variables for stack
+        potential memory leaks for heap (have to use smart pointers or call delete)
+    just making a variable causes automatic allocation, constructor call, etc.
+    just making a global variable causes code to execute before main
+        with possibly undefined order due to things like DLL loading, 
+            lack of order guarantees between modules, etc.
+    operators can end up calling a lot of code secretly due to operator overloading
+    = can be a constructor call or assignment operator call depending on context
+    pointers and references (and nothing like the concept of reference from other languages)
+    direct, unamanged access to blocks of memory
+    no reference vs. value type
+        everything is value type and will get lots of expensive copying if not careful
+    lack of garbage collection on references/pointers
+    unsigned integers
+        not strictly unique, but a lot of languages don't have (Java, Python, TypeScript, etc.)
+    multiple ways to refer to same primitive types
+    differences in type sizes on platforms
+    junk-initialized variables
+    inline static variables
+    need ; after {} for enums, structs, unions, classes
+    explicit control over things like constexpr, alignas, etc.
+
+Primitive Data Types
+    literals need suffixes if greater than int or less than double
+
+    char, bool -> usually 8-bit
+        char can be treated either as a number or a character
+    short int, short -> usually 16-bit
+    int, long, long int -> usually 32-bit
+        literal suffix = UL for unsigned long
+    long long, long long int -> usually 64-bit
+        literal suffix = LL for signed, ULL for unsigned
+
+    wchar_t - 16-bit or 32-bit depending on platform
+
+    float - usually 32-bit
+        literal suffix = f
+    double, long double -> usually 64-bit
+        literal suffix = L for long double
+
+    UNSIGNED: add 'unsigned' before any integral type (inc. char)
+    SCIENTIFIC NOTATION: -3e-4, 2e7, 0.1e-10, etc.
+
+    pointers are also a primitive type and are covered separately below
+        references are not a primitive in the same way
+Declarations
+    int x, int y;  // both initialized to junk
+    int z = 10;
+    int a = 10, b = 20, c;
+
+    int *x, y, *&z = x; // crazy mixing (due to how * and & bind to variable)
+
+    const int x = 10; // x can never change again
+        when you take a pointer or reference to this variable
+        it will look at whether you declared the pointer or reference as 'const int'
+        if you did not, it won't let you do it!
+        that is to stop you from going around the constness of the variable
+        you could technically const_cast it to go around it but you shouldn't generally
+    const int x; // ILLEGAL (must initialize it inline)
+    const MyClass m; // ok if has a DEFAULT CONSTRUCTOR
+
+    static int x;
+        variable created first time code passes through this point
+        then continues to live and see changes
+
+        note that 'static' is a "storage specifier" and is not part of the type of the variable
+            whereas 'const', '&", and "*" are
+            this means 'static' is not seen by 'auto' or typedefs
+Global Variables
+    any variable declared at the global scope (not in a function, class, etc.)
+    initialized before main() called
+    available for whole duration of program
+    they're basically the same thing as static variables
+        the main difference is their visibility
+        and also when exactly they get initialized
+Scope & Visibility
+    ordinary block-scoping like you'd expect
+    none of the weird JS 'var' or Python every variable behavior
+    you can also use {} to make blocks within blocks arbitrarily
+
+References
+    int &x = y;
+        x always refers to y and cannot be rebound
+        if y is reassigned, x sees the new value
+        if x is reassigned, y sees the new value
+        it is a secret pointer dereference underneath
+    a reference in a class must be bound in the c'tor initialization list or inline
+    MyClass &r = m;
+        if r is reassigned, then assignment operator called on m itself
+        it is not like references in Java where you are just changing the reference
+            that is more like how a pointer behaves here
+    const int &x = y;
+        x = 100; is ILLEGAL
+    const int x;
+        int &y = x; is ILLEGAL because non-constant ref to a constant
+    int &&x = 100;
+        x is rvalue reference
+        int &x = 100; is ILLEGAL
+    MyClass &&x = std::move(y);
+        converting to rvalue reference explicitly using built-in function
+    & does not chain endlessly like pointers (no &&& for instance)
+    sizeof() on a referene is sizeof() the referenced variable, not the secret pointer
+Pointers
+    int *p = &x;
+        p is a pointer to integer (* binds to p)
+        & is address of operator
+        p holds an address
+    int y = *p;
+        retrieving x via the pointer
+    *p = 100;
+        changing x via the pointer
+
+    int **q = &p;
+        pointer to pointer (address of variable holding address)
+    int y = **q;
+        retrieve via double dereference
+    **q = 100;
+        set via double dereference
+    *q = &someVariable
+        set the intermediate address instead
     
+    int *&r = p;
+        r is a reference to an int* (reference to p)
+        thus it will act as an int*
+    *r = 100;
+
+    func(*p);
+
+    Pointer Arithmetic
+        p[n] or *(p + n)
+            both add the size of the data type times n, then dereference
+        p += 2
+            doesn't add 2 to the address, but adds 2 * sizeof(whatever the data type is)
+        if reinterpret_cast to char*, you can retrieve/modify individual bytes instead
+
+    Member Access
+        p->x
+            member x of object pointed to by p
+        r.x
+            member x of object referenced by r
+            or object that actually is r in the first place
+        p[2].x
+            3rd object in array
+        pp[2]->x
+            3rd pointer in array dereferenced to object elsewhere
+    constant
+        const int *p = &x;
+            p cannot be used to change the value
+            const binds to int, meaning the value itself can't be changed
+            but p, the pointer, can be reassigned to a differnet address
+            p += 2; // fine
+            *p = 10; // illegal
+        int * const q = &x;
+            in this case, const binds to q instead of the int
+            so q itself cannot be changed, but it can be used to change the target value
+            *q = 10; // fine
+            q = &x; // illegal
+        const int * const q = &x;
+            can combine by putting in the right places as needed
+            count backwards from the variable to put const in between other places in the chain
+    size of pointers
+        usually 64-bit nowadays
+    void*
+        void* is a special type that means we don't know what the type is
+        since all pointers just store memory addresses and are same size
+        any point can implicitly cast to void*
+        void* can static_cast to any other * type
+        banned operations: pointer arithmetic, dereferencing
+
+Nullability
+    nullptr = special literal for pointers that are set to 0
+        eg. if (p == nullptr) {}
+        eg. const int *p = nullptr;  // otherwise would be junk instead of nullptr
+    there is no such thing as a null reference because you are required to bind a reference
+    variables that are not pointers or references have no concept of nullability at all
+    always remember that both pointers and references can become DANGLING
+Dynamic Allocation
+    heap instead of stack
+    int *p = new int;
+    int *p = new int(100);
+        allocate the value 100 on the heap
+    int *a = new int[100];
+        allocate 100 junk values on the heap
+    int *a = new MyClass[100];
+        only legal if MyClass has default constructor
+        100 instances default constructed
+    int *a = new int[100]{1, 2, 3};
+        specifying the first 3 values
+        the rest automatically become 0 instead of junk!
+    int *a = new int[100]{0};
+        100 zeroes
+    int *a = new int[100]();
+        100 zeroes
+    int *a = new MyClass(arg1, arg2);
+        can pass constructor arguments if single value
+    int *p = new MyClass;
+        default constructor if no args
+    
+    delete p;
+        deallocate a single value
+    delete[] a;
+        deallocate an array
+Automatic Variables
+    local variable declarations that don't use 'new'
+        stored on stack
+    but otherwise look like the examples in Dynamic Allocation
+        along with compact versions like this:
+            MyClass m;
+            OtherClass o(m);
+    the automatic variable's destructor is called when it goes out of scope
+    an automatic variable in a class's declaration is stored as part of the class
+        could be on stack or heap depending on where the class is allocated
+        a non-default constructor can be chosen in the class constructor initialization list
+            or inline
+Smart Pointers
+    <memory>
+        unique_ptr<int> p(new int);
+        *p = 100;
+        // no delete needed (called when p out of scope)
+        p.reset()
+            if want to explicitly release it instead
+        
+        shared_ptr<int> p = make_shared<int>(100);
+        *p = 100;
+        shared_ptr<int> q = p;
+        *q = 1000;
+        p.use_count() will be 2 in this case
+        q.use_count() is also 2
+        p.reset()
+            explicitly release one of them
+            or else destructor will do it later
+        // refcounted, object deleted when count goes to zero
+
+        neither of these are meant to be mixed with using naked pointers
+            assume they have full control of the object
+            at least from an ownership perspective
+            eg. if you pass a naked pointer from a unique_ptr but never delete it
+        one way to use them could be to have a unique_ptr owning a pointer as a class member
+            then you could pass the naked pointer however you want
+            the class owns the dynamic storage
+Default Numeric Values
+    all numeric types, including integers, floats, pointers, chars
+    initialized to junk if local, instance, or heap allocation
+        because just doesn't overwrite whatever was on the stack or heap before
+    initialized to 0 if static or global allocation
+        because static and global are same storage
+        and because the program can hardcode the value in the data segment
+Delayed Initialization
+    local variables don't HAVE to be initialized unless const and/or reference
+    class instance members follow the same rule
+        except they can be initialized in constructor initialization list instead of inline
+Placement New
+    have to import <new>
+        but no namespace needed for the operator
+    
+    MyStruct *ptr = new (&storage) MyStruct(42, 3.14);
+        constructors an instance of MyStruct into the memory of the storage variable
+        doesn't dynamically allocate anything, so never need to delete
+        eg. you could dynamically allocate a block first
+            then customize the constructor calls with placement new
+    because delete is never called, you will have to call the destructor at some point
+        if it's necessary, which it won't be for all classes
+            doesn't hurt to just always call it though
+        ptr->~MyStruct();
+    you could use std::aligned_storage to create storage for this
+        <type_traits>
+            aligned_storage<sizeof(MyClass), alignof(MyClass)>::type storage;
+                this example creates it on the stack and cleans it up automatically
+                to do it dynamically, create this with 'new'
+
+Type Aliases
+    typedef int Integer;
+        anywhere in code you can use Integer as the type
+        and C++ will know it's really int
+    using Integer = int;
+        newer, more readable version of the same thing
+    unlike with 'auto', type aliases include const, &, etc.
+        eg. using cstringref = const std::string&;
+            cstringref r = mystring;  // const reference to mystring
+        despite the fact that & normally binds to the variable instead of type
+
+    typedef void(*MyFunctionPtr)();
+    using MyFunctionPtr = void(*)();
+
+Examining Numeric Type Properties
+    <limits>
+        numeric_limits<int>::max()
+        numeric_limits<int>::min()
+Float Near-Equality
+    <cmath> 
+        fabs(): absolute value of float
+            fabs(a - b) < epsilon
+Float Special Values (part of IEEE standard)
+    <limits>
+        numeric_limits<double>::quiet_NaN()
+        numeric_limits<double>::infinity()
+        -numeric_limits<double>::infinity()
+    <cmath>
+        isnan(x)
+        isinf(x)
+            true for negative infinity as well
+
+Enums
+    Old-Fashioned = just int with special compile-time constants basically
+        enum Color {
+            RED,    // 0
+            GREEN,  // 1
+            BLUE    // 2
+        };
+
+        enum Color2 {
+            RED = 3,
+            GREEN, // 4 automatically
+            BLUE = 10
+        };
+
+        Color c = RED; // unqualified compile-time constants for members
+        int x = c; // implicitly castable to integer because really integer
+        c = (Color)(RED + 1) // not implicitly castable the other way
+            use c-style or static_cast
+        c can become a value other than the ones provided
+        std::cout would see it as an integer and print the number instead of the name
+
+    Strongly-Typed Enums (enum classes)
+        enum class TrafficLight {
+            RED,
+            YELLOW,
+            GREEN
+        };
+
+        // changing the backing type (integral types only)
+        enum class TrafficLight: char { // backed by char insted of int
+            RED,
+            YELLOW,
+            GREEN
+        };
+
+        TrafficLight t = TrafficLight::RED;    // qualfied like static
+        std::cout cannot print it by default because it's not an integer!
+        not implicitly convertible
+            static_cast<int>(t) to get the int value
+        if (t == TrafficLight::RED) {}
+        static_cast<TrafficLight>(2)
+            but will accept an invalid number still!
+
+Type Inference
+    'auto' keyword = compile-time type inference
+
+    auto a = 5; // int
+    auto d = 0.1; // double
+    auto s = "Hi!"; // const char * (a special case of inferring 'const')
+
+    auto &x = y; // auto will not infer & because it doesn't know you want that
+        if you did auto x= y, it would assign BY VALUE
+    auto *p = arr;  // auto can be told there's a * there
+    auto p = arr;   // it can also infer it
+
+    const auto &x = y;
+    auto &x = y; // if y is constant, then auto will know it needs to make 'const int' here too
+        otherwise, auto will not infer 'const' because it has no reason to
+
+    auto fn() { return 5; }
+
+    decltype(a) b = 10;  // type matched to another variable (even if auto)
+    decltype(a) d;
+    decltype(a + b) c;  // eg. if a and b are two different types and you want the type of the result
+    
+    auto fn(int a, int b) -> decltype(a+b) {}
+
+    decltype works with generic types in templates too!
+
+Unions
+    unions look like structs
+        but the members OVERLAP
+        effectively it is only storing one of the members at a time
+        assigning to another one clobbers it
+
+    union Data {
+        int i;
+        float f;
+        char str[20];
+    };
+    Data d;
+    d.str[0] = 'h';
+    d.str[1] = 0;
+    d.i = 10; // overwrites d.str completely (and then some)
+
+volatile
+    like in Java
+    stops variable from being cached in registers separately on separate threads
+    doesn't make it atomic or mutex-locked or anything like that though
+
+constexpr
+    specifies that a variable should be computed at compile-time
+    specifies that a function that is given compile-time constants will return a compile-time constant
+        making it usable in compile-time constants
+    simple loops and conditions are allowed
+    offloads some runtime execution to compile-time
+        especially things that don't change like precomputed values and lookup tables
+    implicitly makes the variable 'const' as well (no way to modify at runtime)
+
+    constexpr int square = 10 * 10;
+    constexpr int add(int a, int b) {
+        return a + b;
+    }
+    constexpr int result = add(5, 3);
+
+    you can declare a constexpr constructor on a class
+        that will allow you to declare a constexpr variable holding an instance
+constinit
+    like constexpr, except doesn't make the variable 'const'
+    initialized at compile-time, but can be changed at runtime
+
+alignas()
+    alignas(int) short x;
+    alignas(16) int arr[100];
+
+    see "Operators" for details
+    lets you specify the word alignment of a variable in memory for performance
+
+Not Supported: interning/pooling
+
+[Collections]
+Unique Aspects of C++
+    arrays are really pointers and aren't managed at all
+    multidimesional arrays are layed out contiguously instead of as array of references
+        because array is not a reference type (no such concept here)
+
+Arrays
+    an array variable is actually a POINTER underneath
+        thus, it has no protection or length property
+    
+    int arr[] = {1, 2, 3};      // [] binds to the variable, not the type (just like a pointer)
+        automatid size of 3
+    int arr[10] = {1, 2, 3};    // specifying size (unspecified items become zero)
+    int arr[10];                // junk values
+
+    int *p = arr; // no & needed because arr is already a pointer
+    int *q = new int[100];
+
+    MyClass arr[10];    // only legal if has default constructor
+        or if you do it dynamically with placement new
+
+    int matrix[][3] = {{1, 2, 3}, {4, 5, 6}};
+        you are only allowed to ommit the 1st dimension
+        because it lays out contiguously and needs to know the structure
+        related to the idea of array decay (see "Functions")
+    int matrix[2][3];
+    int matrix[][2][3];
+
+[Strings]
+Unique Aspects of C++
+    heavy reliance on stream operator <<
+    literal string vs. stdlib string
+    null termination
+
+Literals
+    "" -> const char *
+    '' -> char
+
+Character
+    char is both a numeric type and a character type
+    if you print it with std::cout, it will print as a character
+        have to cast to int if want to see the number
+    but you can also store a number there and do math with it
+
+Equality
+    == works on std::string to compare contents
+    const char * == would compare addresses intead
+
 [Operators]
-overloading inside or outside classes
-    Koenig lookup
-spaceship operator
+Unique Aspects of C++
+    overloading inside or outside classes
+        Koenig lookup
+    spaceship operator
+    many different kinds of casts
+
+sizeof()
+    sizeof(int)
+        getting size of a data type on the current system
+    sizeof(x)
+        getting size of a variable
+    sizeof(arr)
+        for an array, it depends on whether it's local
+        local array will get the actual size
+        otherwise, it will give the size of the pointer
+    sizeof(MyClass)
+        get total storage size of class in memory
+alignof()
+    alignof(MyClass)
+        gets alignment of the class on current system
+        eg. 4 to align to 32-bit boundaries
+alignas()
+    looks like alignof(), but it's more of a specifier
+    says the variable needs to be aligned to the boundaries of another type
+    can align classes, arrays, single values, etc.
+
+    eg. alignas(long long) int arr[100];
+    eg. alignas(16) int x; // explicit # bytes
+
+Reflection
+    typeid(x).name()
+Casting
+    long y = x; // implicit widening (coercion)
+        also works for taking base pointer/reference from derived object
+    int y = (int)x; // c-style casting
+    int y = static_cast<int>(x); // c++style casting
+        for most simple casts
+            eg. number conversions (up or down)
+            eg. derived to base pointer
+            eg. enum to int and vice versa
+    DerivedClass *p = dynamic_cast<DerivedClass*>(x);
+        polymorphic cast using RTTI (runtime type information)
+            only works if enabled (the default)
+        returns nullptr if the cast fails
+            doesn't throw
+    int *p = const_cast<int*>(q);
+        removes the constness of the variable so you can change it
+        try not to do this unless there's a super incredible reason
+    char *p = reinterpret_cast<char*>(q);
+        uses same pointer address but changes pointer arithmetic
+        eg. can treat a class structure as a stream of bytes by using char
+        be careful of things like padding ane endian-ness
+
+    see "Classes" for info on overloading the cast operators!
+
+decltype()
+    decltype(x)
+        represents type of a variable at compile-time
+        eg. decltype(x) a;  // variable a declared with same type as x
+
+Equality 
+    == and !=
+        work as you'd expect on primitives
+            with coercion as needed 
+        on pointers, compares the address
+        on class instances, uses operator== overload
+    stdlib collections, inc. std::string, overload operator==
+        eg. strA == strB will do contents comparison, not check if same object
+            unlike with const char * (the built-in literal type) which will probably fail
+        
+Move, Copy, Construction
+    see "Classes" for details as all these can be overloaded in various ways
+    for primitives it's simple - always copy
+
+[Control Flow]
+{} (with nothing in front of it) to make blocks within blocks for scope
 
 [Functions]
-can get TCO under right circumstances
-const reference passing
-    protecting the actual object instead of the variable
-returning a new object requires special considerations while in garbage collected languages it's simple
-    eg. return by value and end up with copies (RVO might help)
-    eg. return by pointer and then the caller has to manage lifetime?
-    eg. return by reference and then have to worry about lifetime
+Unique Aspects of C++
+    can get TCO under right circumstances
+    const reference passing
+        protecting the actual object instead of the variable
+    returning a new object requires special considerations while in garbage collected languages it's simple
+        eg. return by value and end up with copies (RVO might help)
+        eg. return by pointer and then the caller has to manage lifetime?
+        eg. return by reference and then have to worry about lifetime
+
+Trailing Return Types
+    auto f(int a, int b) -> decltype(a+b) {}
 
 [Functional Programming]
-lambdas very different (not fat or skinny arrows, unless you count the trailing return type)
-function pointers can't hold lambdas that capture
-capturing has to be specified very explicitly
-capture by reference is dangerous because not a garbage collected language
+Unique Aspects of C++
+    lambdas very different
+        not fat or skinny arrows, unless you count the trailing return type
+    function pointers can't hold lambdas that capture
+    capturing has to be specified very explicitly
+    capture by reference is dangerous because not a garbage collected language
 
 [Classes]
-classes (and enums) require ; after the closing brace
-    nothing else does (not functions, not control blocks, etc.)
-:: for scope resolution instead of just .
-methods are not virtual by default
-    this makes it difficult to extend things like stdlib collections like you could in others
-    also causes weird name hiding behavior for non-virtuals
-true destructor called at predictable time
-    which leads to RAII idiom
-operator overloading
-no common base class or common interfaces for things like iterables
-    instead have behaviors have to conform to in a duck-typed way when using std:: stuff
-const overloading
-    allowing you to protect objects the way you can't easily in other languages
-access modifiers are sections instead of individual item modifiers
-use class name over and over (no base, super, etc.)
-subclasses can arbitrarily change access levels of base members (not just increase)
-structs are just classes with different default access
+Unique Aspects of C++
+    classes (and enums) require ; after the closing brace
+        nothing else does (not functions, not control blocks, etc.)
+    :: for scope resolution instead of just .
+    methods are not virtual by default
+        this makes it difficult to extend things like stdlib collections like you could in others
+        also causes weird name hiding behavior for non-virtuals
+    true destructor called at predictable time
+        which leads to RAII idiom
+    operator overloading
+    no common base class or common interfaces for things like iterables
+        instead have behaviors have to conform to in a duck-typed way when using std:: stuff
+    const overloading
+        allowing you to protect objects the way you can't easily in other languages
+    access modifiers are sections instead of individual item modifiers
+    use class name over and over (no base, super, etc.)
+    subclasses can arbitrarily change access levels of base members (not just increase)
+    structs are just classes with different default access
+    this-> instead of this.
+
+Static Members
+    mark a variable or method as static
+    static variables have an additional requirement
+        their "storage" must be specified outside the class declaration (eg. in the .cpp file)
+        eg.
+            int MyClass::staticVar = 10;
+        interesting to note: no 'static' specifier here
+            inferred by the compiler because of the class declaration
+            you could also interpret this as a global variable that happens to be scoped in the class
+    static members can be referred to inside the class unqualified just like instance members
+    outside the class, either via MyClass::staticthing or via m.staticthing
+        only 1 shared thing either way
+
+Reference Members
+    must be bound in c'tor initialization list or inline
+Constant Members
+    must be bound in c'tor initialization list or inline
+
+Memory Layout
+    the variables needed + padding to align for the CPU + vtable if virtual members
+    automatic variables declared in the class prototype are part of the class storage
+    references stored as pointers, secretly
+
+Constructors
+    named after the class
+    overloadable
+
+    default = the one with no args
+        can have body and init list
+    parameterized = any other ones that take parameters
+    copy = taking const reference to another object of same type
+    move = taking rvalue reference (&&) (not const) to object of same type
+Assignment Operators
+    look like constructors but named operator= intead of after the class
+        also return the class type itself (usually by reference)
+    
+    copy = taking const reference to another object of same type
+    move = taking rvalue reference (&&) (not const) to object of same type
+
+Move/Copy Semantics
+    whether constructor or assignment is called does not depend on whether () or = used
+        depends on whether the variable has already been initialized or not
+        sometimes = will call a constructor (if it's the first initialization)
+
+    MyClass m;  // default constructor called
+    MyClass m(10); // parameterized constructor called
+    MyClass n = m; // copy constructor called
+    MyClass n = std::move(m);  // move constructor called
+    Myclass n(std::move(m)); // move constructor called
+
+    n = m;  // copy assignment called
+    n = std::move(m); // move assignment called
+
+    a move assignment/constructor is expected to steal data from the source
+        for instance, if source has a vector, use std::move again to invoke on the vector to steal it
+
+'this'
+    this is a pointer of type MyClass* (for instance)
+    thus, you have to use -> intead of .
 
 [Templates]
-compile-time templating instead of runtime generics
-duck-typed like Python instead of dynamically polymorphic
-    eg. by having a begin() and end() that returns something that implements -> and *
-        you have an iterable container
-        if you violate the contract, you'll get errors from the template calling things
-static polymorphism
-    can "virtually" call a derived method via template without that method by virtual
-    also, wrappers like std::function act polymorphic but don't do any inheritence or virtual
-metaprogramming
-arguments that aren't types
-default arguments
-template specializations
-variadic Templates
+Unique Aspects of C++
+    compile-time templating instead of runtime generics
+    duck-typed like Python instead of dynamically polymorphic
+        eg. by having a begin() and end() that returns something that implements -> and *
+            you have an iterable container
+            if you violate the contract, you'll get errors from the template calling things
+    static polymorphism
+        can "virtually" call a derived method via template without that method by virtual
+        also, wrappers like std::function act polymorphic
+            but don't do any inheritence or virtual
+    metaprogramming
+    arguments that aren't types
+    default arguments
+    template specializations
+    variadic Templates
+
+[Imports/Modules]
+???
+
+[stdlib]
+Unique Aspects of C++
+    relies very heavily on templates, static polymorphism, and duck typing
+        no common bases/interfaces like other languages
+
+stdlib headers put stuff in std namespace
+headers that start with c (from the C standard library) do as well
+    but some things also available in global namespace
+    std:: versions are more typesafe in many cases
 
 [Annotations]
 none in the traditional sense
 attributes with [[]] but only certain built-in ones and only the c++ compiler uses them
 
-[stdlib]
-relies very heavily on templates, static polymorphism, and duck typing
-    no common bases/interfaces like other languages
+[ToDo]
+unique_ptr delete [] vs. delete
