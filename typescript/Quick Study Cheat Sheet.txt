@@ -177,7 +177,9 @@ Discriminated Unions
   this is a way around the problem of interfaces not existing at runtime for casting
     usually the prototype chain is all you have, but now you can use this for interfaces
   this is an advanced TS-only feature
-
+  you can call the tag property whatever you want and have different tags for different purposes
+    (eg. different types of interfaces being discriminated between)
+    
 [Collections]
 Literals
   only array and object have literals ([] and {})
