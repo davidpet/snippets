@@ -103,6 +103,8 @@ Type Alias
 
     const x: BetterPerson = {name: "bob", age: 20, email: "bob@bob.com"};
 
+    type NullableString = string|null;
+
 Enums
   regular enums and string enums
     eg. can just give values with no = to auto-assign like in other c-like languages
@@ -163,6 +165,18 @@ var
       value is undefined if not set yet
     window automatically gets any top-level vars (but not let or const)
     can redeclare same symbol with var again with no issue
+
+Discriminated Unions
+  you can make a property a tag on an interface by giving it a string as a type
+    eg. interface MyInterface {x: number; type: "myType";}
+    when that members is read, its value will also be the string
+  classes must impelment the member, but the string must also match
+  this tag is also known as a discriminant when used in the context of type narrowing
+  a switch or if/else block that checks the discriminant will narrow the type
+    eg. if have multiple interfaces, you can use the tag to narrow to the interface type
+  this is a way around the problem of interfaces not existing at runtime for casting
+    usually the prototype chain is all you have, but now you can use this for interfaces
+  this is an advanced TS-only feature
 
 [Collections]
 Literals
@@ -684,6 +698,16 @@ type narrowing (a unique feature of TS)
   if (x) {
     // in here, x is not undefined or null
   }
+you can also define your own functions that have type narrowing behavior
+  this is known as user-defined type guards
+    function isString(x: any): x is string {
+      return typeof x === "string";
+    }
+  the function actually returns boolean
+  but it has a type guard expression
+  then elsewhere, you can call it to narrow the type of its input parameter
+    if (isString(s)) {/* do string-only stuff */}
+  you can't do boolean combinations or anything like that in the type guard
 
 == for a number or string will try to coerce one to match the other (eg. number to string) before comparison
   it comes from JavaScript and causes a lot of bugs
@@ -1053,6 +1077,12 @@ Recursion
     using the current variable name being assigned
     eg. const f = () => {f();};
 
+Callable Object
+  there is nothing like a call operator in JS because no operator overloading
+  but you could treat a function like an object and add properties and methods to it
+  you could use a factory function return new instances of the function (eg. function expressions)
+    that way, the fact that it has no constructor doesn't matter
+
 Not available: pre-defined lambda types, pre-defined functions for common operations,
                purely lazy stream operations (have to use generator),
                a lot of functional operators (due to lack of stream operations),
@@ -1353,6 +1383,44 @@ Declaration Merging
     this will add the extension method on existing or new instances of the class
     since modifying prototypes like that is not recommended, you could alternatively, do it in a facotry
       wrap creation of new instances and set the function on instances instead
+
+Call Signature
+  on an interface only
+  a class cannot implement it, must be a function
+    eg. by casting a function to the interface
+  then you can use the interface to add other properties without TS complaining
+  you can even have multiple call signatures to handle the default args scenarios and such
+
+  (x: number, y: number): number;
+  (x: number): number;
+
+Construct Signature
+  another interface-only thing that is not implementable in a class
+  though a class acts like it implements this interface by providing the matching c'tor
+    it is not allowed to explicitly say it implements it
+  you will be allowed to cast the class itself and then use the interface as a constructor
+    you don't even have to cast - it will just understand it's compatible when you assign
+  this is a way to constrain what you can construct a JS object with, for instance
+  though you can pass a class directly as a function, the type of it would be 'Function'
+    so you can't control what args can be passed that way
+    JS will allow it, but TS will not
+  
+  interface MyConstructable {
+    new (name: string): MyClass;
+  }
+
+  to pass a constructor as a callable object, you have to use a construct signature
+    you could do it inline with an anonymous type too
+    function create(ctor: {new (): MyClass}) {
+        return new ctor();
+    }
+  an alternative way to do it is to pass the type of the constructor like this:
+    function create(ctor: typeof MyClass) {
+      return new ctor();
+    }
+  even though typeof usually gets a string in JS, TypeScript overloads it to work differently on classes
+    'typeof MyClass' tells TS to allow you to pass the class as a constructor function
+    the typeof call will be gone in the emitted JS because it's only a type
 
 Prototypes In-Depth
   an instance of a class or a subclass of a class are both more specialized than the class
@@ -2058,14 +2126,11 @@ be able to implement missing data structures quickly for problems
 a lot less collections than other languages
   either implmeent yourself quickly or assume you have the Java ones (and call it out)
 as usual, be able to do your own linked list nodes, binary search, etc.
+always remember TypeScript cares more about types than JS does
+  so something like pretending an object is another type of object won't matter to JS if the properties match
+  it would only matter if you're relying on the prototype (the inheritence)
 
 [ToDo]
-*constructor signature
-*constructor as method reference
-*type guard on return type (function f(x: any): x is string)
-*callable objects? (probably not since no operator overloading)
-*discriminated/tagged unions
-
 Object.seal()
 worker threads
 background apps (or whatever it's called)
