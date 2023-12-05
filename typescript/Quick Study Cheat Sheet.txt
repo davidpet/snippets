@@ -2154,6 +2154,10 @@ grid is better for 2D layouts
 ** see Angular notebook HTML and HTML Forms sections for full examples **
 key point is <script> tags to put JS code in
 
+[rxjs]
+reactive streams in JavaScript (w/ TypeScript typings)
+** see rxjs notebook for examples **
+
 [Interview Tips]
 be able to implement stream operations like concat(), zip(), etc.
   use generators
@@ -2174,7 +2178,6 @@ CSS box model
 CSS space filling algorithm
 CSS animation
 
-rxjs
 lodash
 NodeJs execution (scripts vs. module, checking main, args, etc.)
   doesn't apply to browser execution
