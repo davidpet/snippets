@@ -551,6 +551,10 @@ Custom Printing of Elements
   console.log() will only print the raw objects
   but console.log(container.toString()) will use the toString() of the elements
 
+Object.seal(o)
+  makes all property creation and re-configuration silently not do anything
+  but writing new values to existing properties still works
+
 Operations Missing:
   binary search
   shuffle
@@ -2131,7 +2135,6 @@ always remember TypeScript cares more about types than JS does
   it would only matter if you're relying on the prototype (the inheritence)
 
 [ToDo]
-Object.seal()
 worker threads
 background apps (or whatever it's called)
 
