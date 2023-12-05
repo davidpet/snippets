@@ -1753,6 +1753,10 @@ Node
     to get JS repl
   node file.js
     execute a file at the terminal
+  node also gives you a framework for executing scripts
+    can get commandline args like a python script
+    can also run server code to retrieve web requests
+    and much more!
 
 tsc
   tsc --init
@@ -2174,10 +2178,6 @@ always remember TypeScript cares more about types than JS does
   it would only matter if you're relying on the prototype (the inheritence)
 
 [ToDo]
-NodeJs execution (scripts vs. module, checking main, args, etc.)
-  doesn't apply to browser execution
-other useful NodeJS stuff (like client/server stuff)
-
 CSS box model
 CSS space filling algorithm
 CSS animation
