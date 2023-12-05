@@ -5,6 +5,16 @@ MDN for JavaScript
   for primitives, look at the boxed version for members
 typescriptlang.org for TypeScript
 
+[Version]
+JavaScript = ECMAScript 2023
+  ES6 was ECMAScript 6 in 2015
+  1 per year since then 
+TypeScript = 4.9 (Nov 2022)
+  5.0 was released in early 2023, and as of now it's up to 5.3
+  but I am not familiar with any of the new features
+  interesting stuff like more sophisticatd type narrowing
+  even in 4.9 there are a lot more features than I could reasonably go into in the notebooks and cheat sheet
+
 [Playgrounds]
 https://www.typescriptlang.org/play - TypeScript playground
   not just for testing TypeScript code
@@ -179,7 +189,7 @@ Discriminated Unions
   this is an advanced TS-only feature
   you can call the tag property whatever you want and have different tags for different purposes
     (eg. different types of interfaces being discriminated between)
-    
+
 [Collections]
 Literals
   only array and object have literals ([] and {})
@@ -460,6 +470,9 @@ WeakMap and WeakSet
   but don't prevent garbage collection of their keys
   auto-updated when it happens
   no enumeration or size because of dynamic nature
+WeakRef is a fairly new class that lets you hold your own weak reference
+  const r = new WeakRef(someObject);
+  const o = r.deref();  // wil be undefined if already garbage collected
 
 Summary of Class-Like Objects and Their Differences
   Type Literals = TS feature, declared with 'type' or as an anonymous type on a variable declaration (left side)
@@ -692,7 +705,12 @@ all the usual arithmetic, arithmetic assignment, bitwise, and comparison operato
   and pre and post increment/decrement
   / will give a fractional number if applicable
     use Math.floor() if want floor division like other C-like languages
+  ** for exponentiation like in Python
 &&, ||, ! for conditions
+&&=, ||=, ??= assignment operators (fairly new)
+  for and, or, and coalesce assignments
+  remember they don't convert to boolean (necessarily)
+  eg. &&= will set to last one seen which may be truthy or not
 
 type narrowing (a unique feature of TS)
   if (typeof x === "string") {
@@ -1079,6 +1097,7 @@ Lazy Sequences
 Recursion
   functions/methods call themselves by name
   no TCO
+    it's actually in the spec, but browsers don't do it
   lambdas and function expressions can call themselves too
     using the current variable name being assigned
     eg. const f = () => {f();};
@@ -2151,9 +2170,6 @@ always remember TypeScript cares more about types than JS does
   it would only matter if you're relying on the prototype (the inheritence)
 
 [ToDo]
-latest JS+TS versions for this doc (and notebooks)
-any new JS+TS version features not mentioned or known in this doc (and notebooks)
-
 CSS box model
 CSS space filling algorithm
 CSS animation
