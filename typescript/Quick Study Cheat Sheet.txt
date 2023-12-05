@@ -1857,6 +1857,8 @@ Browser DOM
       newDiv.id = 'new-div';
       newDiv.textContent = 'This is a new div.';
       newDiv.className = 'my-class';
+      newDiv.classList.add('animated');
+      newDiv.classList.remove('animated');
 
       document.body.appendChild(newDiv); // to append top level
 
@@ -2176,8 +2178,3 @@ as usual, be able to do your own linked list nodes, binary search, etc.
 always remember TypeScript cares more about types than JS does
   so something like pretending an object is another type of object won't matter to JS if the properties match
   it would only matter if you're relying on the prototype (the inheritence)
-
-[ToDo]
-CSS box model
-CSS space filling algorithm
-CSS animation
