@@ -2174,11 +2174,10 @@ always remember TypeScript cares more about types than JS does
   it would only matter if you're relying on the prototype (the inheritence)
 
 [ToDo]
-CSS box model
-CSS space filling algorithm
-CSS animation
-
-lodash
 NodeJs execution (scripts vs. module, checking main, args, etc.)
   doesn't apply to browser execution
 other useful NodeJS stuff (like client/server stuff)
+
+CSS box model
+CSS space filling algorithm
+CSS animation
