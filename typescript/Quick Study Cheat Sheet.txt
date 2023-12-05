@@ -1951,7 +1951,21 @@ JSON
 
 Multithreading
   JS doesn't really have the typical fork/join type multithreading
-  though it does have a concept called worker theads (TBD later)
+  though it does have a concept called Web Workers
+
+Web Workers
+  Web Workers are a way to have multithreading in a JS application, but without a shared memory space.
+  spawn workers with Worker class in JS
+    construct with a JS file (separate from the main JS file)
+  main thread can send/receive messages with the workers
+  workers cannot see DOM or directly access main thread's memory
+
+Progressive Web Apps (PWAs)
+  web app that acts like a native app
+    eg. installed as app on phone home screen
+  use Service Workers to do work in between session
+    eg. load data from page before page is needed
+    sync local data, etc.
 
 [Decorators]
 similar to Python, you can make a function that takes a decloaration and wraps it
@@ -2135,9 +2149,6 @@ always remember TypeScript cares more about types than JS does
   it would only matter if you're relying on the prototype (the inheritence)
 
 [ToDo]
-worker threads
-background apps (or whatever it's called)
-
 latest JS+TS versions for this doc (and notebooks)
 any new JS+TS version features not mentioned or known in this doc (and notebooks)
 
