@@ -9,3 +9,5 @@ The `accumulate` function is used to find the sum of all elements in a vector. I
 The `count` function is used to count the occurrences of a specific element in a vector. It takes a range and the element to count.
 
 These are just a few examples of the aggregate functions provided by the STL. There are many more such functions available, such as `find` (to find an element), `sort` (to sort the elements), `reverse` (to reverse the elements), etc.
+
+NOTE: functions in `<algorithm>` take iterators not by type but by protocol, which means pointers work too.  That means you can use them on __arrays__ as well!  Don't worry - the end iterator (pointer) will not be dereferenced.

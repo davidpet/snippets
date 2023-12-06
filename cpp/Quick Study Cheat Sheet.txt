@@ -453,17 +453,24 @@ Not Supported: interning/pooling
 [Collections]
 Unique Aspects of C++
     arrays are really pointers and aren't managed at all
+        and are fixed length, requiring a special vector data structure for resixable ones
     multidimesional arrays are layed out contiguously instead of as array of references
         because array is not a reference type (no such concept here)
+    immutability via const correctness
+    collections don't automatically print or convert to string
 
-Arrays
+Array
     an array variable is actually a POINTER underneath
         thus, it has no protection or length property
-    
+            and is not resizable
+
     int arr[] = {1, 2, 3};      // [] binds to the variable, not the type (just like a pointer)
         automatid size of 3
     int arr[10] = {1, 2, 3};    // specifying size (unspecified items become zero)
     int arr[10];                // junk values
+    int arr[x];                 // can be runtime chosen size
+
+    NOTE: you cannot skip items in the array initializer (other than truncating off the end)
 
     int *p = arr; // no & needed because arr is already a pointer
     int *q = new int[100];
@@ -478,11 +485,294 @@ Arrays
     int matrix[2][3];
     int matrix[][2][3];
 
+    arr[0] same as *arr
+    sizeof() on an array works if locally defined (and not decayed to pointer)
+        sizeof(arr)/sizeof(arr[0]) gives # of elements
+
+std:: namespace needed in front of all symbols imported from stdlib headers below
+    ommitted for brevity in these notes
+
+vector<T>: dynamic array
+    <vector> header
+    a lot of operations mentioned here are present elsewhere
+        this is basically the prototypical std collection
+
+    vector<int> v;  // new empty vector
+    vector<int> v = {1, 2, 3, 4, 5}; // creating with values
+    vector<int> v(10); // 10 zeroes (not junk)
+
+    v[0] and v.at(0)
+        both by reference, so read-write
+        eg. v.at(0) = 10;
+    v.size(), v.empty(), v.capacity(), v.reserve()
+
+    v.push_back(item);
+    v.pop_back();
+    v.clear();
+
+    v.front(), v.back()
+
+    v.assign(iterator1, iterator2)
+        copy another sequene into this vector
+        gets rid of whatever was here before (whole thing)
+
+    random access iterator operations
+
+list<T>: doubly-linked list
+    <list> header
+
+    list<int> l;
+    list<int> l = {1, 2, 3, 4, 5};
+
+    l.push_back(item);
+    l.push_front(item); // equally efficient
+    l.pop_back();
+    l.pop_front();
+
+    l.insert(iterator, value);
+        get an iterator to a node and use it to insert a value in the middle
+        inserts BEFORE the node the iterator is pointing to
+    l.erase(iterator);
+        remove node from the middle
+
+    bi-directional iteration, but not random access
+
+forward_list<T>: single-linked list
+    <forward_list> header
+
+    like list<> but only the front operations
+    keeps head internally but not tail
+
+map<TKey, TValue>: sorted map (binary search tree)
+    O(logn) lookups
+    <map> header
+
+    map<std::string, int> m;
+    map<std::string, int> myMap = {{"apple", 1}, {"banana", 2}, {"cherry", 3}};
+
+    m["Apple"] = 10;
+    m.erase("Apple");
+
+    iterable as std::pair<TKey, TValue>
+        definitely will want to use 'auto' in the for loop
+        this is the only way to iterate (no keys() and values() members like Java)
+
+    if (m.find("Banana") != m.end()) {
+        std::cout << "Map contains key Banana." << std::endl;
+    }
+
+unordered_map<TKey, TValue>: unsorted version of map
+    O(1) lookups
+    <unordered_map> header
+    exposes same interface as map<> but doesn't use a tree internally
+
+set<T>: sorted set (binary search tree)
+    O(logn) lookups
+    <set> header
+
+    set<int> s;
+    set<int> s = {1, 2, 3, 4, 5};
+
+    s.insert(10); // ignores if duplicate
+    if (s.find(10) != s.end()) {}
+    s.erase(10);
+
+    s.size(), s.empty()
+    s.clear()
+
+    iterable
+
+unordered_set<T>: unsorted set
+    O(1) lookups
+    <unordered_set> header
+
+tuple<T1, T2, ....>: mixed type sequence of objects
+    <tuple> header
+    very unusual collection compared to the others
+    instead of an object with methods, you use a bunch of functions
+        several of which use template metaprogramming and similar constructs
+
+    tuple<int, std::string, double> my_tuple(10, "Hello", 3.14);
+    auto my_tuple = std::make_tuple(10, "Hello", 3.14);
+
+    std::get<0>(my_tuple);
+        retrieval uses integer template arg in a function, instead of a method
+    std::get<0>(my_tuple) = 20; // returns reference
+
+    std::tie(var1, var2, var3) = my_tuple;
+        tuple unpacking
+        tie object takes variables by reference and sets them from assignment operator
+
+    std::tuple_size<decltype(my_tuple)>::value
+        to get # of elements
+    std::tuple_elements<decltype(my_tuple)>::type
+        to get type of an element
+        for declaring another variable to hold the value, for instance
+
+pair<T1, T2>: two possibly different types
+    <utility> header
+
+    pair<int, int> p = {1, 2};
+    auto p = std::make_pair(1, 2);
+
+    p.first, p.second
+
+    p.swap(q);  // swap elements of two pairs
+
+deque<T>: double-ended queue
+    <deque> header
+
+    like a vector with fast insertion and removal at both ends
+    random access iteration
+
+    push_front(), push_back()
+    front(), back()
+    pop_front(), pop_back()
+
+stack<T>
+    <stack> header
+
+    s.push()
+    s.top()
+    s.pop()
+
+queue<T>
+    <queue> header
+
+    q.push()
+    q.front()
+    q.pop()
+
+priority_queue<T>: maxheap by default
+    <queue> header
+        this one is odd because it isn't in a header named after it
+    
+    q.push();
+    q.top();
+    q.pop();
+
+    to make a minheap:
+        priority_queue<int, std::vector<int>, std::greater<int>> q;
+            the middle arg is because there is no overload with only the 2 args we want
+            the middle arg says what kind of container to use for the heap structure
+
+array<T, n>: wrapper for array
+    <array> header
+    adds std features like size(), etc. while maintaining the performance of the raw array
+    makes its own array, rather than wrapping an existing one
+    not necessary for using <algorithm> and such though
+
+    array<int, 5> arr = {1, 2, 3, 4, 5};
+
+Iteration
+    no interfaces, classes, or operators for iteration
+    instead, it's a pattern of operations that would work on it (duck-typed)
+        basically certain pointer-like operations
+        different kinds of iterators depending on which subset of pointer-like operations
+
+    MyClass::iterator it = m.begin();
+    advance(it);
+    *it to get value
+
+    for (std::vector<int>::iterator it = v.begin(); it != v.end(); it++) {
+        std::cout << *it << std::endl;
+    }
+
+    a custom iterator should implement:
+        * operator
+        != operator
+        ++ operator
+
+        [] operator if random access
+        pointer arithmetic if random access
+
+    a custom iterable object should implement:
+        begin() method to return an iterator representing the first item
+        end() method to return an iterator representing the exclusive end of the sequence
+            which should properly do arithmetic with the other iterators in the sequence
+
+    a lot of functions, such as the ones in <algorithm>, take 2 iterator for a range
+        first one is inclusive, second one is exclusive
+        they often return an iterator for the value, returning the end iterator if not found or whatever
+        this allows the functions to generically iterate over various types of containers by static duck-typing
+
+    note that since iterators are designed to act like pointers, real pointers work too
+        which means functions in <algorithm> can be used on arrays
+        don't worry about the end iterator being passed the end of the array
+            it will only be used for math - not dereferenced
+
+Immutability
+    no built-in immutable collections or immutable proxies
+    but if you declare a variable, reference, or pointer as 'const', you can lock it down
+    when you declare it as const, you will only be cable to call 'const' methods on the collection
+    this is a key feature of C++ that is much more efficient than the Java proxy way
+
+Aggregation
+    <algorithm>
+        max_element(iterator1, iterator2)
+            returns iterator for max element in range
+        min_element(iterator1, iterator2)
+            returns iterator for min element in range
+        count(iterator1, iterator2, value)
+            count occurences of value in range
+    
+    <numeric>
+        accumulate(iterator1, iterator2, seed)
+            essentially a reduction using + operator
+
+Slicing
+    for arrays, pass a pointer to the beginning of the slice
+        have to pass length anyway, so just adjust length to end the slice
+    for other containers, you have to std::copy them
+        or something similar like use a constructor that takes iterators
+            eg. std::vector v(oldvector.begin() + 2, oldvector.end() - 3)
+
+Printing and String Conversion
+    besides std::string, the std collections don't have this automatically
+    if you try to std::cout a vector, for instance, you'll get an error
+
+Copying/Cloning
+    <algorithm>
+        copy(srcIterator1, srcIterator2, dstIterator1)
+            the space needs to exist (ex. resize the vector first)
+
+    constructors that take iterators can also copy
+        std::vector<int> v(old.begin(), old.end());
+
+    in general, deep copying is the default in C++ because it is not referenced-based
+
+Conversions
+    constructors that take iterators can be used to convert
+        because iteration doesn't care what the container type is
+    std::set<int> s(vec.begin(), vec.end());
+    std::vector<int> v(arr, arr+sizeof(arr)/sizeof(int));
+
+    to get an array from a collection:
+        int arr[vec.size()];
+        std::copy(vec.begin(), vec.end(), arr);
+
+Sorting 
+    <algorithm>
+        sort(iterator1, iterator2)
+            ascending sort
+        sort(iterator1, iterator2, std::greater<int>())
+            descending sort
+        sort(iterator1, iterator2, fn)
+            fn should be an int function on two values of the type of the collection
+            < 0 for a < b, == 0 for a == b, > 0 for a > b
+            eg. for ints, a - b is perfect
+Shuffling
+    <random>
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(numbers.begin(), numbers.end(), g);
+
 [Strings]
 Unique Aspects of C++
     heavy reliance on stream operator <<
     literal string vs. stdlib string
     null termination
+    strings are not immutable!
 
 Literals
     "" -> const char *
@@ -494,9 +784,38 @@ Character
         have to cast to int if want to see the number
     but you can also store a number there and do math with it
 
+C-Strings
+    the default null-terminated type of string created by literals
+    only immutable if use const char *
+        regular char * is a mutable c-string
+
+std::string
+    <string> header
+    basically acts like a vector<char>
+        plus string-related functionality on top of that
+        mutable
+    
+    string s = "Hello, world!";
+    s[0], s.at(0)
+        read-write
+    f.front(), s.back()
+
+    random access iteration like vector
+
 Equality
     == works on std::string to compare contents
     const char * == would compare addresses intead
+
+Building Strings
+    <sstream>
+        StringStream s;
+        s << "Hello, ";
+        s << "world.";
+        s << "nums: " << 10 << 20;
+        std::cout << s.str() << std::endl;
+
+        s.str("");  //clear it again
+        s.str(std::string()); // another way to clear
 
 [Operators]
 Unique Aspects of C++
@@ -512,7 +831,7 @@ sizeof()
         getting size of a variable
     sizeof(arr)
         for an array, it depends on whether it's local
-        local array will get the actual size
+        local array will get the actual size (in bytes)
         otherwise, it will give the size of the pointer
     sizeof(MyClass)
         get total storage size of class in memory
@@ -585,6 +904,13 @@ Unique Aspects of C++
         eg. return by value and end up with copies (RVO might help)
         eg. return by pointer and then the caller has to manage lifetime?
         eg. return by reference and then have to worry about lifetime
+    returning by reference and modifying original based on it
+
+Returning by Reference
+    int& f(int &x) { return x; }
+    int a = 100;
+    f(a) = 0;
+    makes a lot more sense when it's something like elements in a container
 
 Trailing Return Types
     auto f(int a, int b) -> decltype(a+b) {}
@@ -596,6 +922,8 @@ Unique Aspects of C++
     function pointers can't hold lambdas that capture
     capturing has to be specified very explicitly
     capture by reference is dangerous because not a garbage collected language
+
+Not supported: zip operation
 
 [Classes]
 Unique Aspects of C++
@@ -695,6 +1023,8 @@ Unique Aspects of C++
     template specializations
     variadic Templates
 
+you cannot directly cast between collections of different element types
+
 [Imports/Modules]
 ???
 
@@ -714,3 +1044,6 @@ attributes with [[]] but only certain built-in ones and only the c++ compiler us
 
 [ToDo]
 unique_ptr delete [] vs. delete
+casting between arrays covariantly
+vector of base class scenario
+trailing commas
