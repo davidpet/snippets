@@ -4,7 +4,7 @@
 
 It is defined in __several headers__ in the standard library and used extensively within the standard library containers and algorithms.
 
-Sometimes it is seen as `size_type` instead.
+Sometimes it is seen as `size_type` instead, such as within collection types as typedefs.
 
 ```C++
 for (size_t i = 0; i < vec.size(); i++) {

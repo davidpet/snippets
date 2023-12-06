@@ -42,8 +42,9 @@ These are members all the collections have in common:
 - __Modification__
   - `clear()`
   -  `insert()` = to insert one or more values before a given __iterator__ position (not index)
-    - overloads for single value, iterators from container, and std::initializer_list
-  - `emplace()` = like `insert()` but all args after the first one (position iterator) are __forwarded to element constructor__ (via variadic template)
+     - overloads for single value, iterators from container, and std::initializer_list
+  - `emplace()` = like `insert()` but args after position iterator are __forwarded to element constructor__ (via variadic template)
+     - often seen as `emplace_back()` and similar
   - `erase()` = remove one or more elements via single or two iterators (not values)
   - `swap()` = swap storage with another vectory (cheaply)
     - iterators remain valid but stay with their original data
@@ -175,7 +176,7 @@ HINT: don't forget about __structured binding declarations__ when dealing with p
   - `equal_range(key)` = pair of iterators, `lower_bound()` and `upper_bound()`
 
 - __Comparison Operators__
-  - __lexographical__ comparison of __keys__
+  - __lexographical__ comparison of __pairs__, which lexographically compare __key and value__ within
 
 - __Non_Members__
   - `std::swap` specialized to take __two maps__ and swap their storage cheaply
@@ -319,3 +320,5 @@ _ __Constructors__
   - to reverse a string, use `std::reverse(s.begin(), s.end());`
   - to convert between uppercase and lowercase, use `std::transform` with `std::tolower()` and `std::toupper()` (from `<cctype>`)
   - case insensitive comparison is not directly supported - you'd have to do your own transformations and/or comparisons
+
+NOTE: methods of container objects (eg. `insert`) are able to reallocate to accomodate new items.  This is different from the `<algorithm>` functions which have iterators rather than containers and thus cannot do that.

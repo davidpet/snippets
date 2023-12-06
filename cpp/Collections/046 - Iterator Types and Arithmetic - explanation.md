@@ -2,7 +2,7 @@
 
 Iterators in C++ are a generalized concept designed to work with a variety of container types, including those that don't have straightforward pointer-like arithmetic, such as linked lists or tree structures. While random-access iterators (e.g., those for `std::vector` or plain arrays) behave like pointers and support direct arithmetic operations (including subtraction), other iterator categories, such as bidirectional or forward iterators, do not.
 
-The `std::distance(a, b)` function provides a unified way to find the distance between two iterators, regardless of their category. Let's delve into the reasoning behind this in markdown:
+The `std::distance(a, b)` function provides a unified way to find the distance between two iterators, regardless of their category. Let's delve into the reasoning behind this:
 
 ---
 

@@ -13,3 +13,5 @@ In C++, strings can be quoted in several ways.
 5. Multiline string literals can be created by using a newline (`\n`) escape sequence.
 
 6. Multiline raw string literals can be created by including actual newlines in the `R"( ... )"` syntax. This is useful when you want to preserve the exact format of a multiline string.
+
+7. Strings based on `wchar_t` instead of `char` use the `L` prefix (eg. `L'a'`, `L"hi"`, `LR"(hi)"`).

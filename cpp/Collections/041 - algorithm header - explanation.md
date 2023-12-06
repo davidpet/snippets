@@ -48,3 +48,5 @@ The `<algorithm>` header in C++ provides a variety of functions that can be used
 In this unified example, we utilize a vector and apply various algorithms from the `<algorithm>` header to demonstrate their basic usage. These algorithms provide a concise and effective way to manipulate and query collections in C++. The algorithms provided by the `<algorithm>` header make operations on collections more expressive and concise. As always, refer to the official documentation for a comprehensive list and details of each algorithm.
 
 While this provides an extensive list, it still isn't exhaustive. The `<algorithm>` header offers many more algorithms, and it's recommended to refer to the official documentation or a reference when needed. The power of the STL comes from the combination of these algorithms with containers and function objects.
+
+NOTE: compared to other languages, C++ has an amazing amount of Leetcode/interview type algorithms built-in already, in the `<algorithm>` header. There are a lot more functions in it than are mentioned here.

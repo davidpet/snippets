@@ -415,6 +415,40 @@ Unions
     d.str[1] = 0;
     d.i = 10; // overwrites d.str completely (and then some)
 
+Structs
+    structs are technically as fully featured as classes but with default public members
+        see "Classes" for more details
+    but for the purpose of this section, they're simple wrappers of data (POD types)
+
+    struct MyStruct {
+        int x, y;
+
+        const char *name;
+        const char description[100];
+    }; // semicolon required
+
+    MyStruct s;
+    MyStruct s = {10, 20, "Hello", {}};
+
+    s.x = 100;
+Bitfields
+    bitfields are a feature of structs
+        and probably classes too, but the typical use case is POD structs
+    let you specify # of bits to use per field so that you can pack it in tigheter
+
+    struct MyBitField {
+        // Bitfield with 1 bit. Can hold values 0 or 1.
+        unsigned int is_enabled : 1;
+        // Bitfield with 4 bits. Can hold values from 0 to 15.
+        unsigned int type : 4;
+        // Bitfield with 27 bits. Can hold values from 0 to 134217727.
+        unsigned int id : 27;
+    };
+
+    assigning outside of range will give compiler warning if it can detect it
+        if not, then undefined behavior at runtime
+            maybe clobber other fields?
+
 volatile
     like in Java
     stops variable from being cached in registers separately on separate threads
@@ -458,6 +492,13 @@ Unique Aspects of C++
         because array is not a reference type (no such concept here)
     immutability via const correctness
     collections don't automatically print or convert to string
+    hashing provided by a template specialization instead of member function or passed in (weird!)
+    swap() method by reference that works on anything
+    algorithm header has a lot of very specific CS (leetcode/interview type) operations
+    structured binding declarations look like tuple unpacking
+        but behave fundamentally differently, such as taking by reference
+    has a decent linked list structure with direct access to internal nodes for O(1) operations
+        Java, Python, TS, etc. are missing this
 
 Array
     an array variable is actually a POINTER underneath
@@ -492,6 +533,74 @@ Array
 std:: namespace needed in front of all symbols imported from stdlib headers below
     ommitted for brevity in these notes
 
+Common std:: collections members
+    all collections have optional std::allocator template arg
+        and members like allocator_type and get_allocator()
+        this is there in case you want to customize how storage is allocated
+    Typedefs
+        value_type
+            eg. for vector<int>, vector<int>::value_type will be int
+        reference, const_reference, pointer, const_pointer
+            these are defined in terms of value_type
+
+        size_type = size_t
+        different_type = ptrdiff_t
+
+        iterator
+            iterating over value_type elements
+        reverse_iterator
+            like iterator but goes backwards
+        const_iterator
+            like iterator but can't be used to change elements
+        const_reverse_iterator
+    Methods to Get Iterators
+        begin() and end() for ordinary iterators
+            end() is exclusive (eg. one past end of collection)
+        cbegin() and cend() for constant iterators
+        rbegin() and rend() for reverse iterators (when supported)
+        crbegin() and crend() for constant reverse iterators (when supported)
+    
+        you can do arithmetic on iterators to get # elements, indices, etc.
+    Size Methods
+        size(), empty()
+    Modification Methods
+        clear()
+        insert(iterator, value)
+            insert a value before an iterator
+        insert(iterator, srcIterator1, srcIterator2)
+            insert a range of values
+        insert(iterator, initializer_list)
+            insert an std::initializer_list of values (for {} syntax)
+        
+        emplace(iterator, arg1, arg2, ...)
+            like insert(), but a new value is constructed in-place using forwarded ctor args
+            some containers will have emplace_back() and similar instead of taking iterator
+        
+        erase(iterator)
+            single value
+        erase(iterator1, iterator2)
+            range
+    Storage Methods
+        swap(other)
+            cheaply swap storage with another collection of the same type
+            iterators remain valid, but stay with the data they come from (not the container)
+    Non-Member Helper Functions
+        std::swap(container1, container2)
+            specialized to cheaply swap storage
+        std::erase(container)
+            specialized to clear a container
+        std::erase(container, value)
+            specialized for some containers to erase occurences of value in container
+        std::erase_if(container, predicate)
+            specialized for some containers to erase elements matching a predicate
+
+    operator<, operator==, etc.
+        when available, these tends to do lexographical comparison element-wise
+            forwarding the comparison operator down to elements, which may forward again internally
+
+    methods like insert() will add allocation as necessary
+        different from the <algorithm> functions which cannot do that because only have iterators
+
 vector<T>: dynamic array
     <vector> header
     a lot of operations mentioned here are present elsewhere
@@ -500,42 +609,75 @@ vector<T>: dynamic array
     vector<int> v;  // new empty vector
     vector<int> v = {1, 2, 3, 4, 5}; // creating with values
     vector<int> v(10); // 10 zeroes (not junk)
+    vector<int> v(10, 100); // 10 100s
+    vector<int> v(beginIterator, endIterator); // copy range of another container
+    vector<int> v(otherVector); // copy constructor
+    vector<int> v = std::move(otherVector); // move constructor
 
-    v[0] and v.at(0)
-        both by reference, so read-write
-        eg. v.at(0) = 10;
-    v.size(), v.empty(), v.capacity(), v.reserve()
+    v = {1, 2, 3, 4, 5}; // std::initializer_list assignment
+    v = otherVector; // copy assignment
+    v = std::move(otherVector); // move assignment
+
+    v.assign() overloaded similarly to the constructors
+        replace contents (inc. adjusting size)
+
+    v[0]
+        access by reference (read-write, or read if const)
+        no bounds checking
+        v[0] = 5;
+    v.at(0)
+        access by reference (read-write, or read if const)
+        bounds checking (throws std::out_of_range)
+        v.at(0) = 5;
+    v.front() and v.back()
+        references to first and last element
+    v.data()
+        the underlying array
+        which can become stale if you modify and it reallocates
+
+    v.size()
+        number of elements actually used
+    v.empty()
+    v.capacity()
+        number of elements allocated but not necessarily in use
+    v.reserve(n)
+        change the capacity
+    v.shrink_to_fit()
+        try to reduce capacity to match size
+    v.resize(n)
+        truncate if shrinking
+        overload to provide values if growing
 
     v.push_back(item);
     v.pop_back();
     v.clear();
+    v.insert(iterator, count, value)
+        in addition to the common insert() overloads usually present
+    v.append_range(container)
+        like doing push_back() on each item in the iterable container
 
-    v.front(), v.back()
+    v.emplace_back(arg1, arg2, ...)
+        like emplace() but goes straight to the back
 
-    v.assign(iterator1, iterator2)
-        copy another sequene into this vector
-        gets rid of whatever was here before (whole thing)
+    operator<, operator==, etc.
+        lexographical comparison
+        uses memberwise comparison operators on elements from left to right
+    no operator+, etc.
+        can't use + to concat arrays or vectors like in Python
 
     random access iterator operations
+
+    specialized for bool to use single bits for compactness
 
 list<T>: doubly-linked list
     <list> header
 
-    list<int> l;
-    list<int> l = {1, 2, 3, 4, 5};
-
-    l.push_back(item);
-    l.push_front(item); // equally efficient
-    l.pop_back();
-    l.pop_front();
-
-    l.insert(iterator, value);
-        get an iterator to a node and use it to insert a value in the middle
-        inserts BEFORE the node the iterator is pointing to
-    l.erase(iterator);
-        remove node from the middle
-
-    bi-directional iteration, but not random access
+    basically same interface as vector<T> with these differences:
+        also has l.push_front() and l.pop_front()
+            equally efficient to the *_back() versions
+        insertion/deletion in the middle (via iterator) is O(1)
+        no indexing because not random-access
+        bi-directional iteration, but not random access
 
 forward_list<T>: single-linked list
     <forward_list> header
@@ -544,31 +686,100 @@ forward_list<T>: single-linked list
     keeps head internally but not tail
 
 map<TKey, TValue>: sorted map (binary search tree)
-    O(logn) lookups
+    O(logn) lookups (no hashing)
     <map> header
+    optional template arg for comparison function
+        defaults to std::less (as the function, not the result of calling the function)
+        you can use type inference to invoke it automatically by using c'tor that takes comparison fn
+
+    value_type is std::pair<const TKey, TValue>
+    key_type and mapped_type for TKey and TValue
+    key_comparer = the compare template arg (default std::less)
 
     map<std::string, int> m;
     map<std::string, int> myMap = {{"apple", 1}, {"banana", 2}, {"cherry", 3}};
+    also overloads that take comparison function (eg. less())
+        default constructs the comparison template arg as Compare()
+    and similar overloads to vector
+    similar assignment operations to vector as well
 
-    m["Apple"] = 10;
-    m.erase("Apple");
+    m["Apple"] = 10; // no bounds checking
+        inserts if not there, even if you just read it
+        no const overload, unlike at()
+    m.at("Apple") = with bounds checking (std::out_of_range)
+        m.at("Apple") = 20; // by reference
 
-    iterable as std::pair<TKey, TValue>
+    keyValuePair = m.insert({"Apple"}, 10);
+        won't do it if key already exists
+        return value tells you what's in there now (either old thing or your new thing)
+    m.insert_or_assign(key, value) = method version of using index or at()
+        return value to tell you what's in there now (like insert() above)
+
+    m.emplace() will only emplace if the key is not there
+        like m.insert()
+
+    m.erase("Apple"); // erase by key
+
+    bi-directional iterable as std::pair<TKey, TValue>
         definitely will want to use 'auto' in the for loop
+        and/or possibly structured binding declarations to unwrap the pairs
         this is the only way to iterate (no keys() and values() members like Java)
+        the keys are immutable but the values are mutable
+            so you can actually update the map in-place this way
 
     if (m.find("Banana") != m.end()) {
         std::cout << "Map contains key Banana." << std::endl;
     }
 
+    m.extract() to remove and return entries
+    m.merge() to merge in another map
+
+    m.contains(key)
+    m.count(key)
+        0 or 1 for map, but maybe more for multimap
+    
+    m.upper_bound(key), m.lower_bound(key), m.equal_range(key)
+        mostly makes sense for multimaps, but it's in here too
+        lower bound = first matching entry
+        upper bound = first non-matching entry
+            they are same if empty range
+        equal_range = pair of both
+        entries returned are std::pair, but key is used to find them
+
+    operator<, operator==, etc.
+        lexographical comparison of keys (not values)
+
 unordered_map<TKey, TValue>: unsorted version of map
     O(1) lookups
+        relying on operator== and hash, but not operator<
     <unordered_map> header
     exposes same interface as map<> but doesn't use a tree internally
+    
+    instead of Comparer optional tempalate arg, has Hash and KeyEqual
+        defaulting to std::Hash and std::equal_to
+
+    constructor has overloads to specify initial bucket count
+        you can interact with the buckets and load factor with methods if you really want
+
+    iteration is forward only (no reverse)
+        and order between runs is not guaranteed to be consistent
+
+    operator== and operator!=, but not operator<, etc. since no order
 
 set<T>: sorted set (binary search tree)
     O(logn) lookups
+        operator==, no hash
     <set> header
+
+    looks a lot like map<> except:
+        value_type is T because not pairs
+        iteration is over T, not pairs
+        no [] or .at() because not indexed (even if ordered)
+
+    can be bi-directional iterated because has an order to it
+
+    you can use set operations from <algorithm> like std::set_union
+        those rely on sorted sequences, which this is
 
     set<int> s;
     set<int> s = {1, 2, 3, 4, 5};
@@ -577,20 +788,39 @@ set<T>: sorted set (binary search tree)
     if (s.find(10) != s.end()) {}
     s.erase(10);
 
-    s.size(), s.empty()
-    s.clear()
-
-    iterable
-
 unordered_set<T>: unsorted set
     O(1) lookups
+        operator== and hash, but not operator<
     <unordered_set> header
+    
+    same interface as set<T> except:
+        only forward iteration (and order not guaranteed)
+        can't use set operations from <algorithm> because not sorted
+        for other considerations, see difference between map<> and unordered_map<>
+
+multiset<T>, unordered_multiset<T>
+    in <set> and <unordered_set> headers (instead of their own)
+    like set and unordered_set, but can add same value multiple times
+    when you iterate the set, you'll see the same value multiple times
+        not grouped together or anything like that (though the ordered one will put them adjacent)
+
+multimap<T>, unordered_multimap<T>
+    in <map> and <unordered_map> headers (instead of their own)
+    like map and unordered_map, but can add same key multiple times
+    when you iterate, you'll see the same key multiple times
+        not grouped together or anything liekt hat (though the ordered one will put them adjacent)
+    because of the ambiguity, you cannot use the [] operator or at()
+        use m.equal_range(key), m.lower_bound(key), and/or m.upper_bound(key) instead
+        these methods make more sense here than in map<> where they also exist
 
 tuple<T1, T2, ....>: mixed type sequence of objects
     <tuple> header
     very unusual collection compared to the others
     instead of an object with methods, you use a bunch of functions
         several of which use template metaprogramming and similar constructs
+    one reason it's like this is so other kinds of objects can specialize the templates to act as a tuple
+        eg. for structured binding declarations
+    the tuple functions are specialized for std::pair, std::array, etc. but not raw arrays
 
     tuple<int, std::string, double> my_tuple(10, "Hello", 3.14);
     auto my_tuple = std::make_tuple(10, "Hello", 3.14);
@@ -618,6 +848,9 @@ pair<T1, T2>: two possibly different types
     p.first, p.second
 
     p.swap(q);  // swap elements of two pairs
+
+    operator<, operator==, etc.
+        lexographical comparison of items
 
 deque<T>: double-ended queue
     <deque> header
@@ -664,6 +897,30 @@ array<T, n>: wrapper for array
 
     array<int, 5> arr = {1, 2, 3, 4, 5};
 
+valarray<T>: numeric processing library
+    <valarray> header
+    old-fashioned, replaced by newer, better 3rd party libraries
+    so old it doesn't have iterators
+    supports element-wise operations between valarrays (similar to numpy)
+    also slicing and stuff like that
+
+bitset<n>: bit mask with n bits
+    <bitset> header
+
+    bitset<8> b("01100011");
+    bitset<8> b;    // all zeroes
+
+    b.set(4);   // set a bit
+    b.get(4);   // test a bit (whether set or not)
+
+    b.reset(), b.count(). b.flip()
+    b[i]
+
+    bitset<8> c = a & b;    // bitwise AND on all the bits
+        and other bitwise operators
+
+    supports stream operations for output (as binary digits)
+
 Iteration
     no interfaces, classes, or operators for iteration
     instead, it's a pattern of operations that would work on it (duck-typed)
@@ -690,6 +947,7 @@ Iteration
         begin() method to return an iterator representing the first item
         end() method to return an iterator representing the exclusive end of the sequence
             which should properly do arithmetic with the other iterators in the sequence
+        begin() and end() are same for empty sequence
 
     a lot of functions, such as the ones in <algorithm>, take 2 iterator for a range
         first one is inclusive, second one is exclusive
@@ -700,6 +958,31 @@ Iteration
         which means functions in <algorithm> can be used on arrays
         don't worry about the end iterator being passed the end of the array
             it will only be used for math - not dereferenced
+
+    Categories of Iterators
+        Random Access
+            support all pointer operations, including [], operator-, etc.
+        Bidirectional
+            no arithmetic or [], but increment and decrement fine
+        Forward
+            no arithmetic or [] or decrement
+        Input/Output
+            single pass
+
+    std::distance
+        <iterator> header
+        can compute distance of any iterator type
+        for random access where operator- is supported, just subtracts
+        for other types, will do O(n) opeation to scan between the endpoints
+
+size_t, size_type
+    size_t is a system-dependent (but usually unsigned long long) value for sizes/addresses/indices
+    it is defined in many standard library headers and used by containers
+    it is also typedefed in collections as size_type
+
+    for (vector<int>::size_type i = 0; i < v.size(); i++) {}
+
+    ptrdiff_t is the signed type for pointer arithmetic
 
 Immutability
     no built-in immutable collections or immutable proxies
@@ -735,7 +1018,8 @@ Copying/Cloning
     <algorithm>
         copy(srcIterator1, srcIterator2, dstIterator1)
             the space needs to exist (ex. resize the vector first)
-
+        copy_if() = same but with a predicate to decide whether to include
+            returns end iterator so you know how many it copied
     constructors that take iterators can also copy
         std::vector<int> v(old.begin(), old.end());
 
@@ -767,6 +1051,151 @@ Shuffling
         std::mt19937 g(rd());
         std::shuffle(numbers.begin(), numbers.end(), g);
 
+Thread Safety
+    no built-in collections are build to be thread safe
+    there are no thread safe equivalents either
+    it is up to you to properly protect your usages with mutexes, etc.
+
+Searching
+    most return iterator
+        collection.end() if not found 
+        iterator - collection.start() if need index
+    use reverse iterators to search backwards 
+
+    <algorithm>
+        find(iterator1, iterator2, value)
+            linear search
+            returns iterator
+        find_if(iterator1, iterator2, unaryPredicate)
+            linear search for matching predicate
+            returns iterator
+        find_if_not(iterator1, iterator2, unaryPredicate)
+            oposite of find_if
+            returns iterator
+
+        binary_search(iterator1, iterator2, value)
+            for sorted sequence
+            returns boolean
+        lower_bound(iterator1, iterator2, value)
+            also a binary search, but returns iterator
+            1st occurence of element if found
+            next highest element if not found
+        upper_bound(iterator1, iterator2, value)
+            binary search returning iterator
+            next higher element than value, whether found or not
+            the idea is that if you lower lower_bound and upper_bound as the endpoints,
+                you have the range of values equal to value in the collection
+                so upper_bound is made to be exclusive upper bound
+                    equal to lower_bound if value not present (thus giving an empty sequence)
+
+        search(iterator1, iterator2, subiterator1, subiterator2)
+            linear search for subsequence within host sequence
+
+Implementing Elements for Collections
+    operator== for operations like find()
+    specialize std::hash for unordered maps and sets
+    operator< for sorting (inc. in sorted maps and sets)
+        or a custom comparator function passed into appropriate places
+            eg. std::greater<T> to reverse the sort
+        also used for binary searching
+    override operator<< with ostream& on the left to support converting to string
+        compatible with both std::cout and std::stringstream
+        built-in collections do not have this
+
+Custom Hasher
+    specialize the std::hash template
+    std::hash instance is callable with a value to hash
+    use xor to combine hashes of members of your class
+
+    namespace std {
+        template <>
+        struct hash<MyClass> {
+            size_t operator()(const MyClass& obj) const {
+                // Combine the hashes of individual members
+                return hash<int>()(obj.getId()) ^ hash<string>()(obj.getName());
+            }
+        };
+    }
+
+    collections will automatically use std::hash<T>, which will pick up your specialization
+
+Swap
+    <algorithm> swap(a, b) method swaps two items BY REFERENCE
+    so it can be used for anything - variables, array elements, dereferenced pointers, etc.
+
+Other Algorithms
+    <algorithm>
+        a lot of these have _if versions to apply a predicate to decide first
+            and some also have _if_not
+        also, the simplest versions are shown here, but they have a LOT of overloads
+            eg. predicates to guard operations and operators to transform values
+        this is a very small list compared to the amount of functions in <algorithm>
+            there are a lot of interview/leetcode type operations in there
+
+        reverse(iterator1, iterator2)
+        for_each(iterator1, iterator2, voidFn)
+        replace(iterator1, iterator2, oldValue, newValue)
+        fill(iterator1, iterator2, value)
+        remove(iterator1, iterator2, value)
+            shifts elements forward toward beginning of collection
+            returns iterator to 1st now invalid item
+        unique(iterator1, iterator2)
+            similar to remove(), but removes duplicates in sorted range
+        all_of(iterator1, iterator2, predicate), any_of(), none_of()
+
+        rotate(iterator1, newStartIterator, iterator2)
+            rotates the elements so that newStartIterator becomes the new first element
+            returns iterator to the new location of iterator1 element
+        next_permutation(iterator1, iterator2)
+            next lexographic permutation of sequence w/ wraparound
+        prev_permutation(iterator1, iterator2)
+            opposte of next_permutation()
+
+        transform(iterator1, iterator2, outputIterator, unaryOperator)
+            like map() in functional programming
+
+        set_union(), set_difference(), set_intersection(), set_symetric_difference()
+            all these expect two SORTED ranges
+            output into a 3rd range and return end iterator (past last element) so you know how many
+
+        iota(iterator1, iterator2, startValue)
+            fills a range with increasing integer sequence starting with startValue
+        partial_sum(iterator1, iterator2, outputIterator)
+            computes inclusive prefix sum of each element in the sequence
+
+        mismatch(range1Start, range1End, range2Start, range2End = range2Start + (range1End - range1Start))
+            finds first mismatch between two ranges via operator==
+            returns a pair of iterators, the last iterator for each of the two ranges
+            if mismatch found, the iterators will point to the mismatching element from each
+            if not found, at least one of the iterartors will be an end iterator
+                both if equal size ranges
+        adjacent_find(iterator1, iterator2)
+            gets iterator to first pair of elements that match each other in a range
+
+Predicates, Operators, etc.
+    see "Functional" section
+    you can use these with overloads of <algorithm> functions so you don't have to make your own lambdas, etc.
+
+Destructuring
+    the feature is called "Structured Binding Declarations" in C++
+        it looks like but is not exactly equivalent to destructuring or tuple unpacking in other languages
+        it is for declaring variables locally, not for doing things like magic swap from Python and TS
+
+    auto [x, y, z] = getPointTuple();
+        each type is independently inferred
+    int [x, y, z] = getPointTuple();
+        the non-inferred version (all types same)
+    Point pt = {1, 2};
+    auto [xx, yy] = pt;
+
+    works with tuple, pair, class/struct, or array
+    binding is by order (# must match), not by name
+
+    binding is BY REFERENCE and the righthand side object is KEPT ALIVE for the scope
+
+    overall requirements of object:
+        either implement the tuple protocol via specializations OR have the right # of members
+
 [Strings]
 Unique Aspects of C++
     heavy reliance on stream operator <<
@@ -777,34 +1206,113 @@ Unique Aspects of C++
 Literals
     "" -> const char *
     '' -> char
+    L'' -> wchar_t
+    L"" -> const wchar_t *
+
+    \ escaping, and also '' inside "" and vice versa are fine
+        eg. \n to add newlines
+
+    R"()" -> raw string (const char * still)
+        yes - it needs the () and does not include that in the string (weird!)
+            the reason is so you can use " inside without escaping
+        includes newlines
+    LR"()" -> the wchar_t version of raw string
 
 Character
-    char is both a numeric type and a character type
+    char (and wchar_t) is both a numeric type and a character type
     if you print it with std::cout, it will print as a character
         have to cast to int if want to see the number
     but you can also store a number there and do math with it
+
+    <cctype> header (for char)
+        toupper(c)
+        tolower(c)
+        isalpha(c), islower(c), isdigit(c), etc.
+
+    <cwctype> header (for wchar_t)
+        towupper(c)
+        towlower(c)
+        iswalpha(c), iswlower(c), iswdigit(c), etc.
 
 C-Strings
     the default null-terminated type of string created by literals
     only immutable if use const char *
         regular char * is a mutable c-string
 
-std::string
-    <string> header
+std::string (and std::wstring)
+    <string> header (for both)
     basically acts like a vector<char>
         plus string-related functionality on top of that
         mutable
-    
-    string s = "Hello, world!";
-    s[0], s.at(0)
-        read-write
-    f.front(), s.back()
+        some operations that usually only take iterators will also accept indices
+            with string::npos (-1) representing the not found or end index
+    actually a typedef of std::basic_string<char>
+        std::wstring is a typedef of std::basic_string<wchar_t>
+        so they both are the same interface with a different char element type
+        below, the char version will be used for demonstration for simplicity
 
-    random access iteration like vector
+    string s = "Hello, world!";
+    string s = "Hello, world!"s;
+        this literal type with trailing s is supposed to avoid copying c-string in c'tor
+        but it doesn't seem to work in any IDE I tried as of 2023 (maybe soon?)
+
+    there are a LOT of constructors
+        c-strings, copy other strings, counts, etc.
+    also similar assignments and assign() method
+
+    s.data() for access to underlying array
+    s.c_str() for const c-string copy (null-terminated)
+    conversion operator to std::basic_string_view
+
+    element operations, appending, iteration, etc. exactly like vector
+        not an immutable structure at all
+
+    traits_type
+        typedef for getting character traits
+
+    length() means same thing as size() [both here]
+
+    insert() has more overloads for ways to put strings inside the string
+    append(), operator+, operator+=
+        string concatenation
+        different from push_back() which takes a character
+
+    these string methods have a lot of overloads to restrict range, etc.
+        compare(), starts_with(), ends_with()
+        replace()
+            does not modify the string, returns a new string
+        substr()
+            new copy
+        copy()
+            copies chars into target char* array (no null termination)
+
+        find(), rfind(), find_first_of(), find_last_of(), find_first_not_of(), find_last_not_of()
+            searching for substrings or chars and returning indices
+            the *_of versions are looking for one of a sequence of chars (instead of whole sequence)
+    
+        stoi(), stol(), stof(), etc.
+            convert to number
+            std::invalid_argument thrown if bad conversion
+
+            to go the other way:
+                std::to_string(number)
+                std::to_wstring(number)
+    
+    operator<, operator==, etc.
+        lexographic comparison
+
+    non-member functions
+        std::swap(), std::erase(), std::eraser_if(), std::reverse(), etc.
+
+    Case
+        you can use std::transform with std::toupper() and std::tolower() to change case
+        case insensitive comparison is not built-in
+            you'd have to do your own comparison or convert to lower first
 
 Equality
     == works on std::string to compare contents
     const char * == would compare addresses intead
+    same issue with operator< and such
 
 Building Strings
     <sstream>
@@ -905,6 +1413,8 @@ Unique Aspects of C++
         eg. return by pointer and then the caller has to manage lifetime?
         eg. return by reference and then have to worry about lifetime
     returning by reference and modifying original based on it
+    because of the massive number of ways to overload functions, documentation looks crazy for even a simple method or constructor
+        eg. constexpr, const, move, copy, assignment vs. c'tor, etc.
 
 Returning by Reference
     int& f(int &x) { return x; }
@@ -922,6 +1432,63 @@ Unique Aspects of C++
     function pointers can't hold lambdas that capture
     capturing has to be specified very explicitly
     capture by reference is dangerous because not a garbage collected language
+    have to put placeholders in partial application
+        but can reorder and interleave unbound with bound
+
+Traditional Functional Operations
+    map() is implemented by std::transform
+    reduce() is implemented by std::accumulate
+    filter() is implemented by std::copy_if
+    any(), all(), none() are implemented by std::any_of, std::all_of, std::none_of
+    zip() is not implemented
+
+Type of Function Object
+    std::function (from <functional> header)
+            polymorphic wrapper for function-like things
+            not a base class of function objects, but rather just knows how to wrap them
+            including functions, lambdas, function pointers, etc.
+
+Built-in Function Objects
+    in <functional> header
+
+    std::less<T>(), std::greater<T>(), std::equal_to<T>()
+        call these functions to get a function object you can pass to do < and > operations
+        they invoke operator< and operator> on type T
+        you can specialize them for your type to make them do otherwise
+
+    std::plus<T>(), std::minus<T>(), std::multiplies<T>()
+        call these functions to get a function object to operate on two objects
+        binary operators to do arithmetic operations
+        use the arithmetic operators unless you specialize
+
+    std::logical_and<T>(), std::logical_or<T>()
+        call these functions to get a function object to operate on two objects
+        returns boolean
+
+    std::not_fn(fn)
+        negates a predicate
+
+Partial Application
+    in <functional> header
+
+    std::bind(fn, arg1, arg2, ...)
+        return type is undefined - just use 'auto' for the variable
+        you can use std::cref and std::href for reference and constant reference parameters
+        for args that you're not binding, you have to use members of the std::placeholders namespace
+            _1, _2, etc.
+            even if at the end of the list
+        the placeholders can appear anywhere in the list and be in any order
+            the bind call should look like the whole function call
+            then the placeholders are the things passed in when calling the returned function object
+                with order determined by their number
+    
+        int count_less_than_five = std::count_if(nums.begin(), nums.end(), 
+                                                 std::bind(std::less<>(), std::placeholders::_1, 5));
+
+    std::ref(val), std::cref(val)
+        create ref or constant ref of a value for partial application
+        basically wraps the value in a wrapper object that takes the appropriate reference internally
+        the wrapper implements operators like assignment to forward to the internal value
 
 Not supported: zip operation
 
@@ -1006,6 +1573,11 @@ Move/Copy Semantics
     this is a pointer of type MyClass* (for instance)
     thus, you have to use -> intead of .
 
+Hashing & toString()
+    no methods for these like in Java and Python
+    see "Collections" for how to do it
+        "Implementing Elements for Collections" and "Custom Hasher"
+
 [Templates]
 Unique Aspects of C++
     compile-time templating instead of runtime generics
@@ -1022,6 +1594,8 @@ Unique Aspects of C++
     default arguments
     template specializations
     variadic Templates
+    no raw type
+        even static members live on the specific type
 
 you cannot directly cast between collections of different element types
 
@@ -1032,6 +1606,8 @@ you cannot directly cast between collections of different element types
 Unique Aspects of C++
     relies very heavily on templates, static polymorphism, and duck typing
         no common bases/interfaces like other languages
+    things that you would normally use an interface for in other languages
+        you would specialize a template for, or else just add members/operators to make it fit
 
 stdlib headers put stuff in std namespace
 headers that start with c (from the C standard library) do as well
@@ -1047,3 +1623,9 @@ unique_ptr delete [] vs. delete
 casting between arrays covariantly
 vector of base class scenario
 trailing commas
+.at() vs. [] bounds checking and const correctness (vector as example)
+std::accumulate more details
+even more <algorithm> functions
+even more <functional> functions
+even more <iterator> functions
+std::basic_string_view

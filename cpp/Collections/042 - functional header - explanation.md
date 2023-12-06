@@ -18,8 +18,11 @@
 
 ### 5. Binders:
 - **`std::bind`**: Binds one or more arguments to a function object.
+  - also relies on `std::placeholders` namespace (`_1`, `_2`, etc.) to specify unbound parameters
+    - can reorder and interleave unbound parameter with bound ones
+    - but all function params must be specified as either real values or placeholders
 
 ### 6. Other Utilities:
-- **`std::ref` and `std::cref`**: Generate references or constant references to objects.
+- **`std::ref` and `std::cref`**: Generate references or constant references to objects for use in `std::bind`.
 
 This example illustrates how the `<functional>` header can be used in tandem with collections. The header offers utilities that can make certain operations, especially with algorithms, more succinct and expressive.
