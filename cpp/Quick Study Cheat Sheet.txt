@@ -131,6 +131,7 @@ References
         int &x = 100; is ILLEGAL
     MyClass &&x = std::move(y);
         converting to rvalue reference explicitly using built-in function
+        y should be considered invalid/unuseable after that
     & does not chain endlessly like pointers (no &&& for instance)
     sizeof() on a referene is sizeof() the referenced variable, not the secret pointer
 Pointers
@@ -528,10 +529,16 @@ Array
         related to the idea of array decay (see "Functions")
     int matrix[2][3];
     int matrix[][2][3];
+    NOTE: a multidimensional array is not the same thing as **
+        because it's not storing pointers inside
 
     arr[0] same as *arr
     sizeof() on an array works if locally defined (and not decayed to pointer)
         sizeof(arr)/sizeof(arr[0]) gives # of elements
+
+trailing commas are allowed in initializers but not function calls
+    eg. int arr[] = {1, 2, 3,};
+        but not f(1, 2,)
 
 std:: namespace needed in front of all symbols imported from stdlib headers below
     ommitted for brevity in these notes
@@ -1672,6 +1679,7 @@ Unique Aspects of C++
     RAII
     no 'finally' because of RAII
     class destructor predictable, allowing scope-based context management
+    switches only for numbers
 
 the usual C-like stuff: if/else if/else, switch, for, while, do/while, break, continue
     bodies with or without braces
@@ -1773,15 +1781,237 @@ Unique Aspects of C++
     returning by reference and modifying original based on it
     because of the massive number of ways to overload functions, documentation looks crazy for even a simple method or constructor
         eg. constexpr, const, move, copy, assignment vs. c'tor, etc.
+    variadic args are not type-safe or bounds checked
+    macros existing at all (unusual for OOP), and being text substitution (as opposed to Lisp)
+    array decay
+    controlling linkage & calling conventions
+
+Free Function
+    term for a function that is not a class method
+
+Overall Syntax
+    int f(int a, int b) { return a + b; }
+    void g() {}
+
+    int x = f(10, 20);
+    g();
+Prototypes
+    the interface of the function can be declared ahead of time
+        eg. in header file
+        eg. in same file, before main code, providing body after code
+    then other files can compile against it, while keeping implementation hidden
+    this is not required, but is very common
+    for free functions, declaration order matters!
+
+    eg. for the above "overall syntax" examples:
+        int f(int a, int b);
+        void g();
+
+    technically, param names can be ommited in prototype, or even given names that don't match
+        eg. void f(int, int = 10);
+        the names are for the benefit of the implementation, not the compiler at the callsite
+        though they also help people using the API
+Unique Identity of Function
+    the return type, name, and param # and types
+    param names are not part of the identity
+        thus, you can't overload by only param names
+    return type is, but it's not overloadable by itself
+    this allows lambdas, etc. to work without having to name things consistently
+
+    in places where you would often ommit arg names, like function pointers, you can provide them
+        and the names are allowed to not match
+
+    const and & are part of the param types in method signature
+        sometimes ommitting in one place or other will work, but better to specify
+        can technically overload by just const or &, but creates ambiguities
+
+Inline
+    functions that are provided without separate prototypes are NOT automatically inline
+    you can put the 'inline' keyword before a function to request that it becomes inline
+        eg. if frequently used and small, and want to eliminate function call overhead
+    the compiler still has the ability to choose whether to inline or not in either case
+        think of it more as a "hint" or "request"
+        takes into account size, complexity, frequency of calling, etc.
+    if you have a separate prototype and implementation, and the implementation is in a separate source file
+        you cannot inline it
+        because inlining is done on C++, not machine code
+    class methods are special in that they are automatically requested inline if in the class prototype
+        no 'inline' keyword
+        non-inline if body is provided outside with ::
+        still up to the compiler
+
+Default Args
+    specify with = on the prototype (if separate)
+    the function itself still has the parameter
+        compiler will put in the default value at the callsite
+    must come at end (no empty entries in middle)
+Const and Ref Args
+    behave just like variables
+    good way to pass large objects without copying
+        and specifying whether they're mutable or not
+RValue References
+    see discussions in "Variables" and "Classes"
+    move/copy semantics at the function level
+    std::move() or a temporary object at the callsite
+Keyword Args
+    not supported
+    use map<> or similar to simulate it
+Overloading
+    by args only, not return type
+        but different overloads can have different return types
+    considered static polymorphism
+
+Variadic Functions
+    void f(int a, int b, ...);
+        args after b in a call to f() can be any type
+    <cstdarg> header helps to parse it out
+        va_list args;
+        va_start(args, b);
+            macro to set up va_list variable based on last fixed arg in list
+            parses stack frame internally
+        va_arg(args, int);
+            macro to get next single arg
+            you have to tell it the type (not type safe)
+            you have to know how many to stop at (not bounds checked)
+        va_end(args)
+            macro to clean up when done
 
 Returning by Reference
     int& f(int &x) { return x; }
     int a = 100;
     f(a) = 0;
     makes a lot more sense when it's something like elements in a container
+    could use const-overloading to protect read-only things in a class method
 
+Return Type Inference
+    auto f(int a, int b) { return a + b; }
 Trailing Return Types
-    auto f(int a, int b) -> decltype(a+b) {}
+    auto f(int a, int b) -> int { return a + b; }
+    auto f(int a, int b) -> decltype(a+b) { return a + b; }
+
+Array Decay
+    when you pass an array, it's really a pointer (not by value)
+    the count can be specified or not - the compiler won't use it in any way
+        the array has "decayed" - lost its 1st dimension
+    note that for multidimensional arrays, only 1 dimension is lost
+        because the other dimensions are needed for memory layout
+    if you take a 2D slice inside 3D, and pass to a function that takes 2D, it will decay again
+
+Throw Specifications
+    you used to be able to specify what exceptions a function can throw
+    this was deprecated in C++11 and removed entirely after that
+        because it wasn't accurate and gave a false sense of security
+    you are still allowed/recommended to specify as 'noexcept' to mean won't throw
+        if might throw, for instance via stdlib calls, then just let it throw
+    
+    void f() noexcept;
+    void f() noexcept {}  // probably not needed if has prototype
+
+Recursion
+    functions call themselves by name
+    TCO is posssible but might require a compiler flag
+
+Linkage
+    external linkage = can be seen outside source file
+        functions
+        global variables
+    internal linkage = cannot be seen outside source file
+        static variables
+        static global variables
+        static functions
+
+    normally global variables and top-level functions don't need 'static' because they already are
+        but you can mark them as 'static' to change their linkage to internal
+
+    to use a symbol with external linkage in a different source file, you need the prototype
+        for functions, it works as we've already described here
+        for global variables, you use the 'extern' keyword
+            extern int x;  // x is a global variable that will be linked in by the linker
+        ok for 'extern' to appear in the real place too, just like how function prototypes can
+
+Calling Conventions
+    specifying conventions (and specific ones avilable) is non-standard feature
+        varies by compiler
+    eg. in MSVC:
+        void __cdecl f();
+            f will use cdec convention
+    common conventions include: cdec, stdcall, fastcall, thiscall
+        dictate how params are passed on stack+registers, how things are cleaned up, etc.
+Name Mangling
+    C++ mangles names to support function overloading
+        thus linking with wrong version of ABI (application binary interface) can cause issues
+    C does not - so to interop with C code, you may need to turn off name mangling
+        extern "C" {}
+            everything in {} will be un-mangled
+        NOTE: C supports overloading but just doesn't mangle to support it
+    a C header that might be included in a C++ program should do this:
+        #ifdef __cplusplus
+        extern "C" {
+        #endif
+
+        // C function declarations
+
+        #ifdef __cplusplus
+        }
+        #endif
+Interop
+    C++ can interop with C by using proper un-mangling and calling convention as shown above
+    to interop with other languages, you usually need to pretend to be C
+    different languages have different mechanisms for interfacing
+
+Coroutines
+    new C++ 20 feature not fully supported by compilers yet
+    similar to async/await from JS and/or yield from Python, with keywords like co_await, co_yield, and co_return
+        returning std::future
+    see Coroutines snippet for more details (and check official docs for updates)
+
+Try-Catch Body
+    void f() 
+        try {
+            // function body
+        }
+        catch(...) {
+        }
+
+    NOTE: if a constructor, put initializer list before the 'try'
+
+Macros
+    simple text substitution (unlike Lisp)
+
+    #define PI 3.14159
+    double x = PI;
+        a macro has no type
+
+    #define ADD(a, b) ((a)+(b))
+    int x = ADD(10, 20);
+        taking parameters
+        using () to lexically group
+
+    one of the dangers of macros is they don't follow lexical rules like functions
+        #define MULTIPLY(a, b) a*b
+        x = MULTIPLY(a+b, c+d)
+            you expect this to become x = (a+b)*(c+d)
+            but instead it becomes a+b*c+d
+    also note NO SEMICOLONS at end of macros
+        or else that will become part of the substitution
+        end of line = end of macro
+    
+    use \ to make multiline
+        #define ADD(a, b) \
+            a + b
+
+    #undef PI
+        undefine a macro at this point in the code
+
+    #ifdef PI
+    // code or macro definitions in here
+    #endif
+
+    also #ifndef, etc.
+    used for old-school header de-duping
+        #ifndef the whole header and define the macro inside
+
+Not supported: nested functions
 
 [Functional Programming]
 Unique Aspects of C++
@@ -1792,6 +2022,37 @@ Unique Aspects of C++
     capture by reference is dangerous because not a garbage collected language
     have to put placeholders in partial application
         but can reorder and interleave unbound with bound
+
+Function Pointer
+    double (*fPtr)(double, double) = multiply;
+        fPtr is the variable being declared
+        mulitply is a function being passed to it
+        note that you don't need to name the params
+        note that you don't need to use & on multiply
+            though you can if you want to
+            you do have to have it for pointers to members though!
+    double x = fPtr(10, 20);
+        note that you treat it as a function, not as a pointer
+        you could do (*fPtr)(10, 20) if you wanted, but it's not necessary
+
+Callable Object
+    any object that provides one or more call operator(s)
+    eg. double operator(double a, double b) const {return a + b;}
+    create the object, then pass/call it like it's a function
+
+Lambda
+    [](double num) { return num * 3; }
+
+Pointer to Member (Method Reference from Java)
+    ???
+
+Things You Can Pass to <algorithm> Functions
+    eg. std::transform
+    functions directly (implicitly as function pointers)
+    function pointers
+    pointers to members
+    callable objects (instantiated)
+    lambda
 
 Traditional Functional Operations
     map() is implemented by std::transform
@@ -1936,6 +2197,10 @@ Hashing & toString()
     see "Collections" for how to do it
         "Implementing Elements for Collections" and "Custom Hasher"
 
+Not available:
+    extension methods
+    partial classes
+
 [Templates]
 Unique Aspects of C++
     compile-time templating instead of runtime generics
@@ -1985,8 +2250,6 @@ attributes with [[]] but only certain built-in ones and only the c++ compiler us
 unique_ptr delete [] vs. delete
 casting between arrays covariantly
 vector of base class scenario
-trailing commas
-.at() vs. [] bounds checking and const correctness (vector as example)
 std::accumulate more details
 even more <algorithm> functions
 even more <functional> functions
