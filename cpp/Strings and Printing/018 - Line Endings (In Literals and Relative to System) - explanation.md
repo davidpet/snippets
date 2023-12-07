@@ -1,3 +1,5 @@
 # Line Endings (In Literals and Relative to System)
 
 In the code, we demonstrate the use of different line ending characters in C++ string literals. The newline character (`\n`) moves the cursor to the beginning of the next line. The carriage return character (`\r`) moves the cursor to the beginning of the current line. The combination of newline and carriage return (`\r\n`) is used as a line ending in Windows systems. The form feed character (`\f`) moves the cursor to the beginning of the next page. The vertical tab character (`\v`) moves the cursor down to the next tab stop. The backspace character (`\b`) moves the cursor back one space. The null character (`\0`) is used to indicate the end of a string.
+
+The C++ standard library will virtualize line endings based on the OS where the program is running. For Windows, it will use `\r\n` whenever it sees `\n`, and for Mac and Linux, it will just use `\n` - the same happens in reverse for reading a file.  This can cause issues if you open a file from a different platform.

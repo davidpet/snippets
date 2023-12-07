@@ -13,6 +13,8 @@ The `std::distance(a, b)` function provides a unified way to find the distance b
    - **Random-Access Iterators**: These iterators, like pointers, support a wide range of arithmetic operations, including direct subtraction (`b - a`).
    - **Bidirectional Iterators**: Can be incremented and decremented but don't support direct arithmetic.
    - **Forward Iterators**: Can only be incremented.
+   - **Reverse Iterator**: Pretend to be forward iterators but actually get items in reverse.
+     - to use with forward iterators, such as to end a range after searching backwards, you have to use the `it.base()` method to convert to the forward iterator that is 1 element after (so that you can use it as exclusive endpoint)
    - **Input/Output Iterators**: Used for single-pass algorithms.
 
 2. **Generalized Behavior**:  

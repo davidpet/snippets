@@ -969,6 +969,11 @@ Iteration
             no arithmetic or [], but increment and decrement fine
         Forward
             no arithmetic or [] or decrement
+        Reverse
+            acts like a forward iterator, but actually points to items of container in reverse
+            not directly interoperable with forward iterators, but you can call it.base() to get a forward iterator
+                the caveat is that this forward iterator is the element after the current element
+                    so that you can use the current reverse item as exclusive endpoint of range
         Input/Output
             single pass
 
@@ -1206,6 +1211,9 @@ Unique Aspects of C++
     null termination
     strings are not immutable!
     no named capture groups
+    some common string methods missing: split, trim
+    various ways to split, none of which behave in the usual way with respect to empties
+    line ending conversion less permissive (more manual interention needed)
 
 // and /* */ comments
 
@@ -1406,7 +1414,7 @@ Printing
             std::setpreicion says use 3 significant digits for float
             these manipulators are persistent (continue until set again, even after newlines)
 
-Object to String
+Object(s) to String
     std::stringstream and std::cout (which is an std::ostream) are both at least std::ostream
         from <ostream> header
         so if you overload operator<< (eg. as a friend function) with your type on the right
@@ -1416,13 +1424,17 @@ Object to String
     several built-in types already overloaded, but not the big collections
     the wide version is std::wostream (same header)
 
-String to Object
+String to Object(s)
     overload operator>> on std::istream from <istream> header
-    then grab the fields like: is >> this.x >> this.y;
-    return the istream by reference
 
     several built-in types already overloaded, but not the big collections
         the wide version is std::wostream (same header)
+
+    then you can create an std::istringstream (from <sstream>) for a string:
+        std::istringstream iss(inputString);
+    then you read from it like this:
+        iss >> x >> y >> z;
+    an overload for an object can read individual fields and return the istream by reference
 
 NOTE: stringstream is an ostringstream and istringstream at same time
     you can directly use the o or i version if that's all you need in context
@@ -1445,6 +1457,90 @@ Regular Expressions
     }
         matches is iterable with strings that matched
         also indexable with [] (eager)
+
+Splitting
+    no method on std::string like you'd see in other languages
+    there are a few different ways to do it
+
+    std::vector<std::string> v(std::istream_iterator<std::string>(iss), std::istream_iterator<std::string>());
+        std::istream_iterator (from <sstream> header) iterates through chunks in the istream
+            exactly as if you used >> on the stream directly, but without having to know how many variables
+        the default constructor of std::istream_iterator is the end of stream iterator
+            same as the first iterator will become after you increment it enough
+        so this code will construct a vector to hold all the items from doing >> repeaedly on the string
+        initial and trailing whitespace will be ignored because of how std::istream works
+            and things in the middle will be split by regions of whitespace
+    
+    std::string token;
+    while (std::getline(is, token, ',')) {
+        v.push_back(token);
+    }
+        std::getline (from <string> header) will read text until delimiter and then consume the delimiter (ignoring it)
+        the default delimitter is \n
+        it will include empty strings for duplicate delimitters, even at beginning or end
+            one final delimitter is allowed at the end without causing an empty string
+
+    There is also a `std::sregex_token_iterator`
+        to iterate through parts of a string that don't match a pattern (such as `\\s+`).
+
+    you can also split a string using strtok/wcstok (see "C String Functions")
+
+Trimming
+    no method on std::string like you'd see in other languages
+    use methods like find_first_not_of and find_last_not_of (or find_if with forward and reverse iterator)
+
+Line Endings
+    converted to \n on file read (in text mode)
+    converted to platform-dependent from \n on file write (in text mode)
+    conversions depends on where program is running
+        so could get mismatch if dealing with file from diferent system
+    \r\n for windows, \n for everybody else
+
+C String Functions
+    old-fashioned functions that operate on c-strings
+    no bounds checking
+    <cstring> and <cwchar> headers for char vs. wchar_t
+    for the wchar_t versions, replace 'str' in the name with 'wcs'
+        eg. strlen -> wcslen
+
+    strlen(str)
+        length of string by searching for null
+    strcpy(target, source)
+        copy a string from one buffer to another (inc. null)
+    strcat(target, source)
+        concatenate source string to end of target string
+        original null of target is 1st char of source after copy
+    strcmp()
+        compare two strings
+    strtok(str, delims)
+        tokenize using delimitters
+        searches for first char that is in delimitter
+            delims is a string but acts like array of characters
+        put a null there and return str
+
+        on future calls, strtok(nullptr, delims) to continue from last operation
+            continues to return pointer to new token (while destructively changing original)
+        does not include empty entries for duplicate, leading, or trailing delims
+
+std::stringview (and std::wstringview)
+    <string_view> header for both
+    typedefs of std::basic_string_view
+
+    non-owning, lightweight wrapper for pointing within a string or char[]
+    points to beginning and end of a region within a string
+    operations like substr() supported but just change the numbers instead of allocating anything
+        and a lot of other string operations
+
+    you can construct it with a string literal, an array, std::string iterators, etc.
+    
+    supports printing to std::cout (and ostream in general) directly
+
+std::format
+    <format> header
+    as of writing this, still missing from VSCode and Clang (newer feature in the spec)
+
+    std::string returning version of sprintf with some tweaks to the format specifier language
+    {} instead of % (like the new Python f-strings)
 
 [Operators]
 Unique Aspects of C++
@@ -1749,5 +1845,5 @@ std::accumulate more details
 even more <algorithm> functions
 even more <functional> functions
 even more <iterator> functions
-std::basic_string_view
 add printing without newline to OOP template
+failbit
