@@ -6,4 +6,4 @@
 4. The fourth part shows how to create a formatted string using the C++ style `stringstream` class. This class provides a high-level interface for string formatting and manipulation.
 5. The last part shows how to create a template string and replace a placeholder with a specific value. This is done using the `find` and `replace` methods of the `std::string` class. The `find` method returns the position of the first occurrence of a substring, and the `replace` method replaces a portion of the string with another string.
 
-Note: `sprintf` is actually deprecated, but it's so famous that I didn't replace it here.
+Note: `sprintf` is actually deprecated in clang, but not in the C++ spec, but it's so famous that I didn't replace it here.

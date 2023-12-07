@@ -42,5 +42,18 @@ int main() {
         std::cout << "No match found!" << std::endl;
     }
 
+    // multiple match capture groups
+    std::string text = "The rain in Spain falls mainly on the plain.";
+    std::regex word_regex("(\\b\\w+\\b)"); // Captures each word
+    std::smatch matches;
+
+    while (std::regex_search(text, matches, word_regex)) {
+        std::cout << "Whole match: " << matches[0].str() << '\n';
+        std::cout << "First capture group: " << matches[1].str() << '\n';
+        
+        // Proceed to the next match
+        text = matches.suffix().str();
+    }
+
     return 0;
 }

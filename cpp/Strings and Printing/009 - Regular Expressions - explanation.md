@@ -11,3 +11,5 @@
 5. The `std::smatch` object is used to store the results of a search or match operation. It can be iterated over to access all the matches.
 
 6. The regular expression pattern "\\d+" matches one or more digits. The backslashes are escaped with additional backslashes because they are special characters in C++ strings.
+
+NOTE: C++ does not support named capture groups!

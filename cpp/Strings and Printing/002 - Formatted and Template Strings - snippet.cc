@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <iomanip>
+// #include <cstdio> // for sprintf (included by something above somehow)
 
 int main() {
     // Basic string declaration

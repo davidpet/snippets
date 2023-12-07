@@ -62,6 +62,9 @@ Primitive Data Types
         literal suffix = LL for signed, ULL for unsigned
 
     wchar_t - 16-bit or 32-bit depending on platform
+        usually 16 on Windows, 32 on Linux
+    char16_t and char32_t - utf-16 and utf-32 (approximately)
+        not as fully supported by things like std::cout
 
     float - usually 32-bit
         literal suffix = f
@@ -1202,12 +1205,23 @@ Unique Aspects of C++
     literal string vs. stdlib string
     null termination
     strings are not immutable!
+    no named capture groups
+
+// and /* */ comments
 
 Literals
     "" -> const char *
     '' -> char
+    u8"" and u8'' -> seem to mean same thing (implying utf-8)
+
     L'' -> wchar_t
     L"" -> const wchar_t *
+
+    u'' -> char16_t
+    u"" -> CONST CHAR16_t *
+
+    U'' -> char32_t
+    U"" -> char32_t
 
     \ escaping, and also '' inside "" and vice versa are fine
         eg. \n to add newlines
@@ -1217,6 +1231,7 @@ Literals
             the reason is so you can use " inside without escaping
         includes newlines
     LR"()" -> the wchar_t version of raw string
+    uR"()", UR"()" -> et. etc.
 
 Character
     char (and wchar_t) is both a numeric type and a character type
@@ -1224,6 +1239,12 @@ Character
         have to cast to int if want to see the number
     but you can also store a number there and do math with it
 
+    char16_t and char32_t act more like pure numbers
+        because std::cout is not designed for them
+        but they still take string literals with their own syntax as above
+        these are basically utf-16 and utf-32
+            not literally but something like that
+    
     <cctype> header (for char)
         toupper(c)
         tolower(c)
@@ -1238,6 +1259,7 @@ C-Strings
     the default null-terminated type of string created by literals
     only immutable if use const char *
         regular char * is a mutable c-string
+    similarly, wchar_t * for L"" strings
 
 std::string (and std::wstring)
     <string> header (for both)
@@ -1276,6 +1298,7 @@ std::string (and std::wstring)
     append(), operator+, operator+=
         string concatenation
         different from push_back() which takes a character
+        overloaded for other strings, char*, single char, etc.
 
     these string methods have a lot of overloads to restrict range, etc.
         compare(), starts_with(), ends_with()
@@ -1308,22 +1331,120 @@ std::string (and std::wstring)
         you can use std::transform with std::toupper() and std::tolower() to change case
         case insensitive comparison is not built-in
             you'd have to do your own comparison or convert to lower first
+std::u16string and std::u32string
+    the typedfs of basic_string for char16_t and char32_t
+see <codecvt> header for converting between the various encodings
 
 Equality
     == works on std::string to compare contents
     const char * == would compare addresses intead
     same issue with operator< and such
 
-Building Strings
+Formatting
+    <cstdio>
+        printf(formatString, arg1, arg2, ...)
+            %2d, %.2f, etc.
+            prints to console
+        sprintf(target, formatString, arg1, arg2, ...)
+            print into a char[] instead of to the console
+            no allocation or checking on target - you need to make sure it can hold it
+                for this reason, clang considers it deprecated (but the C++ spec still does not)
+            null terminates the string
+        snprintf(target, n, formatString, arg1, arg2, ...)
+            like sprintf() but with a maximum count n for safety
+            n includes the null character (so n-1 characters max)
+    <cwchar>
+        wchar_t versions of <cstdio> functions
+        wprintf()
+        swprintf() [takes n like snprintf, no unsafe version available]
+        
     <sstream>
-        StringStream s;
-        s << "Hello, ";
-        s << "world.";
-        s << "nums: " << 10 << 20;
+        stringstream s;
+        s << "Integer: " << 15 << ", Float: " << 3.2;
         std::cout << s.str() << std::endl;
+        s.str("new str");  // reset to a new string
+        s.str(""); // clear to start over again
+        s.str(std::string()); // clear to start over again
+        
+        s >> x; // converting string to number (skipping preceding whitespace and stopping at whitespace)
+            can chain together whitespace-delimitted things: s >> a >> b >> c;
 
-        s.str("");  //clear it again
-        s.str(std::string()); // another way to clear
+        also see notes about "Printing" below
+            <iomanip>, std::endl, etc. can be used here too
+            manipulators do not reset when you reset to ""
+            use s.clear() to reset all state including manipulators
+    
+    <iostream>
+        see "Printing" below
+        <iomanip> header to help with formatting
+    
+    mystring.replace() can be used to replace a template string like "{name}" too
+
+StringBuilder
+    the equivalent of StringBuilder in C++ is to just use std::string
+        it can already append, concat, etc. and reallocate as needed, exactly like StringBuilder
+    however, an even more idiomatic way is to std::stringstream to stream together parts of the string
+
+Printing
+    <iosstream>
+        std::cout << "Hello, my name is " << name << " and I am " << x << years old. << std::endl;
+        std::cout is a global variable of type std::ostream (from <ostream> header)
+        std::wcout is the wchar_t version
+    
+        std::endl
+            prints newline and flushes
+            std::cout is line-buffered, but std::stringstream is not
+            the buffer won't print until the next std::endl
+        std::flush
+            flush without printing a newline
+            don't do unless you have to (if the newline will not be coming on time)
+
+        you can stream in return values of <iomanip> functions to control formatting as well
+            std::setw(10) sets width of numbers to 10
+            std::boolalpha says print booleans as words
+                from <iostream>
+            std::setpreicion says use 3 significant digits for float
+            these manipulators are persistent (continue until set again, even after newlines)
+
+Object to String
+    std::stringstream and std::cout (which is an std::ostream) are both at least std::ostream
+        from <ostream> header
+        so if you overload operator<< (eg. as a friend function) with your type on the right
+            then return the ostream&
+            your object will be supported in both std::cout and std::stringtream stream operations
+
+    several built-in types already overloaded, but not the big collections
+    the wide version is std::wostream (same header)
+
+String to Object
+    overload operator>> on std::istream from <istream> header
+    then grab the fields like: is >> this.x >> this.y;
+    return the istream by reference
+
+    several built-in types already overloaded, but not the big collections
+        the wide version is std::wostream (same header)
+
+NOTE: stringstream is an ostringstream and istringstream at same time
+    you can directly use the o or i version if that's all you need in context
+    they are all in <sstream> header
+
+Regular Expressions
+    <regex> header
+
+    regex pattern(R"(\d+)");
+    bool match = regex_search(s, pattern); // pattern somewhere in string
+    bool match = regex_match(s, pattern); // whole string matches pattern
+    string replaced = regex_replace(s, pattern, replacement);
+
+    smatch matches;
+    while (regex_search(s, matches, pattern)) {
+        // capture groups in matches object
+        // by index only with []
+
+        matches.suffix().str();  // to go to next match
+    }
+        matches is iterable with strings that matched
+        also indexable with [] (eager)
 
 [Operators]
 Unique Aspects of C++
@@ -1629,3 +1750,4 @@ even more <algorithm> functions
 even more <functional> functions
 even more <iterator> functions
 std::basic_string_view
+add printing without newline to OOP template
