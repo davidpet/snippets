@@ -1,5 +1,3 @@
-Sure, here is a code snippet demonstrating the use of the coalescing operator in C++.
-
 #include <iostream>
 #include <optional>
 

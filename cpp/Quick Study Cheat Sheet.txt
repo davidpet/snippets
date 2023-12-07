@@ -1241,6 +1241,8 @@ Literals
     LR"()" -> the wchar_t version of raw string
     uR"()", UR"()" -> et. etc.
 
+    string literals are generally safe to pass around because stored statically
+
 Character
     char (and wchar_t) is both a numeric type and a character type
     if you print it with std::cout, it will print as a character
@@ -1549,6 +1551,24 @@ Unique Aspects of C++
     spaceship operator
     many different kinds of casts
 
+all the usual arithmetic, bitwise, logical, and comparison operators
+    inc. assignments, pre and post increment and decrement, ternary, etc.
+    / is floor division toward zero
+    don't forget <<= and >>= as well
+
+not present:
+    coalescing (can simulate with std::optional)
+    safe navigation
+    spread
+
+Truthiness
+    logical operators like && return bool
+    use of objects inside conditional operators relies on bool() conversion
+    numeric types are false if zero, true otherwise
+        including pointers
+    stdlib collections do not implement bool() conversion and cannot be used directly this way
+        nor can arrays since they will be seen as pointers and always true unless nullptr
+
 sizeof()
     sizeof(int)
         getting size of a data type on the current system
@@ -1574,10 +1594,13 @@ alignas()
 
 Reflection
     typeid(x).name()
+    typeid(x) == typeid(y)
+        true only if exact same type (not just compatible like base and derived)
 Casting
     long y = x; // implicit widening (coercion)
         also works for taking base pointer/reference from derived object
     int y = (int)x; // c-style casting
+    int y = int(x); // function-style casting (basically c-style)
     int y = static_cast<int>(x); // c++style casting
         for most simple casts
             eg. number conversions (up or down)
@@ -1617,8 +1640,126 @@ Move, Copy, Construction
     see "Classes" for details as all these can be overloaded in various ways
     for primitives it's simple - always copy
 
+Spaceship Operator
+    <=>
+    3-way comparison
+        same logic as a comparator for sorting (<0, 0, >0)
+    provides a way to implement one operator as the base for all 6 comparisons (<, >, ==, <=, >=, !=)
+        by using <=> and then applying logic that is always the same to derive these from it
+
+    return types from <compare> header
+        eg. std::strong_ordering indicates only <, >, ==
+
+    defaulting for a class results in element-wise spaceship operator
+        or possibl derived from comparison operators on class (ambiguous in the docs)
+    default operator== and operator!= will try to generate based on spaceship
+        but use == on members if no spaceship
+    
+    operator<, operator>, operator<=, and operator>= still have to be implemented
+        can't just default them even though always the same
+
+    don't ask ChatGPT too much about this topic
+        it saw too many draft proposals or something
+
+    typical ways to implement based on members is lexographically, like this:
+        auto operator<=>(const Point& other) const {
+            if (auto cmp = x <=> other.x; cmp != 0) return cmp;
+            return y <=> other.y;
+        }
+
 [Control Flow]
+Unique Aspects of C++
+    RAII
+    no 'finally' because of RAII
+    class destructor predictable, allowing scope-based context management
+
+the usual C-like stuff: if/else if/else, switch, for, while, do/while, break, continue
+    bodies with or without braces
 {} (with nothing in front of it) to make blocks within blocks for scope
+
+for loops
+    don't forget you can use commas for multiple variable
+        or leave parts empty between ;;
+        or have no body by putting ; after the ()
+
+range-based for loops
+    newer (C++ 11) construct that follows what other modern languages do
+    works on anything iterable or a built-in array type
+
+    for (int n : nums) {}
+    for (auto n: nums) {}
+    for (int &n: nums) {}
+    for (auto &n: nums) {}
+
+switch
+    has fallthrough and default
+    braces not required around case bodies
+    still only for numeric types (inc. strongly-typed enums)
+
+variables can be declared in conditional blocks
+    similar to what for loops do
+    eg. if (int x = getX()) {}
+        only executes if x is nonzero because that result is what is checked
+
+if-init
+    fairly new (C++ 20)
+    if (int y = x * 2; y % 2 == 0) {}
+    2 stages - first we initialize the variable, then we check the condition
+    benefit: lets you use y in the block without it having to have been zero or nonzero w/ condition
+
+Exceptions
+    can inherit from std::exception <stdexcept>
+        define char* what() {} method to get a message
+    generally anything is throwable though, even an integer
+
+    try {
+        throw std::runtime_error("Uh oh!"); // throw by value on new instance
+    }
+    catch (int e) {
+    }
+    catch (std::exception &e) {
+        // will be caught here by reference
+    }
+    catch (char) { // type with no variable
+    }
+    catch (...) { // default catch
+    }
+
+    there is no 'finally' keyword, but destructors can clean up
+        RAII idiom
+
+Asserts
+    <cassert>
+        assert(condition)
+            only in debug mode
+    static_assert(condition, message)
+        compile-time assertion
+        fails compilation with error if false
+        eg. assert that an integer template parameter is in the range it was designed for
+        eg. assert that an integral type (std::is_integral) is passed as template arg
+        no effect on runtime performance
+
+Context Management
+    no 'with' or try-with-resources construct because of RAII behavior of C++
+    but could make a context management class that manges scope
+        destructor ends the context - predictable in C++ unlike others
+    can control granularity within functions using anonymous {} blocks
+
+Generators/Laziness
+    nothing built-in
+    can implement your own iterable object to have it act lazily
+
+main() function
+    int main() {}
+        ignoring args
+    int main(int argc, char *argv[]) {}
+        argc >= 1
+        argv[0] = program part of the cmdline
+    void main() {}
+        not standard, don't rely on it
+
+    return value of main() is error code for OS
+        0 = success
 
 [Functions]
 Unique Aspects of C++
@@ -1830,6 +1971,11 @@ stdlib headers put stuff in std namespace
 headers that start with c (from the C standard library) do as well
     but some things also available in global namespace
     std:: versions are more typesafe in many cases
+
+<optional>
+    optional<T>
+        can set to a T or to std::nullopt
+        can coalesce with o.value_or(default)
 
 [Annotations]
 none in the traditional sense
