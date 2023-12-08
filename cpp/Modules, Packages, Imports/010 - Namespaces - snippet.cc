@@ -54,7 +54,8 @@ int main() {
     std::cout << Outer::Inner::innerVar << std::endl; // prints 40
 }
 
-// You can also use unnamed namespaces, which have potential linkage (they can be accessed only within the same file).
+// You can also use unnamed namespaces, which have internal linkage (they can be accessed only within the same file).
+// This is clearer than using 'static' and is now recommended.
 
 namespace {
     int unnamedVar = 50;
@@ -65,10 +66,19 @@ int main() {
 }
 
 // You can also use inline namespaces, which allow the use of their entities in the enclosing namespace scope.
+// The primary use case is versioning.
 
 namespace MyNamespace {
     inline namespace Inline {
         int inlineVar = 60;
+    }
+
+    namespace InlineOld { // this is not inline, but it's still here
+        int inlineVar = 50;
+    }
+
+    namespace Inlinev2 { // we canmove the 'inline' to here when we're ready
+        int inlineVar = 70;
     }
 }
 

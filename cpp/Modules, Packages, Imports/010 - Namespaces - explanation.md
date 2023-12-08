@@ -5,3 +5,5 @@ In the code, we have demonstrated the usage of namespaces in C++. We started wit
 Note: you could use `using namespace` to import all symbols from a namespace to the global namespace.
 
 Note: you can add to any namespace you want, including `std` if you really wanted.
+
+Note: when inside a namespace block, you can see the other members unqualified.

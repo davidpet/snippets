@@ -1954,7 +1954,8 @@ Linkage
         static variables
         static global variables
         static functions
-
+        anything inside unnamed namespace
+        
     normally global variables and top-level functions don't need 'static' because they already are
         but you can mark them as 'static' to change their linkage to internal
 
@@ -3467,6 +3468,7 @@ Renaming Symbols
     use 'typedef' and 'using' to rename symbols (see 'Variables' for more details)
     eg. using StringVector = std::vector<std::string>;
     only works for types, not functions or variables
+        can import functions or variables without renaming them with 'using' though
 
 Namespaces
     // in header
@@ -3474,6 +3476,7 @@ Namespaces
         void f();
         
         int x;
+        int y = x; // members inside namespace see each other without ::
     } // no semicolon
 
     // in source file
@@ -3487,6 +3490,20 @@ Namespaces
     
     f();  // unqualified call
 
+    // direct import
+    using MyNamespace::f; / allowed for functions, unlike typedefs/using for aliases
+    f();  // unqualified call
+
+    // re-importing to another namespace
+    namespace Other {
+        using MyNamespace::f;
+    }
+    Other::f();
+
+    // re-naming and importing into namespace
+    using StringVector = std::vector<std::string>;
+    StringVector v; // unqualified usage
+
 Access Levels
     only apply inside classes/structs
     no access level outside classes
@@ -3494,6 +3511,20 @@ Access Levels
 Statefulness
     global variables (and statics) can be used to share state
     but it's considered bad practice because hard to predict and debug order
+
+    Static Initialization Order Fiasco
+        a term that refers to the fact that statics and globals between modules have no definitive order
+        order is only guaranteed within the same translation unit (source file)
+        there are also separate phases for primitives going to zero vs. clases being constructed
+        to avoid this, restructure code not to rely on exact construction order
+            eg. "Construct on First Use" idiom
+
+    local statics are initialized the first time the code passes through them
+    'constexpr' or 'inline' makes global variable only initialized once
+
+    usually, everything global in the program should be initialized before main() starts
+        but the use of DLLs can break this assumption!
+
 Nesting
     namespaces can be nested, and then you have to qualify each one
     eg. namespace A {namespace B { int x; }}
@@ -3509,7 +3540,40 @@ Adding to Existing Namespaces
     namespace std {
         int myVariableThatLivesWithTheStandardLibrary = 10;
     }
+Unnamed Namespace
+    namespace {}
+    this is equivalent to marking all the members inside as static
+    internal linkage
+    symbols in enclosing namespace (within the file)
+Inline Namespace
+    inline namespace MyNamespace {}
+    the members of the namespace can be seen in the enclosing scope unqualified
+    eg. MyParentSpace::x instead of just MyParentSpace::MyNamespace::x
+    the main use case is versioning
+    eg. have a child namespace for each supported version
+        all are accessible directly by their version
+        but only one is marked inline, making it the default with no qualifier
+        when the next version is stable, move the 'inline' to that one
     
+Conflicting Symbols
+    cause compile error
+    that's why namespaces were introduced
+
+C++ 20 Modules
+    intended to replace the .h/.cc system that's always been used
+    compiler support still may be spotty
+
+    basically adds JavaScript-style 'export' and inline classes/functions in a .ixx file
+    then main.cc would 'import' by name
+    'import' and 'export' don't take strings and aren't prepcoressor directives!
+
+    you would have to compile the .ixx files into .o files
+    then rely on the .o files (and no headers) to compile the main program
+    apparently .o files will now contain interfaces under this system?
+
+    this avoids things like macros leaking out of headers
+    meant to be interoperable with the old .h/.cc system in same project
+
 [stdlib]
 Unique Aspects of C++
     relies very heavily on templates, static polymorphism, and duck typing
