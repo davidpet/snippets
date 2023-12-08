@@ -15,3 +15,5 @@ Note: since it's not shown in the snippet, here is how you'd actually use `std::
 std::function<int(int)> fn = [](int x) { return x * x;};
 std::cout << fn(10) << std::endl;
 ```
+
+NOTE: `std::function` stores things by copy, not by reference.  For function pointers it doesn't matter, but for lambdas and callable objects, if you expected shared state, you might not get it.  You can either capture by reference in lambdas, or use a shared `std::function` object to overcome that.

@@ -23,3 +23,5 @@ Note: You cannot call an unbound method with a `this` pointer as an argument lik
 Note: while the `&` is optional for normal functions assinged to function pointers, they're required for instsance methods.
 
 Note: a __virtual__ method reference from a base will call the derived one, due to how vtables work in C++.
+
+NOTE: you cannot call an unbound member pointer as a static function with 'this' as first arg, because that is not the calling convention of class methods.

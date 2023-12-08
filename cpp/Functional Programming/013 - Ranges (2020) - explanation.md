@@ -23,7 +23,7 @@ Ranges introduce a new way of working with sequences in C++. Instead of standalo
 
 Ranges in C++20 provide a new paradigm for data manipulation in the language. With a wide array of views and adaptors, developers can express complex data transformations with elegance and efficiency.
 
-Certainly! `std::views` provides a set of range adaptors that modify and transform ranges in various ways. Here's a list of some essential members of `std::views` you might find useful:
+`std::views` provides a set of range adaptors that modify and transform ranges in various ways. Here's a list of some essential members of `std::views` you might find useful:
 
 ---
 

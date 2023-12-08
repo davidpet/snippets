@@ -9,3 +9,5 @@ Next, we call the `modifyValue` function and pass `x` to it by reference. Inside
 Finally, we print the value of `x` again, which is now `20`, demonstrating that the original variable was indeed modified by the function.
 
 This is a basic example of passing by reference in C++. It's a powerful feature that allows functions to modify nonlocal variables, among other things. However, it should be used with care, as it can make code harder to understand and debug if overused or used improperly.
+
+NOTE: if you pass in a temporary object (an rvalue), it will be interpretted either as by value or by __constant referece__, depending on how the function is overloaded (error if ambiguous).  A function that takes a non-constant reference cannot take an rvalue.

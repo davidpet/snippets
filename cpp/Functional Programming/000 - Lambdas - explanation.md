@@ -6,3 +6,7 @@ Here is a short list of things you can do with lambdas in other languages that y
 - ommit the types in the parameter list (though you can use `auto`, but that makes a __generic__)
 - capture by reference independently of the enclosing scope
 - provide a single line lambda returning an expression without return or braces
+
+NOTE: by default, when you assign a lambda to a different variable, that is a __copy__, meaning all the variables captuerd by value will be independent.  If you want them to share state, either:
+  - capture by reference so they use the same state
+  - make the 2nd variable a reference so it doesn't copy (`auto &fn = otherFn`)

@@ -10,6 +10,6 @@ Also introduced in C++17, `std::apply` is used to call a callable object by unpa
 
 ### Notes:
 
-- `std::invoke` is a generalized function invoker that abstracts away the difference in syntax for calling different types of callable objects and members.
+- `std::invoke` is a generalized function invoker that abstracts away the difference in syntax for calling different types of callable objects and members.  It is similar to `std::bind` except that it calls instead of returning a function wrapper.  It can give you a python-like static function interface where 'this' is the first arg passed in.
   
 - `std::apply` is a utility for tuple unpacking. It's particularly useful when combined with functions that return tuples and you want to pass their results directly to other functions.

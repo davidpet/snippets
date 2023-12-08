@@ -1754,7 +1754,7 @@ Context Management
     can control granularity within functions using anonymous {} blocks
 
 Generators/Laziness
-    nothing built-in
+    nothing built-in until "ranges" feature in C++ 20 (covered in Functional Programming)
     can implement your own iterable object to have it act lazily
 
 main() function
@@ -1849,10 +1849,21 @@ Const and Ref Args
     behave just like variables
     good way to pass large objects without copying
         and specifying whether they're mutable or not
+    temporary objects (rvalues) can only be passed by reference if const reference
+        and then be careful of ambiguity with passing by value, which can trigger compile error
 RValue References
     see discussions in "Variables" and "Classes"
     move/copy semantics at the function level
-    std::move() or a temporary object at the callsite
+    std::move() on an lvalue, or a temporary object (rvalue) at the callsite
+    just doing std::move on an object doesn't itself change it - just calls the rvalue overload if available
+        it's then expected that the function would change it and make the old one invalid after
+            but if you know that it doesn't, then you can ignore that
+    rvalue overload or lvalue overload are ambiguous with passing by value
+    but if you have both lvalue overload and rvalue overload
+        rvalue has precedence over lvalue for rvalues, even if lvalue ref is const
+            lvalue overload cannot even take an rvalue unless const though
+        rvalue reference will never take lvalues unless std::move
+
 Keyword Args
     not supported
     use map<> or similar to simulate it
@@ -2017,11 +2028,14 @@ Not supported: nested functions
 Unique Aspects of C++
     lambdas very different
         not fat or skinny arrows, unless you count the trailing return type
+        no single-line inline without {} and return
     function pointers can't hold lambdas that capture
     capturing has to be specified very explicitly
     capture by reference is dangerous because not a garbage collected language
     have to put placeholders in partial application
         but can reorder and interleave unbound with bound
+    divergence of types of callable things and need for a polymmorphic wrapper
+    pipe opeator for lazy stream operations
 
 Function Pointer
     double (*fPtr)(double, double) = multiply;
@@ -2042,30 +2056,141 @@ Callable Object
 
 Lambda
     [](double num) { return num * 3; }
+        can pass this expression directly to a function that wants something callable
+    auto triple = [](double num) { return num * 3;}
+        the type of a lambda is a secret for the compiler
+            but you can bind it to a variable with 'auto'
+        tripe(10) will return 30 just like a normal function call
+    
+    [x,y](){}
+        the [] is for capture specification
+        in this case, x and y are captured by CONSTANT VALUE (immutable, but independent)
+            captured at moment the lambda is created, then independent
+    [x,y]() mutable {}
+        the mutable keyword says x and y are not constant
+        they are still BY VALUE here, but you can treat them like normal local variables
+            captured at moment the lambda is created, then independent local variables
+    [x, &y](){}
+        y is captured BY REFERENCE (not const)
+        it can modify the value of y long after the lambda is returned (when called)
+        just like any reference variable
+        but it does not cause it to stay alive
+            so if it's a local variable or deleted, this will cause an issue
+    [](){}
+        empty capture spec still required, because it tells compiler this is a lambda
+    []() -> int {}
+        trailing type, if needs to be specified
+        usually return type is inferred
+        NOTE: do not confuse this with Java arrow functions!
+    [this](){}
+        this is a variable you can capture like anything else
+        eg. to return a lambda from a class method that continues to interact with the class instance
+    [=,&y](){}
+        automatically capture any variable mentioned in the body by value
+        except y which is by reference
+    [&,y](){}
+        automatically capture any variable mentioned in the body by reference
+        except y which is by value
+    [=](){}
+        default only without exceptions
 
+    can use _, _1, _2, etc. as ignored param names
+        no special meaning, technically real variables
+
+    unlike other languages:
+        you cannot ommit () ever
+        you cannot ommit {} ever
+            no single-line inline expressions without return 
+        you cannot have types of arguments inferred
+            except if call them 'auto', which makes a generic lambda
+
+    auto fn = [](){}
+    auto fn2 = fn;
+        this is actually a copy!
+        any values captured by value or duplicated and independent even if mutable
+    auto &fn2 = fn;
+        this is not a copy
+        you can also capture by reference so that it doesn't matter if it's a copy
+    
 Pointer to Member (Method Reference from Java)
-    ???
+    Instance Methods
+        the class where the method lives is part of the type
+
+        void (MyClass::*unboundPtr)() = &MyClass::printX;
+            the * and & are both required here (no leeway like normal functions)
+            this is UNBOUND because we used MyClass instead of an instance on the right side
+        (instance.*unboundPtr)();
+            the * is required here (no leeway like normal functions)
+            this calls the unbound function on an instance
+        you cannot call an unbound member like a static function
+            because that is not the calling convention
+            'this' is treated specailly
+        an unbound pointer to member must be bound to be callable
+
+        you cannot get a BOUND member function directly from an instance
+            you have to get the unbound one and bind it
+        auto boundFn = std::bind(&MyClass::printX, obj); // can add other args and placeholders too
+            std::bind is smart enough to be able to bind 'this' as the 2nd param
+                when the 1st arg is a pointer to member
+            even though you can't normally call an unbound method this way
+        boundFn();  // call like a free function
+
+        for a virtual method, binding to a more derived class will use the more derived implementation
+            because pointers to members still call through the vtable
+            in some contexts this is known as being "contravariant"
+
+    Static Methods
+        don't actually use pointers to members and bound/unbound concept
+        void (*staticfPtr)() = MyClass::printStatic;
+            exactly like normal function pointer but with scope resolution to find the function
+            optional & on right side just like normal Functions
+        staticPtr();
+            use like any function pointer
 
 Things You Can Pass to <algorithm> Functions
     eg. std::transform
     functions directly (implicitly as function pointers)
-    function pointers
-    pointers to members
+    function pointers (inc. static methods or free functions)
+    bound pointers to members
     callable objects (instantiated)
     lambda
 
 Traditional Functional Operations
-    map() is implemented by std::transform
+    map() is implemented by std::transform (or std::views::transform)
     reduce() is implemented by std::accumulate
-    filter() is implemented by std::copy_if
+    filter() is implemented by std::copy_if (or std::views::filter)
     any(), all(), none() are implemented by std::any_of, std::all_of, std::none_of
-    zip() is not implemented
+    zip() is not implemented until C++ 20 with ranges
 
 Type of Function Object
+    there is no unifying type to capture all the callable object types
+    the type of a lambda is a secret only the compiler knows
+        you can use 'auto' and 'decltype' to refer to it
+
+    a function pointer can point to a lambda only if it doesn't capture anything
+        once it captures even one thing, then you can't do it
+        not sure if it copies or not, and since it doesn't capture, I'm not sure it matters
+    
     std::function (from <functional> header)
-            polymorphic wrapper for function-like things
-            not a base class of function objects, but rather just knows how to wrap them
-            including functions, lambdas, function pointers, etc.
+        polymorphic wrapper for function-like things
+        not a base class of function objects, but rather just knows how to wrap them
+        including functions, lambdas, function pointers, bound pointers to members, callable objects
+        a way to hold all those kinds of things in a single callable interface
+
+        std::function<void(int, int)> fn = someFunction;
+            if someFunction is callable with 2 ints and returns void
+                we can store it as a variable here, just like a
+                function pointer, but more general
+        fn(10, 20); // call it just like a function
+
+        see "std function" snippet for example implementation
+
+        std::function will copy rather than reference
+            for function pointers, doesn't matter
+            for lambdas and callable objects, it matters
+                for lambdas, capture by reference if don't want that
+                for callable objects, restructure the code
+                    eg. pass std::function around by reference
 
 Built-in Function Objects
     in <functional> header
@@ -2104,12 +2229,79 @@ Partial Application
         int count_less_than_five = std::count_if(nums.begin(), nums.end(), 
                                                  std::bind(std::less<>(), std::placeholders::_1, 5));
 
+        if fn is a pointer to member, then arg1 should be an instance
+
     std::ref(val), std::cref(val)
         create ref or constant ref of a value for partial application
         basically wraps the value in a wrapper object that takes the appropriate reference internally
         the wrapper implements operators like assignment to forward to the internal value
 
-Not supported: zip operation
+    std::invoke(fn, arg1, arg2, ...)
+        similar to std::bind, except it actually calls the fn
+        if fn is a pointer to member, arg1 should be an instance
+        this is a way to make a method act like a static function that takes a 'this' first like in Python
+
+    std::apply(fn, tuple)
+        apply a tuple as args to pass into fn
+        you can pass an std::pair as the tuple as well
+        doesn't automatically support pointers to members like std::invoke does
+
+IIFE
+    [](){}(); // no need to put () around the lambda
+    not a common practice in C++, but could be a way to create a lexical capture point for the args
+
+Generic Lambdas
+    if you use 'auto' as a param type or return type in a lambda, it is generic
+    once you assign it to a variable, that variable stores an instantiated concrete version
+    variable types like function pointers and std::function must use the concrete version only
+
+Mismatched Return Types on Callables
+    std::function<void(...)> will ignore return values for you
+        but function pointers will not
+    other conversions are not done automatically - the types of variables must match exactly
+
+Ranges
+    new in C++ 20
+        so expect compiler support to be a little bit spotty
+
+    a range is anything that has a begin() and end() for iteration (or is an array)
+        basically anything iterable
+    <ranges> header has lazy stream operations to operate on ranges without having to pass pairs of iterators
+        turn collection into a view, which is a lazy view of the sequence
+        then views have | operator overloaded so you can build a pipeline to process the data
+            eg. auto filteredView = std::views::all(vec) | std::views::filter(predicate) | std::views::transform(fn);
+            eg. vec | std::views::filter(predicate);
+                | overloaded for built-in collections like vector and string for you already!
+    
+    std::views namespace
+        all(range)
+            get view based on a collection
+        iota(a, b)
+            get view from a to b (exclusive) step 1
+            use other views to change the step if needed
+        zip_view(view1, view2, ...)
+            zips together
+
+        filter(fn)
+            filter view based on predicate
+        transform(fn)
+            like map()
+        take(n)
+        drop(n)
+        reverse()
+            reversed view of whole sequence
+        split(delim)
+            can be used for string splitting
+        join (no parenth)
+            flat map a range of ranges
+        keys (no parenth)
+            getting first item out of range of pairs
+        values (no parenth)
+            getting second item out of range of pairs
+
+    views are iterable if you want to see their elements
+    you can also pass them to constructors that take iterables, to get back to a collection
+        std::vector<int> v = oldv | std::views::filter(fn) | std::views::transform(fn2);
 
 [Classes]
 Unique Aspects of C++
@@ -2222,6 +2414,16 @@ Unique Aspects of C++
 
 you cannot directly cast between collections of different element types
 
+when a type arg represents the type of a callable object:
+    MyClass<void(int, int)>
+        MyClass gets 1 type, which is a callable that takes two ints and returns void
+    since tempalates are duck-typed, this matches anything callable like that
+        function pointer, lambda, etc.
+    MyClass<int(void)>
+        this is what it looks like with no args
+    MyClass<int()>
+        this is also fine
+
 [Imports/Modules]
 ???
 
@@ -2256,3 +2458,5 @@ even more <functional> functions
 even more <iterator> functions
 add printing without newline to OOP template
 failbit
+not c++ related: my notes elsewhere say corecursion is alternative to queue for BFS (corecursion uses queue)
+data members 
