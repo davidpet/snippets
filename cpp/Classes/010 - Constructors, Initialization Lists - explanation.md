@@ -13,3 +13,5 @@ In the `main` function, we create objects of each class to demonstrate the use o
 Note: the c'tor init list is the only place you can __bind a reference__ dynamically.
 
 Note: the example on line 39 is included to show that it's safe and legal to use the same name for a parameter and for a value that uses that parameter in the constructor initialization list, though it might not be too readable. This could be resolved by using conventions like `m_` for private member names, etc.
+
+If you provide the constructor body separately from the prototype, the initialization list goes with the body, not the prototype.

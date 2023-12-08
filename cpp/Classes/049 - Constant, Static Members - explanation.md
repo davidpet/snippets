@@ -2,7 +2,7 @@
 
 __Constant fields__ are part of the __class instance__ and must be set either inline or in the initialization list - they cannot be left to become junk if they are numbers. They __do not__ have to be set by __compile-time constant__.
 
-__Static constant fields__ are different because they are not part of an instance. So the storage for them is global, meaning they must be defined outside the class as a __constant variable__ if they are not set __inline__ (cannot be set in initializer list)And unlike with constnat fields, they have to be set by a __compile-time constant__.
+__Static constant fields__ are different because they are not part of an instance. So the storage for them is global, meaning they must be defined outside the class as a __constant variable__ if they are not set __inline__ (cannot be set in initializer list). And unlike with constant fields, they have to be set by a __compile-time constant__.
 
 __Static fields__ that aren't const are special again in that they cannot be set inline for some reason.
 

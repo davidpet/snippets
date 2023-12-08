@@ -32,3 +32,16 @@ Typically, the ones that involve other types that might be on the left or right 
 Note: operators can also have __const overloading__ and stuff like that, just like any method.
 
 Note: due to __Argument Dependent Lookup__, operators are checked not just in the current namespace but in the namespaces of arguments to the operators.
+
+# Defaulted Comparisons (C++ 20)
+  - perators like operator== are not automatically created for a class
+  - but there are defaults you can implement by specifying = default
+        - only if the members are compatible
+
+    - operator==
+        - memberwise ==
+    - operator<=>
+        - memberwise <=>
+
+    - depending what you read and how you ask the question,
+        - just defaulting == and <=> might default the other 5 comparison operators

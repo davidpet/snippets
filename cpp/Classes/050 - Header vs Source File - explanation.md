@@ -6,6 +6,7 @@ In reality, the following usually go in a header (that is protected to only incl
 1. class declarations
 1. function prototypes
 1. extern variables
+1. `virtual`, `override`, `final`
 
 While the implementations of class methods, functions, and variables usually go in a source file that is linked in with the target program, having been compiled without the user having to see it.
 

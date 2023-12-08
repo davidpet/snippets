@@ -486,6 +486,21 @@ alignas()
     see "Operators" for details
     lets you specify the word alignment of a variable in memory for performance
 
+uniform initialization
+    see "Classes" section
+
+all the meanings of 'static'
+    1. local variables
+        set first time and then stick around for future calls
+    2. member variables
+        set first time outside class and then stick around to be referenced with ::
+    3. member functions
+        defined in class and called with ::
+    4. internal linkage
+        turn global variable or function into internal linkage
+    5. static polymorphism
+        templates, function overloading, etc.
+
 Not Supported: interning/pooling
 
 [Collections]
@@ -2311,6 +2326,7 @@ Unique Aspects of C++
     methods are not virtual by default
         this makes it difficult to extend things like stdlib collections like you could in others
         also causes weird name hiding behavior for non-virtuals
+    multiple/diamond inheritance
     true destructor called at predictable time
         which leads to RAII idiom
     operator overloading
@@ -2323,6 +2339,176 @@ Unique Aspects of C++
     subclasses can arbitrarily change access levels of base members (not just increase)
     structs are just classes with different default access
     this-> instead of this.
+    no root object of filesystem
+
+Overall Syntax
+    // header file (typically)
+    class MyClass {
+        public:
+            int x;
+            int y = 100;  // default value
+            int z;
+            static int s;
+
+            MyClass(int val, const std::vector &vec): y(200), z(1000), m_vec(vec)
+            {
+                x = val;
+                ++s;
+            }
+
+            void f() {} // defined inline
+            static void g() {} // defined inline
+
+            void h();  // no body - must be linked in by the linker
+            static void i(); // no body - must be linked in by the linker
+
+        protected:
+            // members only subclasses can see
+        private:
+            // members only this or other instances of this class can see
+
+            const std::vector &m_vec;
+        public:  // can repeat modifier sections to keep adding
+    };  // class prototype must have ; at end (very singular for C++)
+
+    // cpp file (typically - if applicable)
+    int MyClass::s = 0; // static values must be initizlied outside as if global
+
+    void MyClass::h() {} // implementation for h
+    void MyClass::i() {} // implementation for Static
+        // note that you don't mark it as static here!
+
+    // client file
+    MyClass m(10);
+    std::cout << m.x << std::endl;
+    std::cout << MyClass::s << std::endl;
+    std::cout << m.s << std::endl;  // same as MyClass::s
+    m.f();
+    m.g(); // or MyClass::g()
+    m.h(); // will compile - will only link if the cpp file is properly linked in
+
+Inheritance Syntax
+    class BaseClass {
+        public:
+            BaseClass(int x) {} // c'tor has no return type
+
+            virtual void f() {}
+            virtual void g() = 0; // pure virtual
+
+            void h() {} // not virtual
+
+            ~BaseClass() {} // d'tor has no return type
+    };
+
+    class DerivedClass : public BaseClass, public OtherClass { // inheriting from 2 classes
+        // members just like any other class
+        // but can refer to public and protected members of base unqualified
+
+        publc:
+            DerivedClass(): BaseClass(10) {}
+
+            void f() override {}  // overriding f
+            void g() override {}  // now DerivedClass is a concrete class
+
+            void h() {} // not virtal  (hides base version)
+    };
+
+Inline Member Initialization
+    provides default values than be be overriden in c'tor init list
+    does not have to be compile-time constants
+        except for 'static const' variables which do
+    static members can't be initialized inline unless also constant ('static const')
+        in which case has to be inline, or outside class (not in init list)
+    doing something like x(x) where x is a parameter and also a member
+        is fine and works correctly
+    note that any numeric values not set either inline or in the c'tor list (or c'tor body)
+        are initialized to junk just like normal local variables
+Constructor Initialization List
+    optional, and only has to set the variables you want to set
+    another chance to set or override default values of variables
+    also the last chance to set references and constants
+        compiler will complain if not set by end of this
+    runs before the c'tor body, but can take args from the c'tor to help bind
+
+    the c'tor initialization list is also where you can specify base class constructor params
+        no need if using default constructor of base
+        must be done here - not in the body
+    you can also delegate to another c'tor of this class with different overload
+        eg. DerivedClass(): DerivedClass(0) {}
+
+    if you provide the c'tor body via a cpp file, but the c'tor init list with the body
+
+Access Modifiers
+    only public, private, protected
+    default in class is private
+    default in struct is public
+    default inheritance is private (almost always pick public)
+        protected inheritance means public members become protected
+        private inheritance means all members become private
+
+    you can arbitrarily change access level of a virtual member in a subclass
+        not just increase access like in Java
+        the interface you call through determines the access level it has at that moment
+
+    you can change access level without overriding a member like this:
+        using BaseClass::f;  // if BaseClass has a private method f() for instance
+
+Interfaces and ABCs
+    no special keyword to define an interface or an abstract class
+    you make a method abstract (pure virutual) with = 0
+    then nobody can instantiate that class, but subclasses can implement it to become concrete
+    an interface can be made just by making a class with all pure virtual members
+
+Name Hiding/Virtual Methods
+    methods are not virtual by default
+    they will exhibit name hiding (which one you get depends on which interface you use)
+    if you mark them virtual, then they will behave virtually
+    only methods can be virtual (not variables like in scripting languages)
+    once a method is virtual in the chain, it is always virtual
+        a subclass that defines it as not virtual still gets a virtual one implicitly
+
+    in the past, you would mark derived methods as virtual
+    now there's an 'override' keyword you can put between the params and the body
+        instead of putting 'virtual'
+        do it for overriding pure virtual as well
+    helps clarify intent - and gives compiler something to verify
+        eg. before if you think you're overriding but you're not, it couldn't tell
+Multiple Inheritance
+    true multiple inheritance, not just 1 class and interfaces
+    good for mixins
+Calling Base Method from Derived Override
+    within the class:
+        BaseClass::f();
+            looks static but it's not
+    outside the class:
+        x.BaseClass::f();
+Accessing Hidden Base Member
+    in the case of name hiding of variables or methods that aren't virtual
+    same syntax as calling base virtual method from derived
+    m.BaseClass::x
+    or BaseClass::x inside the class
+    static members get hidden this way too, and the same syntax bails you out
+Diamond Problem
+    when you inherit from two classes that both have the same base
+    by default, C++ has 2 separate copies of the base
+    you have to access them through scope resolution of the two bases with the conflict
+        you cannot resolve it with 'using' like you might think
+        eg. m.Base1::x
+    this can also lead to multiple paths through the inheritance tree depending on which node you cast up/down from
+
+    another way to solve it is virtual inheritance
+        class MyClass : virtual public BaseClass {}
+    usually you specify virtual inheritence on each of the bases that has the common base
+        you don't need to specify it on the derived class that inherits from them both
+    basically it means any subclass of these classes must specify its own common base constructor in c'tor list
+        thus collapsing to 1 copy of the common base, breaking the ambiguity
+    it breaks encapsulation a bit because you are specifying a base multiple levels down instead of immediate
+
+'this'
+    this is implicit inside the class when applicable
+    if you do use it, remember it's a pointer, not a reference
+'new'
+    only for dynamic allocation (this is not Java)
 
 Static Members
     mark a variable or method as static
@@ -2333,19 +2519,63 @@ Static Members
         interesting to note: no 'static' specifier here
             inferred by the compiler because of the class declaration
             you could also interpret this as a global variable that happens to be scoped in the class
+        but if 'static const', there is a 'const' specifier here
+        eg.
+            const int MyClass::staticConstVar = 10;
     static members can be referred to inside the class unqualified just like instance members
     outside the class, either via MyClass::staticthing or via m.staticthing
-        only 1 shared thing either way
+        only 1 shared thing either way (not a copy like Python)
+        first version is better style, more readable
+Static Classes
+    no such concept as a static-only class like C#
+    but you can make a class with all static members, like the Java stdlib does a lot
+    give it a private constructor so nobody can instantiate it
 
 Reference Members
     must be bound in c'tor initialization list or inline
 Constant Members
     must be bound in c'tor initialization list or inline
+    numbers cannot be allowed to stay junk
+    'static const' members can't be set in initialization list
+        either inline or outside the class like other statics
+
+Nullable Members
+    in C++, the only way to have nullable members is via pointers
+        because references have to be bound right away
+    if you want the class to own the storage, make it a smart pointer
+
+Const Overloading
+    any method marked 'const' promises not to change the state of the object
+        the compiler won't let it do so
+        it also won't allow it to call other non-const methods of the class
+        doesn't care what you do with static members though
+
+    eg. void f() const;
+    eg. void f() const {}
+
+    when you have a constant variable (by value, reference, or pointer),
+        it will only be allowed to call const methods
+        this ensures that it remains immutable
+
+    you can overload a method purely by whether it's const or not
+        then the const one will be used for constants
+        and the non-const one will be used otherwise
+
+    "const correctness" is the technique of applying const wherever you can
+        for readability and safety
+
+    to allow a variable to be changed by a const method
+        mutable int x;
+    an even more dangerous way to get around it is with const_cast (don't do it!)
 
 Memory Layout
     the variables needed + padding to align for the CPU + vtable if virtual members
     automatic variables declared in the class prototype are part of the class storage
     references stored as pointers, secretly
+
+Methods
+    anything mentioned in "Functions" section goes for methods too
+    inc. all the crazy stuff like trailing return types, etc. etc.
 
 Constructors
     named after the class
@@ -2353,15 +2583,83 @@ Constructors
 
     default = the one with no args
         can have body and init list
+        can make it protected or private to control who can create object
+        all members use default (or init list) values
     parameterized = any other ones that take parameters
     copy = taking const reference to another object of same type
     move = taking rvalue reference (&&) (not const) to object of same type
+        rvalues will prefer move c'tor but use copy c'tor if no move c'tor present
 Assignment Operators
     look like constructors but named operator= intead of after the class
         also return the class type itself (usually by reference)
     
     copy = taking const reference to another object of same type
     move = taking rvalue reference (&&) (not const) to object of same type
+        rvalues wll prefer move assignment but use copy assignment if none present
+
+Default Operations Included in Class
+    default c'tor
+        all members defaulted
+    copy c'tor
+        memberwise copy construction, if all available
+    move c'tor
+        memberwise move construction, falling back on member copy constructor if not
+
+    copy assignment
+        similar memberwise logic to copy c'tor
+        does not reuse or rely on copy c'tor
+    move assignment
+        similar memberwise logic to move c'tor
+        does not reuse or rely on move c'tor
+
+    destructor
+        does nothing
+
+    if you provide a parameterized constructor (or custom default constructor)
+        you lose the automatic default c'tor and move c'tor + assignment
+        but you keep the 4 copy/move things
+    if you provide a move c'tor or move assignment
+        you lose the copy c'tor and assignment
+    if you provide a copy assignment
+        you lose the move c'tor + assignment
+    if you provide a destructor
+        you lose the move c'tor + assignment
+    any of the above can be put back using 'default' (see below)
+
+    you can provide your own implementation of any of the above
+        including changing the access level
+
+    you can explicitly remove one of the automatic methods above:
+        MyClass() = delete;
+            removing default constructor
+    you can explicitly add one of the automatic methods above:
+        MyClass() = default;
+            reasons to do this:
+                change access level
+                restore default c'tor when have parameterized
+                be more explicit for readability
+                signal using base virtual destructor on purpose
+
+    remember that whether c'tor or assignment is called has to do with variable binding
+        instead of whether using = or not
+
+Construction Order
+    1. if init list delegates to another c'tor in same class, that whole c'tor runs first
+        then the init list and body of this one
+    2. base class(es) constructed (possibly taking override from c'tor init list)
+    3. inline member initializations (possibly taking overrides from c'tor init list)
+        happens instead of the default given with =, not on top of it
+    4. init list (whatever didn't override earlier steps)
+    5. c'tor body
+
+    WARNING: the vTable is constructed incrementally
+        calling virtual method during base construction will call base implementation
+Destruction Order
+    derived, then base, and so on
+Virtual Destructor
+    if a class might be used as a base pointer for a more derived type
+    and if the base pointer might be used to destroy the derived one (eg. due to placement new or whatever)
+    mark the destructor as 'virtual'
 
 Move/Copy Semantics
     whether constructor or assignment is called does not depend on whether () or = used
@@ -2389,9 +2687,219 @@ Hashing & toString()
     see "Collections" for how to do it
         "Implementing Elements for Collections" and "Custom Hasher"
 
+Nested Classes
+    classes inside other classes act like static classes in Java
+    visibility subject to the section they're in
+    but the nested class and enclosing class don't automatically see each others' private members
+
+    classes can also be declared inside function bodies, unlike Functions
+Anonymous Class
+    not a 1st class language feature, but you could declare a class in the function and instantiate it
+    if it implements some interface, then nobody outside would ever know what it is really
+        same could be true of a private class, though at least that's in the header
+    note that it does not close around local variables like in other languages
+
+Friend Classes
+    inside the class prototype:
+        friend class TheOtherClass;
+    now TheOtherClass can see all the private members of instances of this class
+Friend Functions
+    inside the class prototype:
+        friend void f();
+    now f() can see all the private members of instances of this class
+    very useful for operator overloading where the overload has to live outside
+
+    alternatively, define the friend function inside the class
+        friend void f() {}
+    since it's declared friend, it is not a true member of the class
+        can't even be called through the class like a static method
+    to call it from outside, you have to define a prototype for it outside
+        do not include the class or scope resolution in the name
+        not needed if it's an operator
+    this is a way to keep the overloaded operator code all physically inside your class
+
+Operator Overloading
+    some operators done as members, some done as friend functions
+        usually if something else on left side (or could be on either side), it's friend function
+        some operators can be overloaded either way
+    have some flexibility about whether to use value, ref, const ref params and returns
+        but there are some standards that are usually always about the same
+    you can overload your own operator overloads too (eg. const overloading)
+    prototypes of operators can be formatted flexibly:
+        eg. operator+()
+        eg. operator + ()
+    operators don't get auto-implemented in terms of each other
+        eg. implementing = does not implement +=
+        eg. implementing == does not implement !=
+    
+    some syntax examples:
+        MyClass& operator=(const MyClass& rhs);
+
+        ReturnType operator()(ArgType1 arg1, ArgType2 arg2, ...);
+            // call operator can be overloaded to provide different ways to call too
+
+        ValueType& operator[](KeyType key);
+        PointerType* operator->();
+
+        friend std::ostream& operator << (std::ostream& out, const Complex& c);
+
+        explicit MyClass(const std::string& str);
+        operator int() const;
+    the list of operators you can overload is huge
+        math, logic, assignment, indexing, conversions, streams, etc.
+    conversions
+        from other to this = constructors
+            used by static_cast<> automatically
+        from this to other = operator
+        either one can be marked as 'explicit' to prevent implicit conversion
+            then it will require static_cast<> to be used
+        
+        implicit conversion will widen numbers if needed and then convert 1 level
+            to make args match a prototype
+
+        conversion operators don't have return types because the operator is the return type
+            also since they're words instead of symbols, format like this: operator int()
+    
+    overloads are found via ADL (Argument Dependent Lookup)
+        namespaces of all the arguments checked if not found in current namespace
+Defaulted Comparisons (C++ 20)
+    operators like operator== are not automatically created for a class
+    but there are defaults you can implement by specifying = default
+        only if the members are compatible
+
+    operator==
+        memberwise ==
+    operator<=>
+        memberwise <=>
+
+    depending what you read and how you ask the question,
+        just defaulting == and <=> might default the other 5 comparison operators
+
+Forward Declarations
+    in order for classes to use each other, they need to know enough info to do what they're doing at that moment
+    for instance, in order to take a reference or pointer to another class, you only need to know that it's a class
+    but to access its members, you need the whole prototype
+
+    eg. if ClassA and ClassB both have methods that take references to each other
+        then you can forward declare B so that A knows how to store a reference
+        then A comes before B, so B already knows what A is
+        then put the bodies of the methods in the cpp file so that the whole structure is known in the implementation
+
+    class ClassB;  // forward declares that ClassB is a class, so ClassA can take references/pointers to it in prototype
+
+    this is a special case where you're allowed to "redefine" a symbol (because it's really defining it in phases)
+        also an extension of the idea of how function prototypes work
+
+References Types vs. Value Types
+    this concept doesn't exist in C++ because it's not a reference-based language
+    all types are value types, in that they prefer to copy when they can
+    but you make them references and const references to make it more efficient or share data
+
+struct vs. class
+    struct and class are almost the same thing now
+        though struct is usually used for POD types
+    a struct is just a class with these differences:
+        default public instead of private members
+        default public inheritence instead of private
+    these things make it nicer to add members and bases with more compact syntax
+
+    padding is not different between classes and structs
+        to use a struct to access a structure in a file, in either case, you need to tell it not to pad
+            via compiler-specific pragmas, etc.
+                eg. #pragma pack
+
+'final' classes/methods
+    class MyClass final : public MyBase {}
+    void f() final {}
+
+    prevent overriding a method or inheriting from whole class
+    note that unlike in Java, 'final' and 'const' are both keywords meaning differnet things
+
+Covariant Return Types
+    yes
+
+Uniform Initialization
+    when you use {} instead of () or nothing
+        eg. MyClass m{1, 2, 3};
+        eg. MyClass m = {1, 2, 3};
+        eg. Myclass m = MyClass{1, 2, 3};  // this is actually not a copy
+        eg. f({1, 2, 3}) // f(MyClass m)
+        eg. MyClass *m = new MyClass{1, 2, 3};
+
+    C++ has this order of precedence for what the values inside will mean:
+        1. if the class has a c'tor that takes std::initializer_list, {} will populate that list
+            std::initializer_list is a lightweight wrapper around a temporary array
+            raw arrays also act this way
+        2. if at least one user-defined c'tor is prsesent:
+            {} will be used for args
+            c'tor matched based on args passed in
+                eg. {} for default c'tor
+        3. otherwise, if all members public (like in a struct by default):
+            {} specifies the fields in order
+            just like it always did prior to the introduction of uniform initialization
+
+    can also be used to explicitly convert:
+        eg. int n{o}; // same as int n(o);
+    when used with numeric types, makes it default to zero instead of junk
+        eg. int x{};  // instead of int x;
+        // same as int x();
+    can also use it to specific specific numeric value
+        eg. int x{100};
+
+    arrays always supported this:
+        int arr[] = {1, 2, 3, 4, 5};
+    but this syntax means you can also do this:
+        int arr[]{1, 2, 3, 4, 5};
+
+What To Ommit From Function Body in Source File
+    'static'
+    access specifier
+    'virtual', 'override', 'final'
+    you need the rest of it, including 'const', reference, etc.
+
+Object Suicide
+    delete this; // from within a class method
+        after that point, do not access any members!
+    
+    the caller may still have a pointer/reference, but it's invalid now!
+
+    this is a very niche pattern
+    where you know the object is on the heap
+    and other things like smart pointers, etc. won't do
+
+vtable 
+    dynamic dispatch of virtual functions
+    if no virtual functions, no vtable
+    array of function pointers, pointing to most derived version of each method
+        built incrementally during construction through the inheritance chain
+    casting between base and derived pointers safe because vtable is structured properly for that
+    for diamond inheritance, it's less straightforward
+        compiler has to "thunk" the 'this' pointer to point to right vtable
+        thus, the memory address of the pointer differs between casts, instead of being the same
+    exact placement is not part of the spec
+        but commonly, it's pointed to by vptr at beginning of class layout
+
+Typedefs Inside Class
+    accessible from inside unqualified
+    accessible from outside via scope resolution from class (if public)
+        not from instance
+        though you could do decltype(instance)::iterator for instance
+            in many cases just using 'auto' will do the trick though
+    syntactically, it works just like normal typedefs (or using), but just inside the class
+        class MyClass {
+            public:
+                typedef int Integer;
+                using Int = int;
+        };
+        MyClass::Integer x = 5;
+    very important feature for standard library containers
+
 Not available:
-    extension methods
-    partial classes
+    extension methods (opreator overloading often achives similar results)
+    partial classes (impossible because c++ needs memory layout of class)
+    root object
+    boxing/unboxing
+    auto-implemented properties (get; set;)
 
 [Templates]
 Unique Aspects of C++
@@ -2425,7 +2933,16 @@ when a type arg represents the type of a callable object:
         this is also fine
 
 [Imports/Modules]
-???
+Header vs. Source File Conventions
+    usually these go in the header:
+        class prototype
+        function prototype
+        extern variables
+    usually these go in the source file:
+        non-inline class methods
+        class static variables
+        non-inline function bodies
+        global variable initialization
 
 [stdlib]
 Unique Aspects of C++
@@ -2460,3 +2977,5 @@ add printing without newline to OOP template
 failbit
 not c++ related: my notes elsewhere say corecursion is alternative to queue for BFS (corecursion uses queue)
 data members 
+std::any
+templates and decltype

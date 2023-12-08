@@ -24,6 +24,6 @@ For dynamic allocation with `new`, the same syntax applies (on the right side), 
 
 Uniform initialization syntax can perform __conversions__ as well. For instance, both `int a(o);` and `int a{o};` perform __explicit conversion__ of an object o to an `int`.  Both of those versions will trigger a warning if you try to downcast a number though (need to use `static_cast` for that).
 
-Construction of __primitives__ is a little special.  They don't have true default constructors the way classes do - some types they default to junk (`int x;`) and sometimes they default to 0 (`int x{};` or `int x();`).  You can specify 0 or any other value explicitly like `int x{100};` or `int x(100);`.
+Construction of __primitives__ is a little special.  They don't have true default constructors the way classes do - sometimes they default to junk (`int x;`) and sometimes they default to 0 (`int x{};` or `int x();`).  You can specify 0 or any other value explicitly like `int x{100};` or `int x(100);`.
 
 __Arrays__ always supported `int arr[] = {1, 2, 3, 4, 5};` - that is the basis for the new uniform syntax. But you can also do `int arr[]{1, 2, 3, 4, 5}`, which may or may not be new.
