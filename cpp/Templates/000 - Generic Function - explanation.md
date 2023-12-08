@@ -9,3 +9,5 @@ The `print_pair` function is a generic function with more than one type paramete
 The `print_array` function is a generic function with a non-type parameter. It takes an array of any type and size, and prints all elements of the array. This function can be used with any type that supports the '<<' operator with `std::ostream`.
 
 In the `main` function, we demonstrate the usage of these generic functions with different types and values.
+
+NOTE: `const`, `&`, etc. can be part of a template type arg too.  If they are also provided in the template, it's additive (not a conflict).

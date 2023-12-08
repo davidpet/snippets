@@ -36,6 +36,18 @@ public:
     }
 };
 
+// Generic template
+template <typename T>
+void print(const T& value) {
+    std::cout << "Generic print: " << value << std::endl;
+}
+
+// Specialization for int
+template <>
+void print<int>(const int& value) { // type arg after print, unlike normal template!
+    std::cout << "Specialized print for int: " << value << std::endl;
+}
+
 int main() {
     Info<int> intInfo;
     intInfo.print();      // "This is an integer type."

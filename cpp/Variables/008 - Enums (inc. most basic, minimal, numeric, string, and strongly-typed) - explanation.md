@@ -19,3 +19,5 @@
 1. To compare or assign values from a strongly-typed enum, you need to use the scope resolution operator (`::`). This is demonstrated with the `TrafficLight` enum.
 
 1. Strongly-typed enums are still backed by an integer type and you can still get values that are not one of the specified ones via casting.  It is __not as type safe as in Java__.
+
+1. You can also make enums even weaker-typed by not giving them a name.  Then their values are scoped to their enclosing scope (eg. a `struct`) just like normal, and are basically integer compile-time constants.

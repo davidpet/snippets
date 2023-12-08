@@ -377,6 +377,13 @@ Enums
         static_cast<TrafficLight>(2)
             but will accept an invalid number still!
 
+    Unnamed Enum
+        struct MyStruct {
+            enum {A = 100, B = 200};
+        }
+
+        MyStruct::A and MyStruct::B are basically compile-time integer constants
+
 Type Inference
     'auto' keyword = compile-time type inference
 
@@ -2269,8 +2276,15 @@ IIFE
 
 Generic Lambdas
     if you use 'auto' as a param type or return type in a lambda, it is generic
-    once you assign it to a variable, that variable stores an instantiated concrete version
-    variable types like function pointers and std::function must use the concrete version only
+        even at runtime
+    you can store a generic lamda with an 'auto' variable just like another lambda
+    when you call it or assign it to an std::function, it is instantiated
+        you can assign it or use it multiple places to instantiate multiple types
+        you can call the same fn variable multiple times with different types
+    to assign it to a function pointer or std::function, those variables must be concrete
+        then assigning them instantiates the lambda
+    the fact that they're still templated at runtime is why they're generic lambdas
+        intead of lambda templates
 
 Mismatched Return Types on Callables
     std::function<void(...)> will ignore return values for you
@@ -2921,9 +2935,13 @@ Unique Aspects of C++
     variadic Templates
     no raw type
         even static members live on the specific type
+    curiously recuring template pattern (CRTP)
 
-you cannot directly cast between collections of different element types
-
+Allowed Type Args
+    anything, including primitive numeric types, your classes, etc.
+    qualifiers like const, &, etc. can be in there too
+    they will be additive with any qualifiers used inside the template next to variables
+    you cannot directly cast between collections of different element types
 when a type arg represents the type of a callable object:
     MyClass<void(int, int)>
         MyClass gets 1 type, which is a callable that takes two ints and returns void
@@ -2933,6 +2951,18 @@ when a type arg represents the type of a callable object:
         this is what it looks like with no args
     MyClass<int()>
         this is also fine
+
+    template <void(*Func)(int, int)>
+        this is saying that you're passing a function pointer, not a type of a function
+        similar to how you can pass 'int N' as a template arg
+        then you can call Func() inside the template
+Default Template Args
+    template<typename T, typename U = T, typename V = int>
+    void f(T t, U u, V v) {
+        std::cout << t << " " << u << " " << v << std::endl;
+    }
+
+    f<std::string>("hi", "there", 3);
 
 Template Function Examples
     template<typename T>
@@ -3032,6 +3062,20 @@ Template Instantiation
     it is not like in Java with generics where there is one that uses Object
     if you have bodies in a source file without instantiating them, the header will work but linking will fail
         using the header will only instantiate the prototypes
+
+    if part of the code is in a source file instead of the header
+        you need to instantiate it either in the source file or in smoething like a .tpp file
+            as described above in the example
+
+    sometimes, the compiler might redundantly instantiate the same classes in different files
+        which won't cause an error, but will slow down the compile
+    to do that, you can use 'extern' in front of an instantiation declaration in the header
+        then it won't get instantiated in the files that use the header
+
+    eg. extern template class MyClass<int>;
+        for this to work, there must be a single source file that explicitly instantiates it
+        this is still enough info for the compiler to build against it
+
 Raw Types/Type Erasure
     no such thing in C++
     each version of the template (instantiation) is a separate entity entirely
@@ -3039,11 +3083,323 @@ Raw Types/Type Erasure
         due to static duck-typing, at runtime it will be perfectly fit to the target data type
     even static members live on the specific type instead of raw type
         this is fundamental to understanding generics vs. templates
+Dynamic Polymorphism
+    if MyDerivedClass inherits from MyBaseClass<int> for instance
+        or MyDerivedClass<int> inherits from MyBaseClass 
+    the templated types are unique for their type arguments
+    so you just pretend MyClass<int> and MyClass<string> are totally separate classes
+    then things like dynamic_cast will work as you expect
 
 typename vs. class
     type args used to use 'class' as the type
     but now you can say 'typename' instead
         considered more clear, because often the type is not a class
+    note that the reason you have to say 'typename' or 'class'
+        is because templates can take other args, such as 'int'
+typename in template body
+    another use of the keyword 'typename' is when you need to use a dependent type in a template
+        eg. a typedef inside the class represented by template arg T
+        it makes sense to you, but the compiler has trouble
+        it can't tell what T::ValueType means (a type or a member)
+        so you can do this:
+            typename T::ValueType v;
+            typedef typename T::ValueType InnerType;
+        typename is operating on T::ValueType here
+
+Generic Lambdas
+    see "Functional Programming" for details
+    interestingly, generic lambdas are real runtime generics instead of templates
+
+Overloading Templates
+    you can overload a template by # of parameters
+        and type of parameters
+Template Specialization
+    statically overriding a template for a specific type
+    you can specialize your own templates, leaving the non-specialized version for types you don't specialize for
+    you can also specialize standard library templates in the std namespace for your class
+        this is how std::hash is designed, for instance
+    
+    each specialization is its own separate template
+        they do not "inherit" from the generic version or anything like that
+    in fact, each specialization could have its own members and expose a totally different interface
+        that occasionally happens with a few members here and there in stdlib
+            but usually the overall interface matches
+    
+    specializations come AFTER the real template
+    it looks like you're removing or constraining the template arg (potentially ending up with <>)
+        but then you put the specific type arg inside next to the classname instead of T
+        for functions, unlike normal function templates, the typename goes after the function name!
+    
+    Class Example
+        // Generic template
+        template <typename T>
+        class Info {
+        public:
+            void print() {
+                std::cout << "This is a generic type." << std::endl;
+            }
+        };
+
+        // Specialization for int
+        template <>
+        class Info<int> {
+        public:
+            void print() {
+                std::cout << "This is an integer type." << std::endl;
+            }
+        };
+
+        // Specialization for char*
+        template <>
+        class Info<char*> {
+        public:
+            void print() {
+                std::cout << "This is a char* (C-string) type." << std::endl;
+            }
+        };
+    Function Example
+        // Generic template
+        template <typename T>
+        void print(const T& value) {
+            std::cout << "Generic print: " << value << std::endl;
+        }
+
+        // Specialization for int
+        template <>
+        void print<int>(const int& value) { // type arg after print, unlike normal template!
+            std::cout << "Specialized print for int: " << value << std::endl;
+        }
+Template Argument Matching
+    this is the name for how specializations work inside
+    knowing how it works gives you more ideas for how you can specialize your templates
+
+    Primary Template = the main generic one
+        in the cases above, it was usable on its own
+        but you can also make it unusable by not giving it a body
+            basically just forward declaring it but not ever defining it
+        it tells the templating engine what is being specialized
+            but the base one won't be instantiated unless you try to use it
+            and won't throw an error until that time
+                in which it would be called "incomplete" by the compiler
+        just like normal templates, the types go in the template header but not by the class
+
+        template<typename P, typename R>
+        class PointAndRef;
+
+        you could also ommit the arg names
+
+        template<typename, typename>
+        class PointAndRef;
+
+    Each Specialization
+        differs from normal template in that args go in <> after the classname or function name!
+            that part looks like how you'd use the template
+        then it has its own template args in front
+            based on what still needs to be bound
+            usually it's less or the same # args, but it can even be MORE
+        
+        template<typename P, typename R>
+        class PointAndRef<P*, R&> {};
+            this class is for the specialization where you pass a pointer and reference
+            note that P and R are set based on the structure, not literally from what you pass in
+                normally you'd think PointAndRef<int*, int&> makes P = int* and R = int&
+                    but the specialization unwraps them both to int and sets P = int and R = int
+
+        within the body, you can use P and R flexibly (inc. with/without * and & and vice versa)
+            
+    Other Examples
+        above inline we showed how to deal with pointers and references
+
+        this example shows unwrapping array type and size (and having more args than generic)
+            template<typename>
+            class Array;
+
+            template<typename T, size_t N>
+            class Array<T[N]> {
+                public:
+                    void f(T t[N]) {
+                        for (int i = 0; i < N; i++) {
+                            std::cout << t[i] << std::endl;
+                        }
+                    }
+            };
+
+            // use as Array<int[5]>
+
+        this example shows unwrapping a function type
+            template<typename T>
+            class Func;
+
+            template<typename Ret, typename Arg>
+            class Func<Ret(Arg)> {
+                public:
+                    Ret apply(Ret(*fn)(Arg), Arg a) {
+                        return fn(a);
+                    }
+            };
+
+            // use as Func<int(int)>
+
+    to provide bodies outside the class prototypes, you match both the <> so compiler knows which
+        template<typename P, typename Q>
+        void PointAndRef<P*, Q&>::f() {}
+
+Template Metaprogramming
+    compile-time execution of code to generate something
+        eg. a lookup table
+    
+    template <int N>
+    struct Factorial {
+        enum { value = N * Factorial<N - 1>::value };
+    };
+
+    template <>
+    struct Factorial<0> {
+        enum { value = 1 };
+    };
+
+    std::cout << Factorial<5>::value << std::endl;
+        factorial<5>::value will trigger instantiating Factorial<N> for the value 5
+        then since that references Factorial<4> that will be instantiated
+        and so on, down to Factorial<0>, which is specialized
+        the code will end up with 5 structs, each with its own enum with 1 value
+        the structs have no instance members and are never instantiated
+            so their only purpose is the compile-time calculation
+
+Type Constraints
+    in C++, this is a fairly new (C++ 20) feature called "Concepts"
+    <concepts> header has the stuff you need to make concepts
+    can restrict what people pass in as type args using your templates
+        giving better error messages instead of template spew
+
+    // A generic function that uses the "Equal" concept as a type constraint
+    // shown here to motivate the next part
+    // but the next part would normally go somewhere above it so it can see it
+    template<Equal T>
+    bool areEqual(T a, T b) {
+        return a == b;
+    }
+
+    // Define a concept "Equal" which will be used as a type constraint
+    template<typename T>
+    concept Equal = requires(T a, T b) {
+        { a == b } -> std::convertible_to<bool>;
+    };
+
+    the concept is itself a template with a type arg
+    you give it a name to use in place of 'typename' in templates
+        then those templates will only allow types that satisfy the concept
+    require(T a, T b) means we're going to define the concept in terms of what it can do on two variables
+        the {} is the body of that requirement
+    the { a == b } part means T is required to support operator== on two variables of its own type
+        eg. could also be a method existence check, such as a.toString()
+    the -> std::convertible_to<bool> part means the thing checked in {} must be implicitly castable to boolean
+        see <concepts> for a lot more conditions you can put on the result of an expression
+        eg. std::derived_from<> to check inheritance from a base
+    
+    you could also provide multiple type args to the concept
+        then use same concept name on each variable in a template
+        the concept determines how those variables must interact
+    you could also use a call from <concepts> directly after = instead of a requires() construct
+        if there is one that fits
+
+    template<typename ClassA, typename ClassB>
+    concept ExplicitlyConvertibleToEachOther = 
+        std::is_convertible_v<ClassA, ClassB> &&
+        std::is_convertible_v<ClassB, ClassA>;
+
+    template <ExplicitlyConvertibleToEachOther T1, ExplicitlyConvertibleToEachOther T2>
+    void exampleFunction(T1 a, T2 b) {
+        // Function implementation
+    }
+
+Curiously Recurring Template Pattern (CRTP)
+    a way to make non-virtual methods act virtually
+    via static polymorphism instead of vtable
+    could be used for niche scenarios where you want polymorphism without vtables
+
+    class Derived: public Base<Derived> {}
+        the base class takes a template arg that is the derived class
+        then derived class inherits from base, using itself as the arg
+        this might appear to be a declaration order issue - but it purposely works fine
+    when the base wants to call the more derived version of a method:
+        it can static_cast to Derived* using its type arg
+        then it can call the method directly, with no vtable needed
+
+    basically the base template is instantiated for each derived class that inherits from it
+        and statically casts to the derived classes to call methods
+    the obvious weakness here is that there is no common base for all the derived types
+        so might present issues if you need dynamic polymorphsim
+
+Variadic Templates
+    kind of reminiscent of spread operator in JavaScript
+
+    template<typename T, typename... Args>
+        Args represents multiple types (to the template itself, not as array at runtime)
+    Args... tail
+        within the template, this will represent multiple variables declared, 1 per type
+        eg. in a function header
+        you could put Args&... tail, Args&&.... tail, etc. to change how the args are passed
+            Args&& actually means each arg could be & or && depending on if lvalue or rvalue
+    tail...
+        within the template, after declaring Args... tail as above
+        this will expand to the variable names
+        eg. in a function call in the body
+        use std::forward<Args>(args)... to make args retain their lvalue/rvalue status
+
+    keep in mind, each recursive call shown below is another template instantiation
+        on the combo of all the args, not just the head!
+
+    // Base function to end the recursion
+    void print() {}
+
+    // Recursive variadic function
+    template <typename T, typename... Args>
+    void print(T head, Args... tail) {
+        std::cout << head << " ";
+        print(tail...);
+    }
+
+    // Usage
+    print(1, 2.0, "three", '4'); // 1 2.0 three 4
+
+    non-recursive usages include:
+        forwarding args to a function
+        use std::forward
+
+    Tuple
+        a class like tuple where you can pass any # of args uses variadic templates
+        works like the recursive function example above
+        each tail part of the arg list is another instantiation
+        then put this after the to make sure it stops:
+            // specialize for no args
+            template <>
+            class MyTuple<> {
+                public:
+                    void print() {}
+            };
+    
+    2 special things about variadic templates:
+        more flexible about putting specializations before generic version
+        can have empty <> type args case
+
+Forward Declaration
+    templated classes can be forward declared like normal classes
+    but as templates
+
+    template<typename T>
+    class MyClass;
+
+Template Aliases
+    using StringVector = std::vector<std::string>;
+    // use as if not templated
+
+    template<typename T>
+    using StringMap = std::map<std::string, T>;
+    // use as StringMap<int> to bind value type
+
+Not Supported:
+    void as type argument or specialization
 
 [Imports/Modules]
 #include <iostream>
@@ -3189,3 +3545,4 @@ not c++ related: my notes elsewhere say corecursion is alternative to queue for 
 data members 
 std::any
 templates and decltype
+.tpp files

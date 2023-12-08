@@ -12,3 +12,5 @@ This is a type of pattern matching templates can do based on the syntax and func
 1. pointers and references
 1. array (including count)
 1. function type
+
+NOTE: when providing bodies outside the class for a specialization, you need to match the template part and the class part (both of the `<>`).
