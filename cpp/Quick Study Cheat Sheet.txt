@@ -1238,6 +1238,8 @@ Unique Aspects of C++
     line ending conversion less permissive (more manual interention needed)
 
 // and /* */ comments
+; end statements, unless preprocessor directive or macro
+    then end of line ends the statement
 
 Literals
     "" -> const char *
@@ -3030,6 +3032,13 @@ Template Instantiation
     it is not like in Java with generics where there is one that uses Object
     if you have bodies in a source file without instantiating them, the header will work but linking will fail
         using the header will only instantiate the prototypes
+Raw Types/Type Erasure
+    no such thing in C++
+    each version of the template (instantiation) is a separate entity entirely
+        the code will actually be duplicated
+        due to static duck-typing, at runtime it will be perfectly fit to the target data type
+    even static members live on the specific type instead of raw type
+        this is fundamental to understanding generics vs. templates
 
 typename vs. class
     type args used to use 'class' as the type
@@ -3037,6 +3046,37 @@ typename vs. class
         considered more clear, because often the type is not a class
 
 [Imports/Modules]
+#include <iostream>
+    importing a built-in header
+    no file extension
+    <> instead of ""
+    no semicolon needed because PREPROCESSOR directive
+    imported symbols in std namespace
+
+#include <cmath>
+    same thing, but c in front to indicate it's a C standard library header
+    still behaves basically same way
+    some symbols might be available both in std and global namespace
+        ok to just always use std version, sometimes it's more typesafe
+    NOTE: in actual C language, these headers would be called something like "math.h"
+        if you import those versions, they won't be in std namespace
+        that is not recommended or standard in C++, but you might see it
+
+#include "myfile.h"
+    include your own header
+#include "subfolder/myfile.h"
+    relative path
+
+Headers vs. Source Files
+    headers get included in both headers and source files
+        depending on what symbols are needed
+        try to include the least you can in any given place to reduce dependencies
+    source files get linked in by the linker
+    any symbols used in source files from headers will become unresolved at compile time
+    the linker needs to resolve all of them when it links, or linking will fail
+        name mangled C++ names, including template instantiations
+    header corresponding to source file needs to be included in source file
+        so that it knows what classes it's supposed to be implementing when you give definitions
 Header vs. Source File Conventions
     usually these go in the header:
         class prototype
@@ -3047,7 +3087,73 @@ Header vs. Source File Conventions
         class static variables
         non-inline function bodies
         global variable initialization
+File Extensions
+    headers = .h
+    source file = .cpp (windows) or .cc (everywhere else)
 
+Building
+    g++ -I . main.cpp module/module.cpp -o main
+        -I . = look for headers in working directory
+            then #include paths using "" will look relative to that
+            can include more than one to expand the search path
+        main.cpp module/module.cpp = link in these source files
+        -o main = create an output executable called main (no extension)
+            on Linux you don't need an extension like on Windows
+
+#pragma once
+    this is non-standard, but supported by most modern compilers
+    put at beginning of header to stop it from being imported multiple times
+    more concise alternative to the more standard #ifndef construct
+    otherwise, if multiple headers include the same header, symbols would get duplicated in a source file
+        which is not allowed, so it wouldn't compile
+
+Renaming Symbols
+    use 'typedef' and 'using' to rename symbols (see 'Variables' for more details)
+    eg. using StringVector = std::vector<std::string>;
+    only works for types, not functions or variables
+
+Namespaces
+    // in header
+    namespace MyNamespace {
+        void f();
+        
+        int x;
+    } // no semicolon
+
+    // in source file
+    void MyNamespace::f() {} // scope resolution qualified
+
+    // in client file
+    MyNamespace::f();
+
+    // alternative (not recommended)
+    using namespace MyNamespace; // generall at top - pollutes global namespace
+    
+    f();  // unqualified call
+
+Access Levels
+    only apply inside classes/structs
+    no access level outside classes
+    no such thing as package private
+Statefulness
+    global variables (and statics) can be used to share state
+    but it's considered bad practice because hard to predict and debug order
+Nesting
+    namespaces can be nested, and then you have to qualify each one
+    eg. namespace A {namespace B { int x; }}
+        A::B::x = 5;
+
+    this is also allowed:
+        namespace A::B { int x; }
+        A:B::x = 5;
+Adding to Existing Namespaces
+    you can add to an existing namespace just by using the name again
+        this could be useful for things like adding template specializations to std
+
+    namespace std {
+        int myVariableThatLivesWithTheStandardLibrary = 10;
+    }
+    
 [stdlib]
 Unique Aspects of C++
     relies very heavily on templates, static polymorphism, and duck typing
