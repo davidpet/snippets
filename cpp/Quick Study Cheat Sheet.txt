@@ -2932,6 +2932,110 @@ when a type arg represents the type of a callable object:
     MyClass<int()>
         this is also fine
 
+Template Function Examples
+    template<typename T>
+    T get_max(T a, T b) {
+        return a > b ? a : b;
+    }
+
+    template<typename T1, T2>
+    T2 transform(T1 input) {
+        return static_cast<T2>(input);
+    }
+
+    template <typename T, int size>
+    void print_array(const T (&arr)[size]) {
+        for (int i = 0; i < size; ++i) {
+            std::cout << arr[i] << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    int x = get_max(20, 30); // inferred type args
+    auto x = get_max(20, 30);
+    int x = get_max<int>(20, 30); // explicit type args
+
+    print_array({1, 2, 3, 4, 5}); // both type and count inferred!
+
+Template Class Example
+    template <typename T>
+    class GenericClass {
+        private:
+            T data;
+            GenericClass *p;
+
+        public:
+            // Constructor
+            GenericClass(T d) : data(d), p(this) {}
+
+            // Getter
+            T getData() {
+                // std::cout << p->data << std::endl; //included for illustration only
+
+                return data;
+            }
+
+            // Setter
+            void setData(T d) {
+                data = d;
+            }
+    };
+
+    // notice that everywhere in the template, you just call it GenericClass, not GenericClass<T>
+
+    GenericClass<int> g(10);
+    GenericClass g(10);     // type inference on classes since C++ 17
+
+Bodies Outside Prototype
+    it's common to put the whole template in the header
+        won't be inlined if compiler doesn't think efficient
+    but you can separate it too
+
+    the syntax is similar to the inline versions
+        but classes must have the type args before :: (in addition to template header)
+        and functions do not have the type arg directly (but do have the template header)
+        this weirdness helps C++ know where args are supposed to go
+
+    // Definition for MyClass constructor
+    template <typename T>
+    MyClass<T>::MyClass(T val) : data(val) {}
+
+    // Definition for MyClass::display, which is also a function template
+    template <typename T>
+    template <typename U>
+    void MyClass<T>::display(U extraData) {
+        std::cout << "Data: " << data << ", Extra: " << extraData << std::endl;
+    }
+
+    // Definition for function template printValue (not in a class)
+    template <typename T>
+    void printValue(T value) {
+        std::cout << "Value: " << value << std::endl;
+    }
+
+    to make sure the source file contains the code we need, we need to instantiate them for types
+        otherwise there's nothing to call from there once it's been compiled
+    these go in the source file:
+        template class MyClass<int>; // template class
+        template void MyClass<int>::display<double>(double); // template function inside template class
+        template void printValue<int>(int);  // template function
+    if you don't know what types to make ahead of time:
+        put implementation in header and let compiler figure it out
+            it will instantiate automatically when you use the template
+        use .tpp file (a new-ish concept)
+
+Template Instantiation
+    when you use a template (or declare the instantiation), it is instantiated for specific type args
+    each instantiation is a totally seprate class/function
+    it is not like in Java with generics where there is one that uses Object
+    if you have bodies in a source file without instantiating them, the header will work but linking will fail
+        using the header will only instantiate the prototypes
+
+typename vs. class
+    type args used to use 'class' as the type
+    but now you can say 'typename' instead
+        considered more clear, because often the type is not a class
+
 [Imports/Modules]
 Header vs. Source File Conventions
     usually these go in the header:
