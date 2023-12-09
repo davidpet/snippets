@@ -2598,3 +2598,13 @@ AutoDiff
         get gradient of J with respect to A
         subtract learning rate times gradient from A
     
+    [Web Backend]
+    ** see Web Backend notebook to study how to make backends **
+
+    here is a brief summary of topics to keep in mind:
+        Flask - for HTTP REST API from Python (server-side)
+        SQLAlchemy - for database support
+        gunicorn - to host a Flask app in production (inc. in docker, kubernetes, etc)
+        gRPC - for service-to-service communication
+        requests - HTTP requests from service-to-service
+    
