@@ -1,6 +1,6 @@
 ** rewrite of this sheet is in progress **
 ** steps:
-** 1. go through notebooks again in detail and merge into what's here (mostly replace, but make sure nothing missed)
+** 1. Remaining folders to merge in: Testing, Standard Library, Recent Versions
 ** 2. sync with Java quick notes to see if any topics missed (from here and notebooks)
 ** 3. sync with python quick notes for the same reason (probably less to find from there, but some stuff like operator overloading will match)
 ** 4. see if any new versions since last time (and mark current version here)
@@ -3609,9 +3609,31 @@ headers that start with c (from the C standard library) do as well
         can set to a T or to std::nullopt
         can coalesce with o.value_or(default)
 
-[Annotations]
-none in the traditional sense
-attributes with [[]] but only certain built-in ones and only the c++ compiler uses them
+[Attributes]
+C++ does not have decorators/annotations like a lot of other languages do
+but it does have a concept of attributes, which are tokens placed in [[]]
+    but there are only certain built-in ones
+    only the C++ compiler uses them, not your code
+attributes can be placed before a lot of entities to mark them
+    including variables, code blocks, functions, classes, enum values, etc. 
+
+[[nodiscard]] int compute();
+    compute();  // triggres compiler warning because didn't use the return value 
+
+[[deprecated("Use newFunction instead")]]
+void oldFunction();
+
+[[maybe_unused]] int value = compute();
+    compiler won't warn if value is unused
+
+if ([[unlikely]] error_condition) { // for optimization hint (also [[likely]])
+    handle_error();
+} else {
+    proceed_normally();
+}
+
+C++ 20 added some attributes that had to be imported (via std namespace)
+    can use std:: or not use it
 
 [Most Vexing Parse (MVP)]
 an old parsing problem in C++
@@ -3689,6 +3711,22 @@ int main() {
     Complex num = 5.5_r + 3.0_i;  // Represents 5.5 + 3i
 }
 
+[Docstrings]
+no support built-in, but tools like Doxygen use a common format
+
+/**
+ * This function adds two integers.
+ * @param a The first integer.
+ * @param b The second integer.
+ * @return The sum of a and b.
+ */
+int add(int a, int b) {
+    return a + b;
+}
+
+** see docstrings folder for more examples **
+    classes, variables, packages, etc.
+
 [Folksy C++ Terms]
 ** see Folksy C++ Terms snippet for full list **
 some include:
@@ -3699,6 +3737,9 @@ some include:
     static initialization order fiasco
     curiously recurring template pattern (CRTP)
     Koenig Lookup (ADL)
+
+[3rd Party Libraries]
+see **3rd Party Libraries** snippets folder
 
 [ToDo]
 unique_ptr delete [] vs. delete
