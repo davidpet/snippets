@@ -1973,8 +1973,27 @@ Ajax
   there is a proposal to add Observable (from rxjs) directly to the JS language
     it is still just a proposal and may not happen for a long time if ever
 
+  fetch() is a newer replacement for XMLHttpRequest
+    fetch(url) -> gives you a promise with the data from the server
+      fetch(url).then((response) => {
+        if (response.ok) {
+          console.log(response.json());
+        }
+      }).catch((error) => console.log(error));
+    fetch(url, fields) -> same thing but can merge fields in
+      eg. fetch(url, {headers: {}, method: 'GET'})
+      some headers are set automatically by the browser in all fetch() requests
+      when you provide your own, it will MERGE with those
+    Chrome DevTools has a "copy as fetch" option so you can repeat an HTTP requests
+      if using it in there, use JSON.stringify() so you don't have to worry about exact JSON format
+  
+  for gRPC, you need a special proxy that lets you fetch() from a JS client in a browser
+
 JSON
   JSON.stringify() and JSON.parse() as described in Strings above
+  JSON is more strict than JS
+    eg. keys have to be double-quoted
+    so JSON.stringify() still useful even if already have a JS object (eg. when sending via web)
 
 Multithreading
   JS doesn't really have the typical fork/join type multithreading
