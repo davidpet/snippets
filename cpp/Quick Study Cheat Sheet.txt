@@ -1,9 +1,8 @@
 ** rewrite of this sheet is in progress **
 ** steps:
-** 1. Remaining folders to merge in: Testing, Standard Library, Recent Versions
-** 2. sync with Java quick notes to see if any topics missed (from here and notebooks)
-** 3. sync with python quick notes for the same reason (probably less to find from there, but some stuff like operator overloading will match)
-** 4. see if any new versions since last time (and mark current version here)
+** 1. Merge in Standard Library folder
+** 2. sync with Java+PYthon quick notes to see if any topics missed (from here and notebooks)
+** 3. Any remaining ToDo items at the bottom
 
 ** because C++ is unique in many ways, this sheet has a lot of topics the other languages don't **
 ** the "unique aspects of C++" portions are in this sheet and not in notebooks diretly **
@@ -20,10 +19,15 @@ this is because of a few reasons:
     - long history with diverse needs serving embedded, desktop, etc.
 ** see snippet 10 of Language-Specific Features for more details **
 
-[Code Layout]
-header vs. source file
-forward declarations
-directives & macros (preprocessor)
+[Versions]
+the last few major versions were C++98, C++11, C++17, C++20
+    C++03 and C++14 were in between
+as of the information in this notebook, C++20 was the latest
+    and C++23 was still being worked on
+as of my latest check in Dec. 2023, it is ambiguous whether it's been released
+    but it's at least close
+C++ does not have LTS versions but does a major release about every 3 years
+    this cadence started with C++11 after years of nothing
 
 [Variables]
 Unique Aspects of C++
@@ -3632,6 +3636,8 @@ if ([[unlikely]] error_condition) { // for optimization hint (also [[likely]])
     proceed_normally();
 }
 
+[fallthrough] for switch statement fallthrough
+
 C++ 20 added some attributes that had to be imported (via std namespace)
     can use std:: or not use it
 
@@ -3727,6 +3733,12 @@ int add(int a, int b) {
 ** see docstrings folder for more examples **
     classes, variables, packages, etc.
 
+[Unit Testing]
+** see Unit Testing folder for examples using gtest **
+
+[Digit Separators]
+3'000'000 // same as 3000000, but easier to read
+
 [Folksy C++ Terms]
 ** see Folksy C++ Terms snippet for full list **
 some include:
@@ -3740,6 +3752,14 @@ some include:
 
 [3rd Party Libraries]
 see **3rd Party Libraries** snippets folder
+
+[Possible 2023 Features Coming]
+executors
+better reflection, inc. source code info
+more work on newer stuff like ranges and modules
+pattern matching (like what Java has been getting)
+as usual, more methods and algorithms on existing stuff
+static operator[]
 
 [ToDo]
 unique_ptr delete [] vs. delete
@@ -3756,3 +3776,6 @@ data members
 templates and decltype
 .tpp files
 RVO rules
+fold expressions
+inline variables (globals, mentioned briefly in here but not officially explained)
+<numbers> (c++ 20)
