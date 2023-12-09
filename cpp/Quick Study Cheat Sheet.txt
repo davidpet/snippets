@@ -1,6 +1,6 @@
 ** rewrite of this sheet is in progress **
 ** steps:
-** 1. Merge in Standard Library folder
+** 1. Merge in Standard Library folder (006+)
 ** 2. sync with Java+PYthon quick notes to see if any topics missed (from here and notebooks)
 ** 3. Any remaining ToDo items at the bottom
 
@@ -1431,7 +1431,7 @@ StringBuilder
     however, an even more idiomatic way is to std::stringstream to stream together parts of the string
 
 Printing
-    <iosstream>
+    <iostream>
         std::cout << "Hello, my name is " << name << " and I am " << x << years old. << std::endl;
         std::cout is a global variable of type std::ostream (from <ostream> header)
         std::wcout is the wchar_t version
@@ -1451,6 +1451,8 @@ Printing
             std::setpreicion says use 3 significant digits for float
             these manipulators are persistent (continue until set again, even after newlines)
 
+        you can also stream to std::cerr and std::clog for stderr and stdlog streams
+            separately redirectable in OS
 Object(s) to String
     std::stringstream and std::cout (which is an std::ostream) are both at least std::ostream
         from <ostream> header
@@ -1473,9 +1475,31 @@ String to Object(s)
         iss >> x >> y >> z;
     an overload for an object can read individual fields and return the istream by reference
 
+    see "User Input" below for more info
+
 NOTE: stringstream is an ostringstream and istringstream at same time
     you can directly use the o or i version if that's all you need in context
     they are all in <sstream> header
+
+User Input 
+    <iostream>
+        std::cin >> x >> y >> z;  // just like std::istream above
+            because std::cin is an istream
+        reads until whitespace, then skips whitespace on next read
+        std::cin.getline() to read whole line including whitespace
+
+        to get user input, write the prompt string without std::endl, flush, and do cin
+            many implementations flush automatically when you read from cin, but it's not in the spec
+
+        std::cin.ignore() to ignore a newline
+            eg. after read in some values and want to go to next line
+            otherwise getline() will return empty string
+            there are overloads to skip more chars, use other delims, etc.
+        
+        std::cin will keep going to next line to get values until it gets the # of things it needs
+
+        to read input in chunks, use cin.read(buffer, n)
+            which won't null-terminate for you
 
 Regular Expressions
     <regex> header
@@ -3613,6 +3637,42 @@ headers that start with c (from the C standard library) do as well
         can set to a T or to std::nullopt
         can coalesce with o.value_or(default)
 
+<cmath>
+    sqrt(x), pow(a, b), abs(x), ceil(x), floor(x)
+    log(x) = natural log
+    log10(x) = base 10 log
+    sin(x), cos(x), tan(x), etc. in radians
+
+<fstream>
+    for file I/O
+
+    ofstream of("myfile.txt");
+    ofstream.is_open() //to make sure no problems
+    ofstream << x << y << z << std::endl; // just like cout
+    ofstream.close();
+
+    ifstream = same concept, but streaming in (like cin)
+
+    these inherit from ostream and istream
+        so your custom class serialization will automatically work here
+
+<mutex>
+    mutex m;   // creates mutex to use for locking (but doesn't lock it yet)
+    m.lock()/m.unlock()
+        to call in threads
+<future>
+    promise<int> p;
+    future<int> f = p.get_future();
+    int x = f.get();
+
+    // in some thread somewhere
+    p.set_value(10); // which will get back to x above
+<thread>
+    thread th(fn, arg1, arg2, ...); // starts right away
+    th.join();
+
+    std::this_thread::sleep_for(std::chrono::seconds(1)); // sleep for 1 second
+
 [Attributes]
 C++ does not have decorators/annotations like a lot of other languages do
 but it does have a concept of attributes, which are tokens placed in [[]]
@@ -3752,6 +3812,8 @@ some include:
 
 [3rd Party Libraries]
 see **3rd Party Libraries** snippets folder
+also:
+    libcurl - for http support (not in stdlib)
 
 [Possible 2023 Features Coming]
 executors
@@ -3770,7 +3832,8 @@ even more <algorithm> functions
 even more <functional> functions
 even more <iterator> functions
 add printing without newline to OOP template
-failbit
+failbit (esp. in cin)
+custom stream manipulators
 not c++ related: my notes elsewhere say corecursion is alternative to queue for BFS (corecursion uses queue)
 data members 
 templates and decltype
@@ -3779,3 +3842,5 @@ RVO rules
 fold expressions
 inline variables (globals, mentioned briefly in here but not officially explained)
 <numbers> (c++ 20)
+chrono
+recursive_mutex
