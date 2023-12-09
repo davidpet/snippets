@@ -18,7 +18,7 @@ this is because of a few reasons:
     - philosophy of radical backward compatibility
     - philosophy of providing total control over memory and execution
     - long history with diverse needs serving embedded, desktop, etc.
-see snippet 10 of Language-Specific Features for more details
+** see snippet 10 of Language-Specific Features for more details **
 
 [Code Layout]
 header vs. source file
@@ -1812,6 +1812,9 @@ Unique Aspects of C++
 
 Free Function
     term for a function that is not a class method
+Return Value Optimization (RVO)
+    when temporary objects are returned from functions and then copied into variables by value
+    the compiler can usually optimize the extra copy away
 
 Overall Syntax
     int f(int a, int b) { return a + b; }
@@ -2046,6 +2049,15 @@ Macros
     also #ifndef, etc.
     used for old-school header de-duping
         #ifndef the whole header and define the macro inside
+Preprocessor Directives
+    closely related to the idea of macros
+        #define is a preprocessor directive that makes a macro
+    preprocessor directives start with # and run during preprocessing
+        before compilation
+    that includes both header file inclusion into the current file and macro substitution
+        which can happen recursively
+    preprocessor directives can do other things that affect the interpretation of compilation of the code
+        eg. change calling conventions, change packing, etc.
 
 Not supported: nested functions
 
@@ -3525,6 +3537,9 @@ Statefulness
     usually, everything global in the program should be initialized before main() starts
         but the use of DLLs can break this assumption!
 
+    NOTE: you can call functions and construct objects in global variables
+        which means 'main' is often not the first thing that runs after all
+
 Nesting
     namespaces can be nested, and then you have to qualify each one
     eg. namespace A {namespace B { int x; }}
@@ -3586,6 +3601,9 @@ headers that start with c (from the C standard library) do as well
     but some things also available in global namespace
     std:: versions are more typesafe in many cases
 
+** see Standard Library Tour notebook for overview of important sections of the library**
+***** many stdlib topics covered elsewhere in here - not going to duplicate it ******
+
 <optional>
     optional<T>
         can set to a T or to std::nullopt
@@ -3594,6 +3612,93 @@ headers that start with c (from the C standard library) do as well
 [Annotations]
 none in the traditional sense
 attributes with [[]] but only certain built-in ones and only the c++ compiler uses them
+
+[Most Vexing Parse (MVP)]
+an old parsing problem in C++
+it continues to happen less and less as the spec and compilers get smarter
+but you still should be aware of it in case you get a mysterious compile error from it
+
+for example, suppose you have two classes, A and B:
+    B b(A());
+        We want a variable called b that takes an rvalue instance of A
+        but the compiler might think this means:
+            we are making a function b that takes a function that returns an A
+                and then returns a B
+        in fact, in the past, it would prefer to interpret it this way
+any example where you pass a temporary object to a function like that could trigger it
+    somefunction(MyClass());
+        in the past, this would trigger MVP even if inside a function body
+if you do run into the problem, the solution is to just use uniform initialization syntax
+    somefunction(MyClass{});
+    B b{A{}};
+
+[Pragma]
+the #pragma preprocessor directive is part of the spec
+but specific arguments to it are not - left up to the compiler
+the spec does say compilers should just ignore pragmas they don't recognize
+    this is to make it safe to use one meant for one compiler without affecting others
+
+#pragma once
+    guard multiple inclusion of header
+#pragma madeup
+    does nothing because I made it up
+    but does not cause an error
+#pragma pack(push, 1)
+    sets packing of classes/structures to 1 byte
+    and pushes the previous packing on a stack
+    generally goes before the class/struct you want to pack
+        eg. to make a struct have no padding so you can use it in OS data structures
+#pragma pack(pop)
+    restores previous packing from stack
+    generally this would go after the class/struct you want to pack
+
+[User-Defined Literals]
+allow you to define custom suffixes (must start with _) for literals
+    numeric or string
+the suffix triggers the literal to have your operator called
+    can transform the value, potentially to a different type
+
+// User-defined literal for kilometers
+constexpr long double operator"" _km(long double km) {
+    return km * 1000;  // Convert km to meters
+}
+
+// User-defined literal for miles
+constexpr long double operator"" _mi(long double miles) {
+    return miles * 1609.34;  // Convert miles to meters
+}
+
+int main() {
+    auto distance1 = 10.5_km;  // 10.5 kilometers in meters
+    auto distance2 = 5.0_mi;   // 5.0 miles in meters
+}
+
+struct Complex {
+    double real, imag;
+};
+
+Complex operator"" _i(long double val) {
+    return {0, static_cast<double>(val)};
+}
+
+Complex operator"" _r(long double val) {
+    return {static_cast<double>(val), 0};
+}
+
+int main() {
+    Complex num = 5.5_r + 3.0_i;  // Represents 5.5 + 3i
+}
+
+[Folksy C++ Terms]
+** see Folksy C++ Terms snippet for full list **
+some include:
+    most vexing parse (MVP)
+    object suicide
+    raii (resource acquisition is initialization)
+    rvo (return value optimization)
+    static initialization order fiasco
+    curiously recurring template pattern (CRTP)
+    Koenig Lookup (ADL)
 
 [ToDo]
 unique_ptr delete [] vs. delete
@@ -3607,6 +3712,6 @@ add printing without newline to OOP template
 failbit
 not c++ related: my notes elsewhere say corecursion is alternative to queue for BFS (corecursion uses queue)
 data members 
-std::any
 templates and decltype
 .tpp files
+RVO rules

@@ -57,3 +57,16 @@ There are a few ways to avoid the MVP:
 ### **5. Conclusion**
 
 The Most Vexing Parse is a subtle quirk of the C++ language. Awareness of it is essential for C++ developers to write unambiguous code and to correctly interpret existing code.
+
+## Update
+As of 2023 in C++ 20 environment, the above example doesn't reproduce the MVP problem.  Nor does this example, but it illustrates a legitimate parsing problem more than the above which just looks weird:
+
+```c++
+class A {};
+class B {
+public:
+    B(A a) {}
+};
+
+B b(A()); // Most vexing parse: Interpreted as a function declaration
+```
