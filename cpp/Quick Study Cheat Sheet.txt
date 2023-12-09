@@ -3835,7 +3835,6 @@ add printing without newline to OOP template
 failbit (esp. in cin)
 custom stream manipulators
 not c++ related: my notes elsewhere say corecursion is alternative to queue for BFS (corecursion uses queue)
-data members 
 templates and decltype
 .tpp files
 RVO rules
