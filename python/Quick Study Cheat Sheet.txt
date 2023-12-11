@@ -60,6 +60,7 @@ Variable Scope (unusual)
         nonlocal x  # x is from function containing this function
         x = 100
     an advantage of this is to be able to create and set variables with multiple possible values in branches more concisely
+    NOTE: the variable is not "hoisted" like in JS with 'var'
 
 there is no such thing as 'const' or 'final' to prevent modification
 mutability and references
@@ -263,7 +264,7 @@ bytes
 
 Cloning
     x = [*y] makes a shallow copy of list y into x
-    x = [**d] makes a shallow copy of dictionary d into x
+    x = {**d} makes a shallow copy of dictionary d into x
     x = list(y) is another way to clone (like a copy constructor)
         often take an iterable rather than specific type
         so that you can also do conversions
@@ -2597,14 +2598,14 @@ AutoDiff
         calculate b = A@x and J = tf.norm(b) within tape context
         get gradient of J with respect to A
         subtract learning rate times gradient from A
-    
-    [Web Backend]
-    ** see Web Backend notebook to study how to make backends **
 
-    here is a brief summary of topics to keep in mind:
-        Flask - for HTTP REST API from Python (server-side)
-        SQLAlchemy - for database support
-        gunicorn - to host a Flask app in production (inc. in docker, kubernetes, etc)
-        gRPC - for service-to-service communication
-        requests - HTTP requests from service-to-service
+[Web Backend]
+** see Web Backend notebook to study how to make backends **
+
+here is a brief summary of topics to keep in mind:
+    Flask - for HTTP REST API from Python (server-side)
+    SQLAlchemy - for database support
+    gunicorn - to host a Flask app in production (inc. in docker, kubernetes, etc)
+    gRPC - for service-to-service communication
+    requests - HTTP requests from service-to-service
     

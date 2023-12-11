@@ -45,9 +45,11 @@ let x = 5; // type inference (the variable is typed, but it was inferred at comp
 
 let point: {x: number, y: number} = {x: 10, y: 20}; // custom object
 let obj: object = {x: 10, y: 20}; // works because all objects inherit object
-let point: {x: number, y: number} = {x, y}; // Shorthand Property Names
-  x and y are used as both the keys and the variables to get the values from
-  if the variables were called something else, you'd still have to say x: somethingElse and y: somethingElseElse
+
+Shorthand Property Names
+  let point: {x: number, y: number} = {x, y};
+    x and y are used as both the keys and the variables to get the values from
+    if the variables were called something else, you'd still have to say x: somethingElse and y: somethingElseElse
 
 let a: any = 5;
   a could be any type
@@ -100,7 +102,7 @@ Nullability
   let x: number|undefined;  // same thing, but other code will be able to tell it could be undefined better
   let x: number|null = null;  // explicit nullability specification
   if (x === null || x === undefined) {...}
-  note that both null and undefined are real valeus from JavaScript and === will work even if the type is wrong
+  note that both null and undefined are real values from JavaScript and === will work even if the type is wrong
 
 Type Alias
     type Person = {
@@ -809,7 +811,7 @@ Truthiness
     and then do short-circuiting based on that
     then the last value seen is the one returned (the original value, not the boolean)
   you can use || as a truthiness coalescing operator
-  statements like if() do an impliict truthiness conversion too
+  statements like if() do an implicit truthiness conversion too
     for instance, you can do if (myIntValue && myStringValue)
     but your linter and coding conventions may wish you to use !! to be more explicit
 
@@ -969,7 +971,7 @@ let run: () => void;
 const run = () => console.log('hi');  // void statements allowed on void returns
 const fns: (() => void)[] = []; // list of lambdas
 
-function expressions: like lambdas (and assignable to varaibles like lambdas)
+function expressions: like lambdas (and assignable to variables like lambdas)
   looks like defining a function but without the name
 
   const fn = function (x: number, y: number): number {
@@ -2014,7 +2016,7 @@ Progressive Web Apps (PWAs)
     sync local data, etc.
 
 [Decorators]
-similar to Python, you can make a function that takes a decloaration and wraps it
+similar to Python, you can make a function that takes a declaration and wraps it
 the interface is more complicated - look it up when needed
 important thing to know is there are decorators you can import (without the @) and use with @
   eg. @log f() {}
