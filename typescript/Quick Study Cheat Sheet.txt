@@ -973,6 +973,9 @@ return type can be ommited to let it be inferred
 never is a special return type that means the function never returns
   eg. if the body throws
 
+if a function returns without a 'return' statement
+  it will implicitly return 'undefined'
+
 Not available: throws, ref and out, overloading, macros, extension methods
   though you can simulate extension methods by modifying classes or instances
 
@@ -1228,12 +1231,13 @@ Construction Order
   presumably should only reference variables declared higher in the list? (but fns don't matter)
 
   super() calls the superclass constructor
-    you are required to do it explicitly if you have a c'tor in a base class
+    you are required to do it explicitly if you have a c'tor in a base class (in TS)
+      in JS it won't detect that didn't happen
     but it doesn't have to go first
     this has some weird caveats to know about
       base fields aren't available until after super() is called beause that's when it really creates the base
       you also can't use 'this' until after super() is called for similar reasons
-    the compiler enforces all this for you
+    the compiler enforces all this for you in TS
 
 Prototype Inheritance
   because inheritance is impelmented in the JS layer using prototypes, that is the basis for inheritance behavior in TS
@@ -1967,6 +1971,12 @@ Promise<T>
   promise.then((data) => transform(data))
          .then((transformedData) => transformedData.x)
          .catch((error) => handleError(error));
+  .then() itself returns a promise
+    but the function inside can return either a single value or a promise
+    it will automatically be unwrapped if a promise
+      so if you didn't want that, you'd need to put in [] or {} or something
+      allows you to do things like call another API based on result of this API
+    but it can also just chain single values so you can do map()-like transformations
 
 async/await keywords
     JS syntactic sugar for chaining promises as if they are synchronous
@@ -1975,6 +1985,8 @@ async/await keywords
       const y = await someOtherAsyncFunction(x);
       return (x + y).toString();
     }
+    const f = async function() {};
+    const l = async () => {};
 
     'async' makes a function that returns a promise into an async function
       still have to explicitly return promise in signature
@@ -1983,6 +1995,10 @@ async/await keywords
       this is part of the state machine magic the 'async' keyword provides
     other 'async' functions can 'await' your function (or promise)
     functions that are not 'async' can still call your function, but they must directly deal with the promise
+
+    you can call an async function without storing the promise safely
+      you won't be able to get the value, but if it has some other side effect
+        then that will happen
 
 Ajax
   XMLHttpRequest is the built-in browser type for making calls to the server
@@ -2088,6 +2104,9 @@ there are no access modifiers on classes
   or any feature that relies on that, such as Parameter Properties in constructors
   that is why TS has to make everything public by default
 there is no 'readonly' modifier for properties
+there are no ? and ! nullable function params or class members
+  nullability is the norm already
+'override' keyword is TS only
 some OOP features only exist in TS:
   interfaces
   abstract
@@ -2098,6 +2117,7 @@ note that a lot of features you might think are added by TS are actually JS
 properties insisde classes can be set either in the body (with no type, like you do in TS with type inference)
   or in constructor since JS lets you add properties at runtime (python style)
   even just saying this: x; // is a statement, though x will be undefined
+    if x was defined on base, this will set it to undefined (as of ES2020)
 non-existent variables being read from an object will not throw - they will read as undefined
   TS normally doesn't allow you to compile that
 the old style syntax for doing classes, which you don't need anymore but might see people doing:

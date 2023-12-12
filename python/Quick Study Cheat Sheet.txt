@@ -1158,6 +1158,10 @@ Constructors
         the others will be uncallable
     thus, there are no delegating constructors within same class
     if you don't provide __init__, then the object can be instantiated with no args
+    a subclass constructor does not automatically call the base class constructor!
+        you will usually want to do that explicitly
+        unless you don't provide one on the subclass
+            then it automatically calls the default base constructor
 
 Properties
     class Circle:
@@ -1604,6 +1608,8 @@ asyncio
 
     see also: async with, asyncio.gather(), asyncio.Lock (async/await friendly alternative to threading.Lock)
 
+    lambdas do not support async (use nested functions instead)
+    
 argparse
     parser = argparse.ArgumentParser()
     parser.add_argument(...) to add each arg and info about it one by one
