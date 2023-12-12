@@ -324,7 +324,7 @@ Arrays
   const s = arr.join(',');
     joining array elements into string with delim
   
-  no built-in value comparison vs. === or .equals()
+  no built-in value comparison via === or .equals()
     either do a loop or do JSON.stringify() and compare the result
 
   Missing:
@@ -756,7 +756,14 @@ both == and === will check reference equality (not value) for reference types li
   you are permitted to do the === check even if the type says it can't be null or undefined
 != and !=== correspond to == and ===
 for value equality in a custom object, you have to implement .equals() for the class
-arrays don't have .equals(), but you can use JSON.stringify(arr) === JSON.stringify(otherArr)
+  .equals() is not actually a member of Object but a convention you can use from Java
+  primitives and built-in collections don't have it because of that fact
+you can also use JSON.stringify(arr) === JSON.stringify(otherArr) for value equality
+Object.is(a, b) is almost like ===
+  but will consider signed zeroes different (+0 vs. -0)
+    technically -0 and 0 are different values but == and === consider them the same
+      even x.toString() considers them the same
+  and will consider NaN equal to NaN
 
 Casting/Coercion
   x as OtherType // compiler will keep you honest
@@ -1042,7 +1049,7 @@ this
     see Partial Application for more details
 
   ** see "Classes" for a more detailed explanation of how `this` binding works
-  
+
 Partial Application
   // just binding 'this'
   function f() { console.log(this); }
