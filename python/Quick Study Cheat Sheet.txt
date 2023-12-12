@@ -409,10 +409,12 @@ Sorted containers (from 3rd party sortedcontainers library)
         acts basically like a normal set, but when you iterate, the items are in sorted order
         < operator and/or key in c'tor
             hash() also used
+        [] to get by index (inc. -1)
     SortedDict
         acts basically like a normal dic, but when you iterate, the items are in sorted order (by keys)
         < operator and hash()
         uses SortedList internally, so methods like bisect_left(key)
+        use peekitem(index) to get (key, value) by index (inc. -1)
 
 Priority Queue/Heap
     the heapq module (built-in) provides a priority queue/minheap implementation
@@ -501,7 +503,7 @@ formatted strings
     NOTE: with any of these, you can store the template as a variable in itself
         though in an f-string, that would already be evaluated
     
-    f'Hi, my name is {name} and I am {age} years old.'
+    f'Hi, my name is {name} and I am {age + 10} years old.'
         name and age should be variables in the encosing scope
     'Hi, my name is %s and I am %d years old' % (name, age)
         this is the old-fashioned way, replaced by f-strings above
@@ -656,6 +658,9 @@ hasattr(obj, name) to see if an attribute exists on an object
 [Control Flow]
 ; isn't required, but it is a way to fit multiple statements on one line
     eg. for shell one-liners
+statements that are normally multiline can be single-line and can use ;
+    eg. for i in range(10): print(i); print(i)
+        this will print each number twice in a loop
 
 pass
     a noop statement
@@ -851,6 +856,9 @@ Extension Methods
 recursion
     function calls itself by name
     no TCO
+    lambda call themselves by name too, even if assigned a variable
+        eg. f = lambda # bla bla bla
+            the lambda can call f() here
 
 not supported: macros, inline, ref and out params
 
@@ -1211,6 +1219,10 @@ Dataclass
         type hints like this go into the __annotations__ field of the class
         if you didn't have the decorator, and did MyClass.x, it would throw AttributeError
 
+    dataclasses also implement __repr__, __str__, and __eq__
+    it also gets __hash__ if you pass frozen=True in the decorator
+        which makes it a readonly data structure after construction
+
 nesting
     clases, functions, etc.  can be nested inside each other w/ no issue
     nested classes don't inheritently have access to each others' private data
@@ -1299,6 +1311,10 @@ name clash issue
     if you name a file the same as an api you're calling, it will try to import itself
     the symptom of this will be that the import is empty
     another place this comes up is if a folder is named after a script (causing ambiguity)
+
+file/module name limitations
+    dash is not allowed (because not allowed in identifiers)
+    . is not explicitly disallowed but is ambiguous with folder and thus won't work
 
 [stdlib]                            
 print(x)
@@ -1452,6 +1468,8 @@ collections
         x,y = p
         p.x
         p.y
+
+        implements ==, str(), repr(), and hash() for you
 
     deque: double-ended queue
         more efficient than regular lists for stack and queue operations
@@ -1609,7 +1627,7 @@ asyncio
     see also: async with, asyncio.gather(), asyncio.Lock (async/await friendly alternative to threading.Lock)
 
     lambdas do not support async (use nested functions instead)
-    
+
 argparse
     parser = argparse.ArgumentParser()
     parser.add_argument(...) to add each arg and info about it one by one
@@ -1873,6 +1891,11 @@ built-in decorators:
     @staticmethod
     @classmethod
     @abstractmethod
+
+@mymodule.submodule.myclass.mydecorator
+    decorator resolution follows normal rules
+    the @ takes the end result of the resolution
+    properties rely on this
 
 [docstring]
 """ multi-line strings in certain places

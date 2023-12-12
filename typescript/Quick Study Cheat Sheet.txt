@@ -1231,8 +1231,9 @@ Construction Order
   presumably should only reference variables declared higher in the list? (but fns don't matter)
 
   super() calls the superclass constructor
-    you are required to do it explicitly if you have a c'tor in a base class (in TS)
-      in JS it won't detect that didn't happen
+    you are required to do it explicitly if you have a c'tor in a base class
+      in JS, a runtime error will happen if you return from derived c'tor without calling super()
+        or access 'this' in derived c'tor before calling super()
     but it doesn't have to go first
     this has some weird caveats to know about
       base fields aren't available until after super() is called beause that's when it really creates the base
@@ -1693,6 +1694,10 @@ require()
 3rd party libraries can also be included by CDN URL in the DOM of your page
   <script src="........."></script>
   this is common for things like jQuery, boostrap, etc.
+
+regarding names in modules/files
+  dash and underscore are fine
+  dot is not
 
 [Project Configuration]
 TypeScript compiler = tsc
