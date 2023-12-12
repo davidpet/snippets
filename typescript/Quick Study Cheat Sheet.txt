@@ -508,21 +508,31 @@ Summary of Class-Like Objects and Their Differences
       and values but no types, except optionally on method return types
 
   'this' is only relevant to classes and anonymous objects because the others have no bodies
-    'this' is bound to the class instance inside a class, shadowing the global object
-      unless the method is static (then it binds to the class)
-      that is true for all 3 ways to define functions as members of the class
-      it is also true for lambdas defined in the bodies of class methods
-        this is to allow you to return a lambda that continues to interact with the instance that created it
-    inside an anonymous object definition, things get more differentiated
-      a lambda/arrow function will bind 'this' to the enclosing scope of the anonymous object
-        instead of treating the lambda as a method of the class, it will treat it as a method of whatever is making the class
-      a method of function expression, on the other hand, will bind 'this' to the anonymous object itself
-        allowing it to act as a method of the anonymous object
-    outside of classes and anonymous objects, `this` will just be the global object (eg. window)
-      unless explicitly bound
-    there is an additional caveat that when a function or function expression is inside the body of a function,
-      the 'this' binding will depend on the call site rather than the definition site
-      this lets you return a lambda from a method and have it act as a method of the class that uses it
+    when it comes to 'this', functions, methods defined in class bodies, and function expressions act the same
+      regardless of how or where they're actually defined
+      the binding of 'this' (assuming it's not explicitly bound with .bind(), etc.)
+        depends on how the function is called
+          eg. if called via an instance with .
+            m.f()
+            then `this` is m
+          if the function was defined outside the class, then to call it like that:
+            you just need a variable in the class that refers to that function
+            eg. m.f = fn; (or define it in the anonymous object, etc.)
+          eg. if called at top-level, then `this is the default value
+            either the global object or undefined depending on environment and strict mode
+      assigning a function expression, method, or function to a member of a new anonymous object
+        will make it act as a true method of that object, if it's called via the object
+    arrow functions, on the other hand, have a different behavior
+      because they're meant to be passed around and keep referring to their lexical context
+      'this' is bound based on the scope the arrow function came from
+      if you define a lambda inside an anonymous object, it will use `this` from whatever it is when that object is defined
+        not the anonymous object itself 
+      it will always keep that `this` no matter what it's passed to, assigned to, or how it's called
+        thus, it will act like a pure function (with some closure to some other object) instead of a method
+    static methods (when called via a class) bind 'this' to the class instead
+        beause that is what they're called on
+    top-level functions, no matter which type, if called that way, will just bind `this` to the default/global object
+    all of this goes out the window if you explicitly bind `this` via bind(), call(), or apply()
 
 Data Structures Missing from JS/TS: (either make your own or use 3rd party library)
   efficient queue and deque
@@ -1031,6 +1041,8 @@ this
     eg. to treat a free function as a method of a class when called
     see Partial Application for more details
 
+  ** see "Classes" for a more detailed explanation of how `this` binding works
+  
 Partial Application
   // just binding 'this'
   function f() { console.log(this); }
