@@ -1101,6 +1101,7 @@ Method References
     eg. const g: () => void = MyClass.g;
   assigning the method via an instance or via the class mean the same thing here
     both are considered UNBOUND
+      calling it is allowed, but it's like calling a top-level function in terms of 'this'
   to make either one BOUND, call .bind() on it
     eg. const f = instance.f.bind(instance);
   but a key weirdness is that static and instance methods are totally separate
