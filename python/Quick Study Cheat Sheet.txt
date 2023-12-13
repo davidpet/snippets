@@ -184,6 +184,7 @@ list
         use a.extend() for destructive
 
     x == y # value equality implemented
+    x < y # lexographic comparison implemented
     x = [0] * 100 # initialize with 100 0s
 
 tuple
@@ -197,6 +198,7 @@ tuple
     () = empty tuple
 
     and some of the stuff from list above
+        inc. < ,==, and lots of stuff (immutable operations)
 
 set
     x = {1, 2, 3} # mutable
@@ -215,6 +217,8 @@ set
         have to use set() constructor
 
     order is not guaranteed
+
+    has == but not <
 dict
     x = {'a': 1, 'b': 2} # mutable
     x['c'] = 3
@@ -233,6 +237,9 @@ dict
     empty dict = {} or dict()
 
     order (of either keys or values) is based on insertion order
+
+    has == (by keys+values), but not <
+
 collections.deque
     double-ended queue
     can serve as an efficient stack, queue, or linked list
@@ -1220,6 +1227,7 @@ Dataclass
         if you didn't have the decorator, and did MyClass.x, it would throw AttributeError
 
     dataclasses also implement __repr__, __str__, and __eq__
+        does not get __lt__, etc. by default
     it also gets __hash__ if you pass frozen=True in the decorator
         which makes it a readonly data structure after construction
 
@@ -1469,7 +1477,8 @@ collections
         p.x
         p.y
 
-        implements ==, str(), repr(), and hash() for you
+        implements ==, <, str(), repr(), hash(), etc. for you
+            acts like a normal tuple
 
     deque: double-ended queue
         more efficient than regular lists for stack and queue operations
@@ -2638,3 +2647,10 @@ here is a brief summary of topics to keep in mind:
     gRPC - for service-to-service communication
     requests - HTTP requests from service-to-service
     
+[Interview Tips]
+    as usual, be able to do your own linked list nodes, binary search, etc.
+    negative indexing, though not changing O(), is slower in leetcode problems
+    can use a dict like you'd use an anonymous object in JS
+        inc. literal
+        unless need < operator, then used named tuple
+    prefer comprehensions to map(), filter(), etc. as it's more idiomatic nowadays
