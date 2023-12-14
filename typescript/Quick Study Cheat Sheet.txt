@@ -883,10 +883,10 @@ Built-in Exceptions
   RangeError (for index issues)
 Exception Members
   typically at least 'message' and 'name'
+    constructors will typically set message based on a string passed in
+      eg. new Error(message)
 
 Not Available: context management, asserts (have to use libraries)
-  constructors will typically set message based on a string passed in
-  eg. new Error(message)
 
 [Functions]
 types look a lot like python type annotations (but compiler actually cares)
