@@ -726,6 +726,8 @@ all the usual arithmetic, arithmetic assignment, bitwise, and comparison operato
   and pre and post increment/decrement
   / will give a fractional number if applicable
     use Math.floor() if want floor division like other C-like languages
+    works ok in slice() and other things that take integers like that
+      automatically floored for you
   ** for exponentiation like in Python
 &&, ||, ! for conditions
 &&=, ||=, ??= assignment operators (fairly new)
