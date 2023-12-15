@@ -50,6 +50,8 @@ Shorthand Property Names
   let point: {x: number, y: number} = {x, y};
     x and y are used as both the keys and the variables to get the values from
     if the variables were called something else, you'd still have to say x: somethingElse and y: somethingElseElse
+  let {x, y} = point;
+  let {x: otherXVariableName, y: otherYVariableName} = point;
 
 let a: any = 5;
   a could be any type
