@@ -1383,6 +1383,9 @@ math
     log(x, base)
     radians(angle)
     cos(radians)
+    fabs(x) for float absolute values
+        abs(x) is a top-level function that also works on floats, integers, etc.
+        math.fabs() returns floats even if given integers while abs() maintains the input type
     pi = constant
     e = constant
 operator: functions for passing operators around functionally
@@ -2669,3 +2672,4 @@ here is a brief summary of topics to keep in mind:
     reverse() and reversed() don't take index
         idiomatic way is to use slicing
         same goes with sort
+    idiomatic to declare variables on one line using tuple unpacking
