@@ -574,6 +574,11 @@ Extra copies
         for same reason as Java - don't want to keep big one around for small one
     but it's possible under the hood some optimizations are done you don't know about
 
+Ascii Values
+    because there is no char type, you can't do this: s[0] - 'a'
+        instead, do this: ord(s[0])
+        the opposite is: chr(n)
+
 [Operators]
 mostly the same as C-like languages with some exceptions
     additional operators like // and ** also support assignment (//= and **=) like others
@@ -779,6 +784,9 @@ Default args
 
     def f(a=g()):  # not a "compile-time constant"
         return a
+
+  you cannot ommit args if they don't have defaults
+  you cannot add extra args beyond what's in the list
 Default Mutable args
     this is a weirdness of Python
     when a default value of an arg is a mutable type like a list or dictionary
@@ -1032,6 +1040,10 @@ Inheritance
     a key thing to note here is that instances dynamically see changes to their classes
         it is not clone stamped at the point of instantiation
         but changing superclass won't affect instance if subclass defines that symbol
+            WARNING: if you modify an object (instead of rebinding a variable) in subclass,
+            you are changing the static class!
+                eg. appending to an array defined in the class body affects all instances
+                    this is a sharp corner you don't see in other languages - be careful!
     no 'virtual' keyword - everything is virtual (like Java) due to how the lookups work
         just using the same name overrides already
         both for variables and functions
@@ -2654,3 +2666,6 @@ here is a brief summary of topics to keep in mind:
         inc. literal
         unless need < operator, then used named tuple
     prefer comprehensions to map(), filter(), etc. as it's more idiomatic nowadays
+    reverse() and reversed() don't take index
+        idiomatic way is to use slicing
+        same goes with sort

@@ -297,6 +297,8 @@ Arrays
     fill() returns the array itself which is modified in-place
     this makes it friendly to this way of making a new array:
       new Array(5).fill(100)
+        NOTE: without the fill(), new Array(5) gives you a sparse array
+          with all undefined values
 
   a.flat() returns a flattened copy of 2D array
     only works 1 level 
@@ -708,6 +710,11 @@ there is no StringBuilder type object
   use arrays and join(), or template strings
 to do something like sort a string, use Array.from() and then arr.join('')
 
+Ascii values
+  because characters are not a separate type, you can't do this: s[0] - 'a'
+    do this instead: s.charCodeAt(0)
+    the opposite: String.fromCharCode(65)
+
 Case Insensitivity: convert both to lowercase first
   maybe also toLocaleString() and normalize() depending on requirements
 
@@ -916,6 +923,11 @@ Default Params
   function power(base: number, exponent: number = 2): number {
     return Math.pow(base, exponent);
   }
+
+Extra or Missing Args
+  extra args passed in are ignored
+  missing args become 'undefined'
+  TS compiler doesn't allow you to do either of those, but JS does
 
 Named Params
   not a first-class language feature, but you can do it with objects
@@ -2244,3 +2256,6 @@ as usual, be able to do your own linked list nodes, binary search, etc.
 always remember TypeScript cares more about types than JS does
   so something like pretending an object is another type of object won't matter to JS if the properties match
   it would only matter if you're relying on the prototype (the inheritence)
+a.reverse() doesn't take index
+  either slice it or manually reverse it in a loop
+  same goes with sort()
