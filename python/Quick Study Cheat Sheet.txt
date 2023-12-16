@@ -2659,9 +2659,10 @@ here is a brief summary of topics to keep in mind:
     Flask - for HTTP REST API from Python (server-side)
     SQLAlchemy - for database support
     gunicorn - to host a Flask app in production (inc. in docker, kubernetes, etc)
+    Django - more "batteries included" alternative to Flask
     gRPC - for service-to-service communication
     requests - HTTP requests from service-to-service
-    
+
 [Interview Tips]
     as usual, be able to do your own linked list nodes, binary search, etc.
     negative indexing, though not changing O(), is slower in leetcode problems
