@@ -541,7 +541,7 @@ Summary of Class-Like Objects and Their Differences
 Data Structures Missing from JS/TS: (either make your own or use 3rd party library)
   efficient queue and deque
     3rd party libraries: double-ended-queue, typescript-collections, collections (js)
-  prioroity queue/heap
+  priority queue/heap
     3rd party libraries: heap, typescript-collections, collections (js)
   sorted map and set
     3rd party libraries: typescript-collections, collections (js)
