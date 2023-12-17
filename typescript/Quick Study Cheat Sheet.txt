@@ -1,4 +1,4 @@
-** most of these notes are summarized from notebooks, except for the interview stuff at the bottom & documentation & playgrounds at top **
+** most of these notes are summarized from notebooks, except for the interview & debugging stuff at the bottom & documentation & playgrounds at top **
 
 [Documentation]
 MDN for JavaScript
@@ -2263,3 +2263,60 @@ always remember TypeScript cares more about types than JS does
 a.reverse() doesn't take index
   either slice it or manually reverse it in a loop
   same goes with sort()
+
+[Debugging]
+Chrome DevTools
+  depends on sourcemap files for TS - just works for JS (but might have to work with minified if production)
+    sourcemaps also can help with debugging minified pure JS
+  
+  Sources tab
+    Cmd-P (or click Open Fiel) and search by part of filename
+    click to set/clear breakpoint
+    right-click to edit breakpoint (or to add specific type of breakpoint)
+      conditional breakpoint
+
+    or go to Event Listener Breakpoints
+      can set to break on a listened event (browse by cateogory)
+        eg. break on any click handler
+  
+    XHR/Fetch Breakpoints to break when url contains a substring
+
+    DOM breakpoints
+      set from Elements tab
+        right-click an element and Break On -> pick what kind of activity to break on
+    Data Breakpoints: not available
+      could change the code to use a property getter/setter and break in there
+    
+    Deactivate breakpoints button to temporarily deactivate all breakpoints
+    buttons to pause, resume, etc. are in the debugging area (3rd pane)
+    Step into (F10) and Step Over (F11), Step Out (Shift-F11)
+      remember Step Over just means don't step into, but still executes
+    Scope Panel hidden inside the debugging panels (with the breakpoints, etc.)
+      has the current variables values
+    Watch panel is where you can add watch expressions
+      any expression that is constantly evaluated during debugging
+      eg. to get a variable value, or something like 'typeof x'
+    Console panel at buttom of debugger
+      redundant with the Console tab (linked together)
+      allows you to execute JS code in the current scope WHILE PAUSED
+  
+    you can change a source file and cmd-s to save it
+      will only affect the copy running in the browser
+      will be gone on refresh
+    
+  you can also put 'debugger;' in the code to force a debugger breakpoint on execution in browser
+
+VSCode
+  VSCode has built-in support for Chrome and Edge debugging
+  Command Palette -> Debug: Open Link
+    give url
+    will check default browser and then find Chrome if not Edge
+  alternative is to use a Launch Configuration the old-fashioned way
+    with "type" equal to "chrome" and then set "url"
+    then just hit F5 to run
+  the features and options are similar to DevTools
+    eg. still no data breakpoints
+    this part is dependent on the installed debugger, not on VSCode
+      but for JS/TS, it's built-in to VSCode
+  "Run" menu for debugger commands
+  "Run and Debug" panel on left

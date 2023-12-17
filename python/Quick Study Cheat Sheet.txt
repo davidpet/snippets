@@ -1,3 +1,5 @@
+** Interview Tips and Debugging not from notebooks **
+
 [Documentation]
 docs.python.org
 
@@ -2676,3 +2678,132 @@ here is a brief summary of topics to keep in mind:
         idiomatic way is to use slicing
         same goes with sort
     idiomatic to declare variables on one line using tuple unpacking
+    
+[Debugging]
+breakpoint() built-in function can be used to force to break when code executes
+    and invoke pdb
+no data breakpoints
+
+VSCode
+    use a launch configuration of type "python"
+        with the python extension installed
+        a default is created for you if you do "create launch.json" with a python file selected
+            use "Add Configuration" command (from dropdown in Run and Debug panel) to add another one
+                launch.json is global to the WORKSPACE, not the project or file
+        launch configurations are in the .vscode folder, not meant to be part of Git
+        you can add an "args" field with cmdline args for the py script
+    launch configurations can vary by language/debugger
+        but there are some fields that tend to be there commonly
+        "name" to name the configuration (for dropdown selection, etc.)
+        "type" so VSCode knows what to do (eg. python or node)
+        "request" to tell it what you want to do (eg. "launch")
+        "program" to tell it what file to run (uses special ${} variable expressions)
+pdb
+    python -m pdb myscript.py
+        invoking built-in pdb module as the top-level script
+        and passing it your script as an arg
+    pdb starts broken at the beginning or the program
+        and it restarts the program if it termiantes normally
+            with breakpoints, etc. preserved
+        enters post-mortem debugging mode if it terminates abnormally
+    commands can often be abbreviated to one or two letters
+    newline with no input = repeat last command
+    unrecognized commands are assumed to be python commands and are executed in current program scope
+        eg. so you can change variables, call functions, etc. 
+        can also prefix with ! to make it explicit
+    ;; for multiple lines
+    can set a convenience variable with $ prefix
+        gone when program resumes
+        better than setting real variables and affecting the scope of the program
+        built-in $_frame convenience variable for current frame
+        $_retval and $_exception if frame is returning or throwing exception
+    
+    Commands
+        all can be abbreviated as 1 character expected indicated
+
+        help
+            list available Commands
+        help where
+            list help about a specific command
+        where
+            print stack trace, most recent @ bottom with >
+        down/up [count]
+            move down/up in the stack frames (default count of 1)
+
+        break linenumber
+            set a breakpoint at a line number in current file
+        break file:linenumber
+            set a breakpoint in another file
+            file must be found relative to sys.path
+        break myfunc
+            set a breakpoint in a function
+        break [linenumber|function] condition
+            set a conditional breakpoint by python expression
+        break
+            with no arguments, shows info about all breakpoints
+        tbreak....
+            temporary breakpoint (gone after hit once)
+            same args as break 
+        
+        clear [abbreviation: cl]
+            clear all breakpoints
+        clear [filename:linenumber]
+            clear breakpoints at a line in a file
+        clear [number]
+            clear a breakpoint by assigned breakpoint number
+        clear [number1] [number2] ...
+            clear a space-separated list of breakpoints by number
+        disable [no abbreviation] [number1] [number2] ...
+            disable (without clearing) breakpoints
+        enable [no abbreviation] [number1] [number2] ...
+            enable disabled breakpoints
+        
+        condition bpnumber [condition]
+            set (or remove if ommitted) the condition on a breakpoint
+
+        step
+            step into
+        next
+            step over
+        return
+            step out
+        continue
+            continue execution until breakpoint hit
+        until [abbreviated 'unt'] [line]
+            continue until a line (or greater) hit
+        jump [lineno]
+            jumps straight to a line (eg. to repeat or skip sections)
+
+        list
+            show 11 lines around current line
+        list first last
+            show specific range of lines
+        list line
+            show 11 lines around given line
+        list line count
+            show given # lines around given line
+        longlist [abbreviation ll]
+            list lines for current function or frame
+        
+        args
+            print current function args
+        retval [no abbreviation]
+            last return value of current function
+        p expression
+            print result of python expression
+        pp expression
+            print result of expression with prettyprint module
+        whatis expression [no abbreviation]
+            type of expression
+        display expression [no abbreviation]
+            sets a watch in the current frame
+        undisplay [expression] [no abbreviation]
+            clear watch(es) in current frame
+        run [args] [no abbreviation]
+            restart program with given args
+            maintains breakpoints, etc.
+        restart [args] [no abbreviation]
+            same as 'run'
+        
+        quit
+            exit the debugger
