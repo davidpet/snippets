@@ -1662,10 +1662,12 @@ dataclasses
     dataclass: decorator for defining a data class
 
 logging
-    basicConfig()
-    logger = getLogger()
+    basicConfig(filename, level, format)
+    logger = getLogger(name)
+        various APIs define their own loggers to use
     logger.info('this is an info message')
     logger.error('this is an error!')
+    logger.debug('this is a debug message!')
 
 importlib
     reload(module): to reload a module (eg. to test changes)
