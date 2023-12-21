@@ -289,7 +289,8 @@ Unpacking
         means the same thing as above (regardless of whether list or tuple)
     a[0],a[4] = collection
         the left side doesn't have to be a new variable or a variable at all
-        it is just a general assignment  
+        it is just a general assignment
+    there is no object or dict unpacking like in JS
 Iteration
     for item in l:
         print(item)
@@ -410,8 +411,8 @@ Objects as keys
 Implementing Objects for Collections
     == operator is used for membership tests
     < operator is used for sorting and binary searching
-    hash() is used for dict insertion
-    hash() and == are used for dict retrieval
+    hash() is used for dict and set insertion
+    hash() and == are used for dict and set retrieval
     repr() is used for printing collections (trickles down to elements)
     str() is used for converting collections to string (trickles down to elements)
 
@@ -465,6 +466,13 @@ Immutability
         independent copy
     dict -> types.MappingProxyType
         view on the original
+
+    only the immutable collections are hashable
+        mutable ones will throw TypeError if attempt to hash
+            including if try to use them as keys in set or dict
+    you can use a wrapper class or convert to work around it
+        eg. tuple(mydict.items())
+        eg. frozenset(myset)
 
 Thread Safety
     in general, read operations on collections are thread-safe, but write operations are not
@@ -607,8 +615,17 @@ missing
     ++ and --
     safe navigation
 division
-    // behaves like / in c-like languages (floor division)
+    // behaves somewhat like / in c-like languages (floor division)
+        but it truncates toward negative infinity instead of zero
+        which makes it like using math.floor()
     / becomes a float instead!
+modulo
+    % is unusual in Python when it comes to negatives
+    -1 % x = x - 1 (instead of -1)
+        the pattern continues downward cyclically instead of inverting the result symetrically
+    when it comes to negatives on the right side (x % -y), the result is inconsistent
+        I saw a different result on jupyter vs. the terminal
+        best not to rely on whatever it does then
 exponentiation
     a**b means a to the b power
 boolean
@@ -669,6 +686,7 @@ collections
         [1, 2, 3, 4]
     [*mylist]
         spread operator (in this case copying mylist)
+    [*myset]
 
 del
     x = 5
@@ -838,6 +856,10 @@ Spread (star and double-star)
         k = keyword args expanded in-place
         a way to forward variadic args
             in addition to using collections to store args
+    works in comprehensions too
+        l = [*other]
+    * iterates over a collection to get sequential/positional args
+    ** iterates over a collection to get keys and tries to use [] to get values
 Rest/Variadic (star and double-star)
     def f(x, a=10, *args, **kwargs):
         pass
@@ -1268,6 +1290,10 @@ Dataclass
     it also gets __hash__ if you pass frozen=True in the decorator
         which makes it a readonly data structure after construction
 
+    from dataclasses import asdict
+    f(**asdict(m))
+        a dataclass doesn't act like a dictionary by default, but you can convert it
+
 nesting
     clases, functions, etc.  can be nested inside each other w/ no issue
     nested classes don't inheritently have access to each others' private data
@@ -1403,6 +1429,7 @@ math
         for float near-equality
     sqrt(x)
     floor(x)
+        truncate towards negative infinity
     exp(x) [e to the x]
     log(x) [natural log]
     log(x, base)
@@ -1427,7 +1454,7 @@ statistics
     mean(l)
 random
     seed(value)
-    randint(inclusiveLower, exclusiveUpper)
+    randint(inclusiveLower, inclusiveUpper)[unusual]
     random() [float from 0 to 1, not including 1]
     shuffle(l) [destructive]
     gauss(mean, stddev)
@@ -2705,6 +2732,8 @@ here is a brief summary of topics to keep in mind:
         and very idiomatic
     it's surprisingly tricky to remember to pass self and use self before all members
         so make sure to practice classes before interviews
+    it's more idiomatic to do a re.sub than to do a char by char string builder like copy with skip
+        and the LC results are actually better for some reason
 
 [Debugging]
 breakpoint() built-in function can be used to force to break when code executes
