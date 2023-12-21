@@ -39,7 +39,7 @@ x = 'hi'
     can be set to a totally different type later
 
 2., 2e9, etc. for floats
-    float('inf') and float('-inf') to get infinities
+    float('inf') and float('-inf') to get infinities (or float('Infinity'))
         these act like you'd expect (eg. infinity always stays infinity when add finite numbers)
     float('nan')
         stays nan no matter what operations you do to it
@@ -314,6 +314,12 @@ Membership
 
     all(item in small_list for item in l)
         a way to check if all items are in a collection
+
+    if c in '/*+-':
+        print('operator')
+    if c in 'eE':
+        print('exponent')
+
 Comprehensions
     in general, look like the literal for the collection you're making
         with a for loop inside to generate the elements
@@ -321,6 +327,8 @@ Comprehensions
     squared = [x**2 for x in nums]
     name_lengths = {name: len(name) for name in names}
     unique_vals = {x for x in nums}
+    vals_with_matching_key = [value for key,value in mydict.items() if f(key)]
+        notice the tuple destructuring and the key and value going left and right
 
     a special exception is with tuples and Generators
         gen = (x**2 for x in nums)
@@ -346,6 +354,11 @@ Slicing
     [:2] # includes 0, 1
     s[-2:] # includes last 2 items only
     s[:-1] # excludes last item
+    s[::-1] # reversed copy
+    s[:] = s[::-1] # reverse in-place
+    s[2:4] = s[3:1:-1] # reverse region in-place
+    s[2:] = s[:1:-1] # reverse end-region in-place
+
     s[start:stop:step] # full version (all 3 can be left off and/or negative)
         step -1 can be used to REVERSE the order
         but the start and stop are taken literally and might end up empty
@@ -360,6 +373,11 @@ Slicing
 
     NOTE: slice is actually a built-in top-level data type
         s = slice(2, 3)
+
+    PERFORMANCE: seems to be pretty efficient even though conceptually a copy
+        I've seen several LC problems be as fast or faster with slicing than with storing indices
+        using negative indices does have an impact though
+
 Ranges
     the range() function works similar to slicing
     it returns an iterable that you can use with a 'for' loop
@@ -702,6 +720,11 @@ for x, y in l:
 
 for i in range(10):
     print(i) # 0, 1, 2...9
+print(i)
+    the variable still exists after the loop
+    but unlike other languages, it is set to the last value seen in the loop
+    in this case 9 (not 10)!
+    this would apply to iterating a list, etc. too
 
 break and continue supported as usual
 
@@ -2678,11 +2701,18 @@ here is a brief summary of topics to keep in mind:
         idiomatic way is to use slicing
         same goes with sort
     idiomatic to declare variables on one line using tuple unpacking
-    
+    don't be afraid to slice since it's pretty efficient
+        and very idiomatic
+    it's surprisingly tricky to remember to pass self and use self before all members
+        so make sure to practice classes before interviews
+
 [Debugging]
 breakpoint() built-in function can be used to force to break when code executes
     and invoke pdb
 no data breakpoints
+
+print()
+    use comma, separated values instead of printing line by line so things are grouped
 
 VSCode
     use a launch configuration of type "python"

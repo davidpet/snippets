@@ -2265,6 +2265,9 @@ a.reverse() doesn't take index
   same goes with sort()
 
 [Debugging]
+console.log()
+  use comma-separated values instead of printing line by line (logically groups things)
+
 Chrome DevTools
   depends on sourcemap files for TS - just works for JS (but might have to work with minified if production)
     sourcemaps also can help with debugging minified pure JS
