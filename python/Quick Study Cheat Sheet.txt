@@ -607,6 +607,9 @@ Ascii Values
         instead, do this: ord(s[0])
         the opposite is: chr(n)
 
+Comparison
+    == and <, etc. use lexographical comparison just like arrays, tuples, etc.
+
 [Operators]
 mostly the same as C-like languages with some exceptions
     additional operators like // and ** also support assignment (//= and **=) like others

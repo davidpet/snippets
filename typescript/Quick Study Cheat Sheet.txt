@@ -418,6 +418,7 @@ Maps
   also can use m.keys(), m.values(), m.entries()
 
   Map.groupBy(list, fn)
+    gets a map of arrays
     to get a counts dictionary, you have to do it yourself
       eg. with reduce()
 
@@ -682,6 +683,8 @@ s.repeat(n)
 methods that search from the start or end of a string can often take a start index
   so that you don't have to break the string apart just for that
 for things like checking if letter, use regex
+note that unlike other languages, support for directly checking character classes is weak
+  have to rely on conversions, conditionals, and regex instead
 
 for...of iterates over characters (single-length strings)
 
@@ -740,11 +743,14 @@ Regular Expressions
     makes a regular expression object directly using perl-like syntax
     no need for raw strings because already raw (unquoted)
     the // quotes it, but global flag comes after /
+    but don't forget you can also use // inline (eg. text.match(/\d+/g))
   pattern.test(text)
     true if a match anywhere in text
   matches = text.match(pattern)
     if you use /g flag, gets multiple matches as array of strings
     if you don't use /g flag, gets tuple with info about 1 match
+      null if no match
+        this allows you to say if (text.match(/blabla/)) {}
   text.replace(pattern, replacement)
     replace all occurences of pattern with replacement
     can use $1, etc. for capture groups
@@ -764,6 +770,15 @@ Ascii values
 
 Case Insensitivity: convert both to lowercase first
   maybe also toLocaleString() and normalize() depending on requirements
+
+Lexographical Comparison
+  operators like < use lexographical comparison on strings
+  therefore, you can use them for ascii comparisons without converting to ascii
+    eg. c > '0' && c < '9'
+
+Iteration
+  strings can be iterated with 'for' as a sequence of characters (single char strings)
+  but they do not have a .forEach() method
 
 [Operators]
 all the usual arithmetic, arithmetic assignment, bitwise, and comparison operators from c-like language
@@ -895,6 +910,7 @@ Truthiness
 Spread Operator
   const a = [1, 2, 3];
   const b = [...a, 4, 5, 6]; // [1, 2, 3, 4, 5, 6]
+  works on anything iterable (eg. set, custom class, etc.)
 
 semicolons are technically optional
   JS people don't like them
@@ -1153,6 +1169,8 @@ Applying Arguments Positionally
 map, reduce, filter
   map, reduce, and filter are array methods that return new arrays
   note that reduce signature looks like arr.reduce(fn, seed) [weird order]
+
+  NOTE: there is no sum() function unlike Python - have to use reduce() for that
 
 some, every
   boolean methods of array that takes predicate
@@ -2300,6 +2318,7 @@ be able to implement stream operations like concat(), zip(), etc.
   use generators
   useful to have these in problems & interviews
 be able to implement missing data structures quickly for problems
+  esp. heap
   some platforms might let you use some other popular libraries
   for interviews, probably fine to just pretend the Java ones exist here
     be able to implement in case they ask
