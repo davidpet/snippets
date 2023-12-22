@@ -2731,9 +2731,13 @@ here is a brief summary of topics to keep in mind:
     don't be afraid to slice since it's pretty efficient
         and very idiomatic
     it's surprisingly tricky to remember to pass self and use self before all members
-        so make sure to practice classes before interviews
+        so make sure to practice classes/OOP before interviews
     it's more idiomatic to do a re.sub than to do a char by char string builder like copy with skip
         and the LC results are actually better for some reason
+    use float('inf') and float('inf') for gauranteed max and min in comparisons
+        instead of max safe int or whatever like in Java
+    practice a lot of string and array transformations, regex, etc.
+        unlike C++ and Java, those are more idiomatic and performant here!
 
 [Debugging]
 breakpoint() built-in function can be used to force to break when code executes

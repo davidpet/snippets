@@ -194,6 +194,39 @@ Discriminated Unions
   you can call the tag property whatever you want and have different tags for different purposes
     (eg. different types of interfaces being discriminated between)
 
+JS Number Weirdness
+  JS is unique in that it combines floating points and integers in 1 concept
+  internally, a Number (number) is always a 64-bit IEEE floating point number
+  it uses 52 bits for the mantissa (w/ implied leading bit depending on whether all exponenent bits clear)
+    plus 1 sign bit
+  so for the range -(2^53 - 1) to (2^53 - 1) [53 bit unsigned magnitude],
+    integers an be bit-perfect represented for arithmetic, etc.
+    that's basically equivalent to 54-bit (minus 1 negative value) integers
+  outside that range, you can represent from very tiny to very large magnitudes
+    but adding and subtracting 1, for instance, will have rounding errors
+  an additional weirdness to watch out for is the behavior of BITWISE operators
+    a bitwise operator converts a Number to a 32-bit binary integer before it does its thing
+    first, if it's a fractional number, it will truncate toward zero (not negative infinity like Math.floor)
+    then it will write the number as a 54-bit binary integer
+    then it will truncate upper bits as if you did a downcast in C
+    the result of the bitwise operator is then either passed onto the next one or converted back to floating point
+    x | 0 is a way to downcast to 32-bits and back to float
+    an additional weirdness is that if you bit shift more than 31 bits, it will auto-wrap for you
+      but sequential shifts won't do this cooperatively
+  arithmetic operators just work on floating point numbers with no conversion
+  if you need more than 32-bits for bitwise operations, you have to use BigInt
+
+BigInt
+  trailing n for literals, or BigInt(n) to convert a Number
+    if the Number is fractional or otherwise can't be represented, it will throw
+    note that if you do Number math to make the argument to BigInt(), you may have already lost precision
+  you can use all the arithmetic, bitwise, etc. operators on BigInt, but you cannot mix with Number
+    eg. b ** BigInt(2), b << BigInt(2), b << 2n, etc.
+  the range of a BigInt is essentially unlimited because it's a concatenated buffer
+  to convert a BigInt back to Number, either use Number(b) or +b
+    it will not throw if too large
+    might lose precision, become infinite, etc.
+
 [Collections]
 Literals
   only array and object have literals ([] and {})
@@ -655,7 +688,11 @@ for...of iterates over characters (single-length strings)
 Conversions
   s = n.toFixed(2) // format a number as a fixed-point decimal string
   parseInt() and parseFloat() to get numbers from strings
-  +s // number to string via unary plus operator
+  +s // string to number via unary plus operator
+  Number(s) // boxed type as function (instead of c'tor)
+    Number('Infinity') // Infinity
+    Number('bob') // NaN
+  String(n)
   JSON.stringify() to make object into json string
     JSON.stringify(o, null, 2) to pretty-print with 2 spaces per indent
     JSON.stringify(o, [key1, key2], 2) to only include certain set of keys
@@ -664,6 +701,14 @@ Conversions
   o.toString() to get string from object (as it defines for itself)
     arrays do not have this
     set and map do not implement it properly
+
+  boxed types like Number, BigInt, String, etc. can act as either functions or c'tors
+    this is only for those types - you can't do this with your classes
+    the function version does a primitive conversion
+    the c'tor version makes the boxed type (and doesn't autounbox back)
+      you almost never want to do this
+    you can't use the primitives like number (lowercase) as either functions or c'tors
+      only for typeof and TS annotations
 
 Base64
   btoa(original)
@@ -2267,6 +2312,12 @@ always remember TypeScript cares more about types than JS does
 a.reverse() doesn't take index
   either slice it or manually reverse it in a loop
   same goes with sort()
+use Infinity and -Infinity for gauranteed max and min in comparisons
+  instead of max safe int or whatever like in Java
+practice classes and OOP on your own since practice problems don't exercise that
+  eg. remember to put 'this' everywhere
+practice array and string transforms, regex, etc.
+  more idiomatic and performant than in languages like C++ and Java
 
 [Debugging]
 console.log()
