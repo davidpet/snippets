@@ -528,6 +528,9 @@ isascii(), isnumeric(), isalpha(), isalnum(), isupper(), etc.
 find(), rfind(), replace(a, b, count=None), removeprefix(possiblePrefix), removesuffix(possibleSuffix), 
 
 s = s1 + " " + s2
+implicit literal concatenation is also supported
+    eg. s = "a" "b" "c"
+        becomes "abc"
 
 if substring in s:   # substring search
     print('present')

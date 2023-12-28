@@ -647,6 +647,8 @@ concatenation is weird in JS compared to other languages
     this will be 1, 23, 4
   TypeScript complains about a lot of these operations though
     you can still get the behavior if you use 'as any' on the objects it complains about
+implicit concatenation NOT SUPPORTED
+  eg. can't do "a" "b" "c" like in C++
 
 '' and "" are both for string (char is just a single character string, not special thing)
 `Hello, {name}!` // 'name' should be variable in current scope
