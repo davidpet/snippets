@@ -610,6 +610,10 @@ Implementing Objects for Collections
 	to put into a collection that uses hashes, you will need hashCode() and equals()
 		to do operations like remove() on a list, you will need those as well
 		utilize Objects.hash(...) to make this easy
+	NOTE: if an object is mutable, its hash code may change after it's been used as a set or map key
+		that means potential data loss since the key-value pair will have been bucketed by the old hash
+			but .equals() will use the new value since it's a reference
+		this is why Python only allows using immutable collections as hashable objects
 	to support sorting and operations like that, you will need to implement Comparable<T>
 	to support writing the collection to a string, implement toString()
 
@@ -674,6 +678,7 @@ reference type/interned/immutable
 not array, not indexable with []
 
 + or .concat() [fluent]
+	no implicit concatenation of literals next to each other like C++
 automatically converts with toString() if type is not string
 
 str.length() [insted of size() like collections]
@@ -825,6 +830,13 @@ Casting Details
 	
 	a runtime cast will throw ClassCastException (unchecked) if it fails
 
+% and / with negative numbers
+	/ (for integers) is truncation towards zero
+		signs from left and right side combine on magnitude of end result
+	Math.floor is truncation towards negative infinity
+	% ignores signs at first and then applies sign from the left side
+		sign on right side has no effect
+
 [Control Flow]
 ranged-based for (enhanced for loop)
 	[remember to use : instead of of, in, etc. like some others]
@@ -915,6 +927,7 @@ var
 	ok as variable that gets a function call as a value
 	not ok as function return type or parameter type
 recursion works like normal (by name), but no TCO
+	cannot do recursion using a variable as the function to call from itself like in scripting languages
 
 params can be marked final, but it only prevents the local references and not the objects
 	uncommon
