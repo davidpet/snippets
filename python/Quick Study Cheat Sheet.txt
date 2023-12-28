@@ -1114,6 +1114,10 @@ Inheritance
 object
     the root of the type system is called 'object'
     even primitives inherit from object
+        you can call methods on a literal
+        but . after a number looks like a float
+            eg. can't do 3.__str__ but can do (3).__str__
+            eg. can do 'hi'.__lt__
     the default hash function returns a different hash for each instance
         which makes it useful for unique opaque dictionary keys and such
     object can be directly instantiated too
