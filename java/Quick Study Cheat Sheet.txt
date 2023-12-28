@@ -34,7 +34,7 @@ C++ style quoting for strings and chars
 interning for numbers and strings
 all reference types are nullable
 primitive value types are not Object and have boxed equivalents (which have static things too)
-== reference or primitive value, .equals() contents, .compareTo() lex, Object.equals() null safe
+== reference or primitive value, .equals() contents, .compareTo() lex, Objects.equals() null safe
 
 implicit widening, c-style narrowing (truncates)
 	numeric conversions via cast operator only work for primitives
