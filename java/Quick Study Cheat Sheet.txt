@@ -1415,7 +1415,7 @@ ABCs
 	mark the class as 'abstract' and then mark methods as 'abstract' (no bodies or =0)
 	an interface is not an ABC because it can't have variables inside an instance
 Interfaces
-	'interface' keyword and then abstract methods (no body, no =0 like C++, NO 'abstrat' keyword)
+	'interface' keyword and then abstract methods (no body, no =0 like C++, NO 'abstract' keyword)
 	all methods public and abstract by default (and can't be changed)
 		the normal case is to just have those
 		need to explicitly declare the overridden methods as 'public' when implementing
