@@ -1,0 +1,6 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/MovingCameraScene/3940201998_1804042621_3279855857.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/MovingCameraScene/274773777_443793829_498191744.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/MovingCameraScene/3333367714_3808846266_456754517.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/MovingCameraScene/2070057004_3527355647_456754517.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/MovingCameraScene/682145131_2596705010_456754517.mp4'

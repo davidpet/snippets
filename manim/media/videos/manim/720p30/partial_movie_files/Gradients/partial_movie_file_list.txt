@@ -1,0 +1,4 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/Gradients/274514146_2562600914_2496185103.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/Gradients/2789044632_36632488_2442378928.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/Gradients/2789044632_36632488_3171448560.mp4'
