@@ -3,3 +3,4 @@ file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/
 file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/PlotCurves/274514146_1804042621_3159487165.mp4'
 file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/PlotCurves/2789044632_329969645_2419664804.mp4'
 file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/PlotCurves/2789044632_329969645_1593262591.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/PlotCurves/2789044632_329969645_105248264.mp4'

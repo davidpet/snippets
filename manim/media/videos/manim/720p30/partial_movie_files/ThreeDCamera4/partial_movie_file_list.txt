@@ -1,0 +1,7 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/ThreeDCamera4/1605223203_1627756893_2150969767.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/ThreeDCamera4/4261713500_3296951522_2983748185.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/ThreeDCamera4/3295467977_1465312882_2291585170.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/ThreeDCamera4/4155374681_3154618582_4115410019.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/ThreeDCamera4/111685294_1021880186_2482380934.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/ThreeDCamera4/2474452557_3837998516_1261207675.mp4'
