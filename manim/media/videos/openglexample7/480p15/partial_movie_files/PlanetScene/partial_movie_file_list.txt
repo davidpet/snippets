@@ -1,0 +1,8 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/openglexample7/480p15/partial_movie_files/PlanetScene/233493676_2264327378_1473712444.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/openglexample7/480p15/partial_movie_files/PlanetScene/2676061449_2264327378_3034659065.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/openglexample7/480p15/partial_movie_files/PlanetScene/2676061449_476144271_3651647231.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/openglexample7/480p15/partial_movie_files/PlanetScene/2514204116_718767945_2428418047.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/openglexample7/480p15/partial_movie_files/PlanetScene/3526036425_3885269776_3436732499.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/openglexample7/480p15/partial_movie_files/PlanetScene/1518896282_125143876_2331882745.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/openglexample7/480p15/partial_movie_files/PlanetScene/951913570_216796110_2331882745.mp4'
