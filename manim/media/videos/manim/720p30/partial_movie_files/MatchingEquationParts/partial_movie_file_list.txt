@@ -1,0 +1,6 @@
+# This file is used internally by FFMPEG.
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/MatchingEquationParts/2016333726_3649372508_908703310.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/MatchingEquationParts/543634251_3737264535_4227516557.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/MatchingEquationParts/543634251_2569161387_2023390784.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/MatchingEquationParts/543634251_2070456877_574630669.mp4'
+file 'file:/Users/davidpetrofsky/repos/snippets/manim/media/videos/manim/720p30/partial_movie_files/MatchingEquationParts/543634251_2569161387_2454460092.mp4'
