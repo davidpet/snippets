@@ -1959,6 +1959,18 @@ Browser DOM
             if they don't, it would be a memory leak
           the lambda could remove itself when it's done if it's a one-time thing
             use its own name as the reference to pass in
+    Event Phases (event capturing)
+      if you click a button in the browser:
+        1. window capture phase click event fired
+        2. document capture phase click event fired
+        3. all elements in the chain down to the lowest target fired (in capture phase)
+        4. at each level, all handlers are called in the order they were added
+        5. then we go into the bubble phase and go back up to the window
+      there is a 3rd (optional boolean) param of addEventListener() that defaults to false
+        if you set it to true, you add to capture phase instead of bubble phase
+      e.stopPropagation() will stop from continuing the above procedure but will still process other handlers on current target
+        if capture phase, can be a global handler that doesn't want children to see the events themselves
+      e.stopImmediatePropagation() is event strong and stops other handlers on same target from being called
     
     Load Events
       document 'DOMContentLoaded' fires when the DOM is in-place (but before styles, etc. and other resources)
@@ -2069,6 +2081,12 @@ Promise<T>
       allows you to do things like call another API based on result of this API
     but it can also just chain single values so you can do map()-like transformations
 
+  Promise.race([promise1, promise2])
+    makes a new promise that returns (or errs) when the first promise passed in returns or errs
+      the rest are ignored and not cancelled in any way
+    this is like doing new Promise((resolve, reject) => ...) and passing the resole and reject into all the subpromises
+      because once one calls it, then the promise is done
+
 async/await keywords
     JS syntactic sugar for chaining promises as if they are synchronous
 
@@ -2105,7 +2123,7 @@ Ajax
     fetch(url) -> gives you a promise with the data from the server
       fetch(url).then((response) => {
         if (response.ok) {
-          console.log(response.json());
+          console.log(await response.json());
         }
       }).catch((error) => console.log(error));
     fetch(url, fields) -> same thing but can merge fields in
@@ -2116,6 +2134,8 @@ Ajax
       if using it in there, use JSON.stringify() so you don't have to worry about exact JSON format
   
   for gRPC, you need a special proxy that lets you fetch() from a JS client in a browser
+
+  response.json() and response.text() are async because HTTP is a streaming protocol (could be chunked)
 
 JSON
   JSON.stringify() and JSON.parse() as described in Strings above
