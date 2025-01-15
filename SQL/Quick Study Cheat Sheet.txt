@@ -18,6 +18,18 @@ statements end with ;
 identifiers, operators, etc. are not case sensitive but built-in stuff is usually capitalized
 	equality in strings is case sensitive by default
 
+whitespace (including newline) is ignored - only a semicolon can end a statement
+	if at end of query, missing semicolon ok
+		but between two statements will cause issue
+
+a common way to break is:
+	SELECT
+		name, age
+	FROM
+		employees
+	ORDER BY
+		age;
+
 [Data Types]
 INT
 FLOAT
@@ -64,6 +76,24 @@ WHERE column1 IS NOT NULL
 
 COALESCE(column1, 0)
 IFNULL(column1, 0) = same thing as COALESCE
+
+[Variables]
+for the duration of the script/session (like temporary tables)
+	doesn't seem to work in jupyter
+
+DECLARE @myVar INT:
+SET @myVar = 10;
+
+DECLARE @otherVar INT = 10;  -- both in 1 line
+DECLARE @x INT, @y INT;  -- multiple in 1 line
+
+PRINT 'The value is: ' + CAST(@myVar AS VARCHAR(10));
+
+SELECT * FROM table WHERE id = @myVar;
+
+[Macros]
+??? TBD (Have notebook but haven't put here yet)
+	parameterized views
 
 [Select Statement]
 overall order of clauses: [SELECT [DISTINCT]] [FROM] [JOIN] [WHERE] [ORDER BY] [LIMIT] [OFFSET] [GROUP BY] [HAVING]
@@ -147,6 +177,9 @@ ORDER BY column ASC
 
 	ORDER BY column1 ASC, column2 DESC
 		for 2 level ordering
+
+	without ORDER BY, order of rows is not guaranteed
+		even if you test it and it appears to always be insertion order, the engine could suddenly do it differently in production context
 LIMIT n
 	only get first n rows
 OFFSET n
@@ -172,6 +205,52 @@ Full Examples:
 
 	SELECT e.id, e.name, o.id AS orderId, o.product FROM employees AS e INNER JOIN orders AS o ON e.id = o.customer_id
 
+[Window Functions]
+SELECT id, name, age, ROW_NUMBER() OVER (PARTITION BY age ORDER BY id) AS row
+    FROM employees
+    ORDER BY age, row;
+
+window function applies to 1 column and is structured like this:
+	FUNCTION_CALL() OVER (PARTITION BY col1 ORDER BY col2) AS column_name
+unlike GROUP BY, windowing functions do not collapse rows!
+	the PARTITION BY determines how a window is defined
+	the function iterates within each window in the order given by the ORDER BY
+		this does not affect the final output order
+		if the final order is compatible, the engine should be able to optimize instead of penalize you for double looping
+you can ommit PARTITION BY to have the whole table be 1 window (eg. if want to apply the functions to all rows returned)
+	keep in mind windowing is applied after WHERE and before things like ORDER BY and GROUP BY
+you can technically ommit ORDER BY, but then you lose control of the order for applying window functions
+	if just doing an aggregate like COUNT() that's fine
+	eg. SELECT age, COUNT(*) OVER () AS count ...
+
+Specific Window Functions:
+	ROW_NUMBER()
+		1-based index in order of ORDER BY
+	RANK()
+		like ROW_NUMBER() but for repeated values of the ORDER BY field, repeats indices and skips to make gaps
+	DENSE_RANK()
+		like RANK() but doesn't leave gaps in the indexing
+
+Aggregates as Window Functions:
+	COUNT(), AVG(), etc. can be used as window functions too
+		eg. COUNT(*) OVER ()
+	if no ORDER BY is present, they calculate the value for the whole window and repeat it
+		otherwise, they do a CUMULATIVE RUNNING VALUE in order
+
+Window Aliases:
+	SELECT 
+        id, name, age,
+        ROW_NUMBER() OVER age_window AS row,
+        RANK() OVER age_window AS rank
+    FROM employees
+    WINDOW age_window AS (PARTITION BY age ORDER BY id)
+    ORDER BY age, row
+
+	WINDOW clause defines alias as the part that comes after OVER normally
+		then you can use that in the column specs instead of repeating it over and over
+		must come after WHERE in the statement
+		note that unlike normally, the left part of AS here is the name
+	
 [Union, Intersect, Except]
 SELECT * FROM table1 INTERSECT SELECT * FROM table2;
 	combines two WHOLE QUERIES (including the where, etc.)
@@ -179,6 +258,46 @@ SELECT * FROM table1 INTERSECT SELECT * FROM table2;
 INTERSECT = rows that are identical in results from both tables
 UNION = deduplicated rows from results from either table
 EXCEPT = result rows in first and not in 2nd
+
+[Iteration and Lists]
+arrays with [] syntax do exist in some implementations, but it's not universal
+	often worked around with strings, JSON, table normalization, etc.
+
+SELECT * FROM employees WHERE office_id IN (1, 2, 3);
+	IN is shorthand for using OR and =
+		but more optimized by the engine
+	office_id IN (1, 2, 3) becomes office_id = 1 OR office_id = 2 OR office_id = 3
+	the (1, 2, 3) here is not some kind of list or set data type but is just shorthand for that bigger condition
+	if you were passing in a list from another language, you could format it into the string sent to the SQL engine
+		eg. with python f-strings
+SELECT * FROM employees WHERE office_id IN (SELECT id FROM offices);
+	IN can take a subquery instead of hardcoded values
+	this is useful if you want to pass the values as a table instead of in the query itself
+IN can be thought of as doing an outer loop on rows matching the condition (as opossed to all rows)
+	then you can further tweak the "iteration" by using window functions and subqueries to do filtering within groups of rows
+	the final result can then be returned as a flat table with a composite sort (that the consuming script can easily break by)
+	you can also return JSON, but the handling of JSON depends on the engine, so it gets complicated
+note that you may have to use a subquery due to WHERE not having access to column aliases (eg. from window functions)
+	but the engine can optimize this kind of subquery very well, much better than complex joins, so you don't need to worry
+
+This example gets a flat list (sorted by author and then reverse sorted by article ID) of the last 2 (or 0 or 1 as applicable) articles for each author:
+	SELECT
+		author_id,
+		article_id,
+		article_name
+	FROM (
+		SELECT
+			author_id,
+			article_id,
+			article_name,
+			ROW_NUMBER() OVER (PARTITION BY author_id ORDER BY article_id DESC) AS row
+		FROM
+			articles
+	)
+	WHERE
+		row <= 2
+	ORDER BY
+		author_id, article_id DESC;
 
 [Database Creation]
 CREATE DATABASE mydatabase;
@@ -213,6 +332,8 @@ VALUES (1, 'John Doe', 30, 5000.00),
        (2, 'Jane Smith', 25, NULL),
        (3, 'Mike Johnson', 35, 8000.00),
        (4, 'Sarah Williams', 40, NULL);
+
+Note that even though you are specifying the column names, the order still has to be right
 
 [Updating Rows]
 UPDATE employees SET salary = 75000.00 WHERE id = 2;
