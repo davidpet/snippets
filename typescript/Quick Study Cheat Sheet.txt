@@ -1971,6 +1971,10 @@ Browser DOM
       e.stopPropagation() will stop from continuing the above procedure but will still process other handlers on current target
         if capture phase, can be a global handler that doesn't want children to see the events themselves
       e.stopImmediatePropagation() is event strong and stops other handlers on same target from being called
+      custom events dispatched to an element will capture down to that element from the top
+        they will only bubble back up to the top if you pass {bubbles: true} as the 2nd param in the Event() constructor
+          or change 'bubbles' property after construction
+      el.click() will capture and bubble like a real click
     
     Load Events
       document 'DOMContentLoaded' fires when the DOM is in-place (but before styles, etc. and other resources)
