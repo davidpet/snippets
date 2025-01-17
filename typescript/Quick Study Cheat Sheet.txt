@@ -2141,6 +2141,8 @@ Ajax
 
   response.json() and response.text() are async because HTTP is a streaming protocol (could be chunked)
 
+  NOTE: don't forget to check the return code before fetching json, especially if going to do an 'as'
+  
 JSON
   JSON.stringify() and JSON.parse() as described in Strings above
   JSON is more strict than JS
