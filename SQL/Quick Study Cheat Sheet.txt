@@ -205,6 +205,26 @@ Full Examples:
 
 	SELECT e.id, e.name, o.id AS orderId, o.product FROM employees AS e INNER JOIN orders AS o ON e.id = o.customer_id
 
+[Subqueries and Derived Tables]
+grouping a part of a query with () makes a subquery
+	subqueries execute before the top query so that the results can be used
+	essentially it makes a temporary table in memory that is then thrown away when the statement ends
+	think of it like a pipeline, not a for each
+		by default, subqueries run as a discrete step, not on each row
+a subquery that returns a single column of a single row (eg. an aggregate) can be used to provide a single value (eg. duplicated to to all rows in outer query)
+	a subquery can also be used this way in WHERE to get a condition value to filter against
+it is possible to reference a column from the outer query in a subquery, which makes it a CORRELATED SUBQUERY
+	this is very expensive in that it will then do the subquery FOR EACH ROW (usually to be avoided - use join instead)
+
+a subquery in the FROM part creates a DERIVED TABLE
+	this is just a temporary table that goes away when the statement is done (executed once before outer query)
+	some engines require you to alias the derived table or they will throw an error (and some don't)
+		eg. SELECT subquery.x, subquery.y FROM (SELECT * FROM sometable) subquery ORDER BY subquery.x;
+			the alias goes after the subquery and can be used as a table name in the rest of the query
+
+derived tables can participate in joins as well (the usual rules apply - just a little harder to understand)
+	easier to understand if you don't use correlated subqueries and remember it runs once at the beginning to make a temporary table
+
 [Window Functions]
 SELECT id, name, age, ROW_NUMBER() OVER (PARTITION BY age ORDER BY id) AS row
     FROM employees
