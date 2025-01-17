@@ -2218,6 +2218,8 @@ some JS operations can be done in TS but you have to use things like 'any' to ma
 there are no access modifiers on classes
   or any feature that relies on that, such as Parameter Properties in constructors
   that is why TS has to make everything public by default
+  JS has its own # for private members (enforced) and _ for protected (by convention)
+    #x = 5; .... this.#x
 there is no 'readonly' modifier for properties
 there are no ? and ! nullable function params or class members
   nullability is the norm already
