@@ -33,8 +33,10 @@ number (both float and integer)
     NaN
     Infinity
     -Infinity
-    isNan()
-    isFinite()
+    Number.isNan(x) // the boxed type has static methods
+    Number.isFinite(x)
+    Number.isInteger(x)
+    Number.isSafeInteger(x) // checks if in the +-(2^53 - 1) range
 string (lowercase)
 bigint (if need more than 54-bit integers)
   trailing n literal (eg. 'const x = 10n;`)
@@ -417,8 +419,8 @@ Maps
   }
   also can use m.keys(), m.values(), m.entries()
 
-  Map.groupBy(list, fn)
-    gets a map of arrays
+  Map.groupBy(iterable, fn)
+    gets a map of arrays (fn should turn elements into keys)
     to get a counts dictionary, you have to do it yourself
       eg. with reduce()
 
@@ -440,7 +442,10 @@ Objects (as structs)
   let o = {a: 1, b: 2, c: 3}; // we will ignore c
   let {a, b} = o;  // destructure into variables called a and b with those values from the object
   let {a: x, b: y} = o; // renaming the variables to x and y locally
-
+  function f({a, b}: {a: number, b: number}) {}
+    destructuring in function param mixed with specifying type
+      eg. in React you could do this to get prop members as variables instead of having a props param
+  
   keys can be quoted or unquoted (or not even strings at all)
     const obj = {a: 1, "b": 2, true: false, 1: "One",};
     obj.a, obj.b, obj.true (actually a string key), no way to do obj.1
@@ -455,6 +460,9 @@ Objects (as structs)
     to iterate over fields in an object as if a map
     does not include functions or symbol keys
 
+  Object.groupBy(iterable, fn)
+    works like Map.groupBy but makes object keys instead
+  
   Copying Objects
     spread operator
     let m = {...n, x: 20}; // x will replace the value of n.x if present (or add as new)

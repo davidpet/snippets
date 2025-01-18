@@ -8,3 +8,10 @@ console.log(a);
 console.log(b);
 console.log(x);
 console.log(y);
+console.log();
+
+function f({a, b}: {a: number, b: number}) {
+    console.log(a);
+    console.log(b);
+}
+f({a: 5, b: 10});
