@@ -2045,6 +2045,22 @@ Browser DOM
     you delete a cookie by setting its expiration date to the past
     ** see Standard Library notebook for examples **
 
+console
+  log(), info(), error(), warn() [as shown in Strings section above]
+  table() makes a tabular display so you don't have to expand fields to see it
+    works well for objects and arrays, esp, if no nesting
+  dir() looks a lot like log() but a bit more pure tree structure
+  group(header)/groupEnd()
+    any logging that happens in between these gets grouped under header
+  time()/timeEnd()
+    starts and stops a timer (displaying the result)
+    eg. timeEnd() in .then() of fetch()
+  debugger;
+    not part of console but feels related
+    forces a breakpoint without having to set it in devtools
+alert()
+  modal popup box with message and OK button
+
 Math: static math functions you can call on numbers
   abs()
   ceil(), floor(), round()
