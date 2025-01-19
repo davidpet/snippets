@@ -1987,6 +1987,8 @@ wheel = pre-built binary package for python
     can be installed via pip
     see Modules notebook for more details about wheels when needed (esp. the Apple and TensorFlow stuff)
 
+NOTE: new versions make you say pip3 instead of pip
+
 [conda]
 conda update conda
 conda env list
@@ -2005,6 +2007,24 @@ conda does not manage:
     apt packages
     node packages
 conda manages things by messing with PATH as you activate and deactivate environments
+
+[venv]
+built-in alternative to conda
+    but only virtualizes environment for packages, not Python itself
+
+python3 - m venv somefolder
+    creates somefolder containing virtual environment
+    will create parent folders if needed too
+source somefolder/bin/activate
+    activate an environment by running this script from the folder
+    that environment will become active in the current shell session
+deactivate
+    go back to global Python environment
+pip3 install somepackage
+    if an environment is active, the package will go in there instead of global
+
+remember to put environment stuff in .gitignore
+    GitHub python template does that already
 
 [3rd party libraries]
 termcolor
