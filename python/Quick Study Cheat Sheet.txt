@@ -27,6 +27,11 @@ int(x) to convert something to integer
     could also be string
 float(x) to convert string or upconvert integer
 str(x) to convert something to string
+bool(x)
+these conversions call overloaded operators like __int__ on a class so that you can overload them
+no automatic coercion because params aren't strongly typed
+you can use these like functions too
+    eg. map(bool, lst)
 
 None = absence of value
     type is NoneType
@@ -560,6 +565,11 @@ formatted strings
     'Hi, my name is {} and I am {} years old.'.format(name, age)
     'Hi, my name is {name} and I am {age} years old.'.format(name=name, age=age)
 
+    in general, the thing in {} is an expression which may or may not contain variables
+        in addition, you can put = at the end to print the whole expression inside literally
+            you can also put spaces after the = for padding
+        f'{x + y = }' will get 'x + y = 10' for instance (if that's what x + y is)
+
     {:.2f} (example of format specifier - in this case float with 2 places after decimal point)
         or in the old style %.2f
         see Java notes for rundown of the specifiers (%02d, %.2f, %15s, %-15s, %s, %d)
@@ -677,6 +687,7 @@ truthiness
         ''
         []
     the rest are truthy
+        including NaN and Infinity!
     you can disambiguate None from [], for instance, using is None first
 
 coalescing
@@ -1059,6 +1070,20 @@ Class Method References
         NOTE: if you see lambda x: m.f(x), you can probably just replace that with m.f
     MyClass.f(m)
         method f of class MyClass is UNBOUND, so you have to pass an instance as the first arg
+    more on method binding:
+        taking a function variable from an instance method will treat it as BOUND (ignoring self, secretly passed)
+        taking a function variable from a class method will treat it as UNBOUND (no self param)
+            you can also take an instance method (if it's on the class) as UNBOUND (have to pass self) if treat as static
+                you can also call it this way on the class itself
+        to go the other way, attaching a free function as a static or instance method dynamically:
+            for static methods, just attach to the class
+            you can also attach an instance method that way, as long as it has a self param
+            to attach to an instance instead, you have to do this:
+                from types import MethodType
+                m.f = MethodType(someFunc, m)
+                    note that someFunc must take 'self' as the 1st arg
+                    also note that you had to specify m even though someFunc takes a self
+                this is sort of like JavaScript's 'bind' except the opposite use case
     you can treat a class itself (or a variable referencing it) as a callable function for construction
         constructor = MyClass
         m = constructor(10)
@@ -1344,6 +1369,22 @@ nesting
 not supported: partial classes, friend classes (can use _ variables), sealed/final
 a variable and method of the same name cannot exist because methods/functions are variables in Python
 
+Metaclasses
+    classes that intercept the creation of other classes
+        eg. to add members, etc.
+    you create a metaclass by inheriting from 'type' and overloading '__new__'
+        the metaclass receives new instances of another class which you can add members to, etc.
+    you use a metaclass in a class by specifying metaclass=MyMetaClass
+        eg. class MyClass(metaclass=MyMetaClass):
+    eg. metaclass looks for "listen_*" method names on class and adds the trailing part to a dictionary
+        then when the class dispatches that string (eg. o.listen('hello')), a method added by the metaclass calls the method
+    this example is shown in the notebook (decided not to duplicate it here)
+
+Slots
+    classes usually use __dict__ member to manage member lookup
+    you can provide a __slots__ member to make it more efficient and compact if needed
+    this is super low-level and probably won't come up much
+
 [Generics]
 because python is dynamically weakly typed and duck-typed, it does not have generics
 any collection is a generic, with no constraints at all on elements (can mix and match however)
@@ -1427,6 +1468,14 @@ name clash issue
 file/module name limitations
     dash is not allowed (because not allowed in identifiers)
     . is not explicitly disallowed but is ambiguous with folder and thus won't work
+
+__main__.py
+    if present, the containing folder can be used as a python program without an extension
+    eg. python3 subfolder/myapp
+    eg. python3 -m subfolder.myapp
+    in either case, __main__.py is the entry point
+    if you use this, you may not need to check __name__=='__main__' in __init__.py or anywhere else anymore
+        because the top-level code is already run by __main__.py
 
 [stdlib]                            
 print(x)
