@@ -22,6 +22,12 @@ int is probably usually 64-bit (maybe minus some overhead) at first
     but dynamically sized for very large values so it can grow
     also some pooling/interning goes on
 
+int(x) to convert something to integer
+    if float, floor division
+    could also be string
+float(x) to convert string or upconvert integer
+str(x) to convert something to string
+
 None = absence of value
     type is NoneType
 
@@ -291,6 +297,11 @@ Unpacking
         the left side doesn't have to be a new variable or a variable at all
         it is just a general assignment
     there is no object or dict unpacking like in JS
+    a, *b = l
+        unpacks the rest of l after the first element as a list
+    lambda a, *b: print(b)
+        b as a tuple (just like a normal function)
+
 Iteration
     for item in l:
         print(item)
@@ -795,7 +806,8 @@ some built-in errors:
     FileNotFoundError
     KeyboardInterrupt
         triggered by ctrl-c
-    NotImplemented
+    NotImplementedError
+        singleton NotImplemented available to return from operators instead of throwing
 
 with open('myfile.txt') as f: # context management
     contents = f.read()
@@ -869,8 +881,19 @@ Spread (star and double-star)
 Rest/Variadic (star and double-star)
     def f(x, a=10, *args, **kwargs):
         pass
-    args becomes a list of positional args passed in besides the named ones
-    kwargs becomes a dictionary of keyword args passed in besides the named ones
+    args becomes a tuple (eager) of positional args passed in besides the named ones
+    kwargs becomes a dictionary (eager) of keyword args passed in besides the named ones
+/ and * in params list (newer feature)
+    def f(a, b, /, c, d, *, e, f):
+        pass
+    / and * are fake args that signal what type of args are allowed from the caller
+        in the above example, a, b, c, d, e, f are the args
+    to the left of / = positional only
+    to the right of * = keyword only
+    in between = either
+    missing = assume can be either until hit the other (if applicable) going the other way
+        eg. missing / means can be either until hit the *
+    / is always before * (if both present)
 
 Generators (lazy)
     def f():
@@ -1177,10 +1200,10 @@ MyDerviedClass.h()
 Interfaces
     python doesn't have interfaces - everything is duck-typed
     as long as the things referenced or called by the caller are on the object, it works
-    you could throw NotImplemented from a method to make it "abstract"
+    you could throw NotImplementedError() from a method to make it "abstract"
 
 Abstract Base Class
-    you could just have methods throw NotImplemented to make an ABC
+    you could just have methods throw NotImplementedError() to make an ABC
     there is also an abc module to make it a little more automatic (but not much)
     hooks into the internals of the class to make it act like a language feature
     see details in [stdlib]
@@ -1217,13 +1240,17 @@ Special Class Members
 
     __call__(self, ...) = call operator - for calling object as if it is a function
     __enter__ and __exit__ for context management
+        c'tor of object creates the object
+        the object should get returned from __enter__ (possible to separate them but more complicated)
+        __exit__ takes 3 args and should close up as needed
+        but the object still exists after the context is exited
 
     __eq__(self, other), __lt__(self, other), __add__(self, other), __sub__(self, other), __and__(self, other), etc.
         implementations for operators like ==, <, +, -, etc.
         a lot of operators have an r version for when your type is on the right side instead of left
             eg. __radd__(self, other)
-            first, python will call the class on the left side and only call you if they throw NotImplemented
-        if operating with a type you don't know how to deal with, you should throw NotImplemented so the other type gets a chance
+            first, python will call the class on the left side and only call you if they return NotImplemented
+        if operating with a type you don't know how to deal with, you should return NotImplemented so the other type gets a chance
     __bool__(self), __int__(self), etc. for type conversions
     __hash__(self) = for hashing (eg. in dict)
         if object has multiple fields, make them a tuple and hash that
@@ -1235,6 +1262,10 @@ Special Class Members
 
     even more advanced ones like __new__ to hook higher-level construction and do crazy things
         eg. things like @dataclass and ABC
+
+    __matmul__(self, other) = @ operator (matrix multiplication)
+        built-in types don't implement it
+        but libraries like numpy and tensorflow make use of it
 
 Constructors
     there is only one method of each name due to lack of overloading in Python
