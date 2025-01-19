@@ -907,7 +907,7 @@ Truthiness
   !! and ! are opposites
     !! makes value into boolean based on truthiness, ! does same but negates it
   falsey: null, undefined, 0, "", NaN, false
-  truthy: empty collections, empty arrays, empty objects, anything else
+  truthy: empty collections, empty arrays, empty objects, Infinity, anything else
   boolean operators like && and || return actual values (not boolean conversion)
     they evaluate the conditions in terms of truthiness (as with !! and !)
     and then do short-circuiting based on that
@@ -1113,6 +1113,7 @@ functions (inc. top-level, lambdas, methods, and function expressions) are refer
 
 closures usually are by reference (even for primitives)
   but loop variables are an exception (eg. for loop iteration variable)
+    but using 'var' instead of 'let' is an exception yet again (turning it back into by reference)
   to make a value close by value instead of reference, you need to make it a parameter of a function
     in other words, lexically capture it
     eg. a nested function, an IIFE lambda around the lambda, etc.
@@ -2011,6 +2012,15 @@ Browser DOM
       element.parentNode.removeChild(element)
       element.remove() // more direct, but not supported in IE
         polyfill can fix that though
+    
+    Classes
+      element.className = space-separated string (like in the real DOM)
+      element.classList = a special object with convenience operations on the class names that are present
+        add(token1, ....), remove(token), contains(token)
+        toggle(token) -> boolean (if present after toggling presence)
+        values() to get iterable of class names as Strings
+          but classList is iterself iterable as that
+
   location: Location
     for dealing with url and host type stuff
 
@@ -2084,6 +2094,8 @@ setTimeout(fn, delay = 0)
     esp. useful in things like Angular change detection
     or if your code will take a long time and you want to let the UI continue to function
   this is part of Java's simulated multithreading
+  you can rely on lambdas with no timeout adding to the back of the task queue in order
+    eg. a loop of 100 setTimeout calls will end up with processing in the order you expect
 
 Promise<T>
   const promise: Promise<string> = new Promise((resolve, reject) => {
@@ -2101,19 +2113,37 @@ Promise<T>
   // chainable
   promise.then((data) => transform(data))
          .then((transformedData) => transformedData.x)
-         .catch((error) => handleError(error));
+         .catch((error) => handleError(error))
+         .finally(() => handleCleanup);
   .then() itself returns a promise
     but the function inside can return either a single value or a promise
     it will automatically be unwrapped if a promise
       so if you didn't want that, you'd need to put in [] or {} or something
       allows you to do things like call another API based on result of this API
     but it can also just chain single values so you can do map()-like transformations
+  .catch() is shorthnad for .then(undefined, onReject) since .then() has optional 2nd arg
+    if neither of those are provided and it rejects, an error will be thrown
+  
+  notes about async behavior and promises:
+    a custom promise created with 'new' runs the code passed into it right away
+      but you can call async things like fetch and await other promises to come back right away
+    functions like fetch() that return promises tend to start their async behavior right away inline
+      then you have to wait for the next event loop after completion to be able to have the .then() part run
+    a lot of built-in browser operations (eg. fetch()) are truly async but exposed to JavaScript in the special fake async way via .then()
 
   Promise.race([promise1, promise2])
     makes a new promise that returns (or errs) when the first promise passed in returns or errs
       the rest are ignored and not cancelled in any way
     this is like doing new Promise((resolve, reject) => ...) and passing the resole and reject into all the subpromises
       because once one calls it, then the promise is done
+  Promise.any(iter) is very similar to Promise.race() except it will resolve if ANY subpromise resolves (and only reject if ALL reject)
+
+  Promise.all() = array of settled values if all subpromises settle
+  Promise.allSettled() = similar but objects describing results instead of the direct values
+  Promise.resolve(valueOrPromise) = wrap a value in a new promise (or directly return another promise without making anything)
+  Promise.reject(error) = create a new promise that throws an error right away
+  Promise.try(fn) = wrap a function call in a promise
+  Promise.withResolvers() -> {promise, resolve, reject} = for being able to resolve and reject from outside
 
 async/await keywords
     JS syntactic sugar for chaining promises as if they are synchronous
