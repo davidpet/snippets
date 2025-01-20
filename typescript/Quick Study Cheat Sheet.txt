@@ -2102,12 +2102,29 @@ Browser DOM
       el.click() will capture and bubble like a real click
     
     Load Events
-      document 'DOMContentLoaded' fires when the DOM is in-place (but before styles, etc. and other resources)
+      document 'DOMContentLoaded' fires when the DOM is in-place (but before styles, images, etc. and other resources)
       window 'loaded' fires when all dependencies are loaded
       to gaurantee your events don't fire until one or both of those,
         put the addEventListener call in the appropriate handler
       a click handler could fire before either of those otherwise
         eg. if browser renders part of the DOM first and the button is there
+
+    Event Names/Handlers
+      built-in handlers = all lowercase with 'on'
+        <div onclick="alert()"></div>
+      built-in names (eg. with dispatching) = all lowercase without 'on'
+        "animationstart"
+      custom events = make sure it matches how you defined it
+      React = <div onClick={fn}></div>
+    Useful Events to Know
+      `click`
+      `mouse*`
+      `key*`
+      `touch*`
+      `drag*`
+      `DOMContentLoaded`
+      `submit`/`change`/`focus`/`blur`/`input`
+      `animationstart`/`animationcancel`/`animationend`
 
     Hydration
       turning static HTML from server-side rendering into active part of web app
@@ -2351,6 +2368,8 @@ JSON
   JSON is more strict than JS
     eg. keys have to be double-quoted
     so JSON.stringify() still useful even if already have a JS object (eg. when sending via web)
+  JSON.stringify() will ignore fields with a value of undefined, even if present on the object
+    this makes it possible to do simple merging with ?: on fields without getting fields you don't want
 Loading JSON Files (as JS objects)
   import Data from './data.json';
     loads a statically available at build-time JSON file
