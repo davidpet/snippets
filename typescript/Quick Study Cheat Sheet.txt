@@ -445,7 +445,9 @@ Objects (as structs)
   function f({a, b}: {a: number, b: number}) {}
     destructuring in function param mixed with specifying type
       eg. in React you could do this to get prop members as variables instead of having a props param
-  
+  function g({a: theA, b: theB}: {a: number, b: number}) {}
+    combining destructuring with types and renaming all in one
+    
   keys can be quoted or unquoted (or not even strings at all)
     const obj = {a: 1, "b": 2, true: false, 1: "One",};
     obj.a, obj.b, obj.true (actually a string key), no way to do obj.1

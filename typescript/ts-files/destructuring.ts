@@ -14,4 +14,11 @@ function f({a, b}: {a: number, b: number}) {
     console.log(a);
     console.log(b);
 }
+
+function g({a: theA, b: theB}: {a: number, b:number}){ //renaming the variables on destructure
+    console.log(theA);
+    console.log(theB);
+}
+
 f({a: 5, b: 10});
+g({a: 5, b: 10});
