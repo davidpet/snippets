@@ -867,7 +867,10 @@ Casting/Coercion
     will throw exception if bad format
   n.toString()
     but 10.toString() not allowed because of parsing issues
-  
+  x satisfies y;
+  const dog = {walk() {}} satisfies Animal;
+    TypeScript satisfies operator (which goes away in JS) just does compile-time structure check on instance
+
 ?? nullish coalescing
   x ?? "hi"
     will be x unless x is null or undefined, then it will be "hi"
@@ -972,7 +975,7 @@ Exception Members
     constructors will typically set message based on a string passed in
       eg. new Error(message)
 
-Not Available: context management, asserts (have to use libraries)
+Not Available: asserts (have to use libraries)
 
 [Functions]
 types look a lot like python type annotations (but compiler actually cares)
@@ -1627,6 +1630,21 @@ Prototypes In-Depth
   interfaces and type literals don't participate in any of this becuase they are only for the TS compiler
   TS considers function prototype properties to be 'any' but is more restrictive on MyClass.prototype
 
+RAII/Context Management/Dispose Pattern
+  JS recently added Symbol.dispose, Symbol.asyncDispose, and the 'using' keyword to support this
+    'using' originally came from TS and has not made it to JS yet (at least in Chrome or Jupyter)
+  class MyDisposable {
+    [Symbol.dispose]() { // use asyncDispose if need to make this an async function instead
+      // do cleanup here
+    }
+  }
+  function useDisposable() {
+    using d = new MyDisposable();
+
+    // use d here
+    // d's cleanup happens at the end of this function block
+  }
+
 Not supported: operator overloading, partial classes, value types, method/constructor overloading,
                classes nested in other classes (but nested in body is fine),
                finalizers/destructors/disposable, friend classes (in TS),
@@ -1793,6 +1811,19 @@ require()
 regarding names in modules/files
   dash and underscore are fine
   dot is not
+
+'use' directives
+  parse-time (not runtime) feature
+    looks like standalone string as a statement
+    can be file-scoped or function-scoped
+  must be understood by either the parser or the JS engine itself to do anything
+  
+  eg. 'use madeup';
+    does nothing
+  eg. 'use strict';
+    understood by ES6 itself
+  eg. 'use client';
+    understood by React's JSX and TSX parsers
 
 [Project Configuration]
 TypeScript compiler = tsc
@@ -2021,6 +2052,12 @@ Browser DOM
         values() to get iterable of class names as Strings
           but classList is iterself iterable as that
 
+    URLs
+      /absolute/path/to/file.js
+        relative to web app root (server config, not JS config)
+      relative/path/to/file.js
+        relative to current file
+
   location: Location
     for dealing with url and host type stuff
 
@@ -2203,6 +2240,17 @@ JSON
     eg. keys have to be double-quoted
     so JSON.stringify() still useful even if already have a JS object (eg. when sending via web)
 
+AbortController
+  // set up the abort scaffolding
+  const controller = new AbortController();
+  const signal = controller.signal;
+  
+  // kick off an async fetch
+  const promise = fetch('http://www.amazon.com', {signal});
+  
+  // stop the fetch in-progress
+  controller.abort();
+
 Multithreading
   JS doesn't really have the typical fork/join type multithreading
   though it does have a concept called Web Workers
@@ -2280,6 +2328,7 @@ there is no 'readonly' modifier for properties
 there are no ? and ! nullable function params or class members
   nullability is the norm already
 'override' keyword is TS only
+'as', 'implements', and 'satisfies' are TS only
 some OOP features only exist in TS:
   interfaces
   abstract
