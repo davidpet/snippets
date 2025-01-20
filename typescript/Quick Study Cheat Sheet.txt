@@ -1004,6 +1004,18 @@ Exception Members
     constructors will typically set message based on a string passed in
       eg. new Error(message)
 
+Boolean Control Flow
+  very common in React
+  function f(): void {}
+    actually returned undefined, which is falsey
+  const b = flag1 && flag2 && f() && console.log('yo');
+    b will be undefined (because f() will run)
+    console.log() will not happen
+  flag1 && flag2 && f() && console.log('yo'); // statement instead of expression
+    if flag1 and flag2 are true, then f() will run but nothing will log at the end
+    this is a way to guard the calling of f() by flags inline
+      it's also a way to do some final action if the other actions all pass.
+
 Not Available: asserts (have to use libraries)
 
 [Functions]
@@ -1886,6 +1898,10 @@ regarding names in modules/files
   same as .js files except force the use of ES6 modules
   regular .js files use the project settings instead of forcing one or the other
 
+/// <reference types="cypress" />
+  triple-slash directive
+  you may see it in some places as a way to bring in types without importing (eg. in Cypress tests)
+  
 [Project Configuration]
 TypeScript compiler = tsc
 
@@ -2118,6 +2134,17 @@ Browser DOM
         relative to web app root (server config, not JS config)
       relative/path/to/file.js OR ./relative/path/to/file.js OR ../relative/path/to/file.js (for parent)
         relative to current file
+
+    Image Preloading
+      new Image() equivalent to document.createElement('img')
+        creates HTMLImageElement
+      image.src = ...kicks off async loading of image in the background even if not displayed
+        when finished, the image data goes into the browser cache
+        if you use the same URL in another image later (or set in a hardcoded <img> element), the cached data will be used
+          this is much faster than loading the preload <img> from the background into the DOM
+      specify width and height on Image() c'tor or img attributes creates a transform (which may have performance cost)
+        it does not affect the cache
+      to be able to locally cache transformed images, you need to use a CDN with prerendered sizes (eg. by query params)
 
   location: Location
     for dealing with url and host type stuff
