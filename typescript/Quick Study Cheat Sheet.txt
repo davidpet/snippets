@@ -2071,7 +2071,7 @@ Browser DOM
     URLs
       /absolute/path/to/file.js
         relative to web app root (server config, not JS config)
-      relative/path/to/file.js
+      relative/path/to/file.js OR ./relative/path/to/file.js OR ../relative/path/to/file.js (for parent)
         relative to current file
 
   location: Location
@@ -2255,6 +2255,13 @@ JSON
   JSON is more strict than JS
     eg. keys have to be double-quoted
     so JSON.stringify() still useful even if already have a JS object (eg. when sending via web)
+Loading JSON Files (as JS objects)
+  import Data from './data.json';
+    loads a statically available at build-time JSON file
+    default import = top-level object
+  fetch('./data.json')
+    otherwise, if dynamic, treat it like any URL or API
+    eg. might be in the 'build' folder after building
 
 AbortController
   // set up the abort scaffolding
