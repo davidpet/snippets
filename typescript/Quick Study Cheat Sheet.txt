@@ -1841,6 +1841,10 @@ regarding names in modules/files
   eg. 'use client';
     understood by React's JSX and TSX parsers
 
+.mjs files
+  same as .js files except force the use of ES6 modules
+  regular .js files use the project settings instead of forcing one or the other
+
 [Project Configuration]
 TypeScript compiler = tsc
 
