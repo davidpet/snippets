@@ -447,7 +447,7 @@ Objects (as structs)
       eg. in React you could do this to get prop members as variables instead of having a props param
   function g({a: theA, b: theB}: {a: number, b: number}) {}
     combining destructuring with types and renaming all in one
-    
+
   keys can be quoted or unquoted (or not even strings at all)
     const obj = {a: 1, "b": 2, true: false, 1: "One",};
     obj.a, obj.b, obj.true (actually a string key), no way to do obj.1
@@ -1726,7 +1726,8 @@ Default Export
   the difference is you can drop the {} on import for the default symbol only
     import MyClass from './mymodule';
     import {OtherClass} from './mymodule';
-
+    import MyClass, {OtherClass} from './mymodule';
+  
 Importing From TS Files
   in another TS file, import by relative path from the file itself (not working directory or project)
     eg. import {PI} from './myconstants';
@@ -1770,6 +1771,33 @@ Statefulness of Imports
   all the various places that import or rename that variable will see the change!
   the top-level code from the imported module is only run once on the first import
     then the state just continues to live and get returned by other modules that import it
+Bare Imports
+  import './thefile';
+    code in the file runs but we don't import any symbols
+    eg. if has side effects we want to run (new relic does this)
+Hoisting of Imports
+  imports may be hoisted depending on settings and execution engine
+    if so, then all imports would execute first before code in between them
+
+Dynamic Imports
+  const p = await import('./somefile');
+    p (after the promise resolves) will have a 'default' field and a named field for each non-default import
+      eg. p.x, p.MyComponent
+    this is never hoisted because it runs inline asynchronously
+  const p = require('./somefile');
+    this is the Node-style way of importing
+    it works like dynamic import above, but SYNCHRONOUS
+    you can still use this way with ES6 modules in case any library requires it
+  exports in Node-style modules look like this:
+    module.exports.x = 100;
+    exports.y = 200; // exports is alias for module.exports
+
+Index File
+  instead of importing a file directly by name, you can import a folder if it has an index file
+  eg. import {x} from './somefolder';
+    somefolder needs to have index.ts or index.js, which will then run
+    index.ts can then import other things in the folder by relative path
+  this is simialr to __init__.py in Python
 
 old concepts/keywords you may see (discouraged in new code):
   namespace
