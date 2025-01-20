@@ -292,8 +292,10 @@ Arrays
     nested [] just as you'd expect
 
   a.sort() for mutable, a.toSorted() for immutable copy
-    either can take a comparison fn
+    either can take a comparison fn (binary function to -1, 0, 1)
     default sort is weird - converts to strings and does lexographic
+      s1 - s2 works for numbers as comparison fn but not strings
+      do a conditional for strings (<, > operators work)
 
   Array.from() can make an array-like thing into a true array
     the thing you pass in must support indexing and length like an array
@@ -469,7 +471,8 @@ Objects (as structs)
     spread operator
     let m = {...n, x: 20}; // x will replace the value of n.x if present (or add as new)
     // m and n are separate, not linked together
-
+    but this is a 1-level SHALLOW COPY
+  
   Computed Properties
     instead of providing a name or a quoted name for a key
     you can put [] around some TS expression to have the key computed at runtime
@@ -622,7 +625,7 @@ Thread Safety
   not an issue because no true multithreading in same address space
 
 Implementing Objects for Collections
-  objects are hashed and compared by reference instead of value when used as keys
+  objects, maps, sets, and arrays are hashed and compared by reference instead of value when used as keys
   for sorting, you have to provide your own comparison function
 
 Swap
@@ -636,7 +639,8 @@ Iterables
     see "Classes" for details
 
 Deep Copying
-  n = JSON.parse(JSON.stringify(m));
+  new way: n = structuredClone(m); // works on built-in things like maps, sets, arrays, multi-level objects, etc.
+  old way: n = JSON.parse(JSON.stringify(m));
 
 Custom Printing of Elements
   console.log() will only print the raw objects
@@ -772,6 +776,9 @@ Regular Expressions
     no need for raw strings because already raw (unquoted)
     the // quotes it, but global flag comes after /
     but don't forget you can also use // inline (eg. text.match(/\d+/g))
+
+    // creates instance of RegExp
+      can create yourself with new RegExp(pattern, options)
   pattern.test(text)
     true if a match anywhere in text
   matches = text.match(pattern)
@@ -901,9 +908,12 @@ Casting/Coercion
     you could very easily be wrong and have null at runtime when the compiler thinks you can't (be careful!)
       could end up causing other bugs and throwing other kinds of errors at runtime
 
-? safe-navigation operator (also called optional chaining, or Elvis operator)
+?. safe-navigation operator (also called optional chaining, or Elvis operator)
   a?.b?.c?.d
   if any link in the chain is nullish (null|undefined), stops and returns that
+
+  a.?[0] = special syntax for arrays (.? followed by [])
+    arrays don't normally allow a.[0] syntax
 
 typeof x
   gets a string representing the primitive type of an object (in JS)
@@ -942,6 +952,7 @@ Spread Operator
   const a = [1, 2, 3];
   const b = [...a, 4, 5, 6]; // [1, 2, 3, 4, 5, 6]
   works on anything iterable (eg. set, custom class, etc.)
+  shallow copy
 
 semicolons are technically optional
   JS people don't like them
@@ -1435,10 +1446,10 @@ Object
       not used by maps and sets (=== instead)
   
   no hashing
-    objects are not hashed the way they are in other languages for use in maps and sets
+    objects (inc. maps, sets, arrays) are not hashed the way they are in other languages for use in maps and sets
     the object's reference is treated as the key, and it is unique per instance
     there is no way to treat it as a value like you could in Java
-    primitives are hashed as you'd expect them to be
+    primitives are hashed as you'd expect them to be though
 
   other methods:
     hasOwnProperty() can tell if a property lives on this object instead of a superclass
