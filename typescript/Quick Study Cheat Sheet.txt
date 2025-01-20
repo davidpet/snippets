@@ -1901,7 +1901,7 @@ regarding names in modules/files
 /// <reference types="cypress" />
   triple-slash directive
   you may see it in some places as a way to bring in types without importing (eg. in Cypress tests)
-  
+
 [Project Configuration]
 TypeScript compiler = tsc
 
@@ -2007,6 +2007,14 @@ ts-node
 
 ** see Setup notebook for more details on environment setup **
 
+polyfills
+  while tsc will emit syntax for the targetted JS version, it will not add new data structures to old versions
+  polyfills fill in missing functions, data structures, etc. as needed
+    eg. check if window.Map is defined and if not, define it
+  core-js = library you can import specific polyfills from
+  babel = replacement for tsc that can add polyfills at build-time
+  polyfils should be peer dependencies in libraries so that the main application chooses which polyfills to use overall
+
 [stdlib]
 unlike Java, Python, C++, etc. there are no imports needed for standard library symbols
   imports are for other TS/JS files and node packages
@@ -2101,6 +2109,11 @@ Browser DOM
       a click handler could fire before either of those otherwise
         eg. if browser renders part of the DOM first and the button is there
 
+    Hydration
+      turning static HTML from server-side rendering into active part of web app
+        by attaching handlers, etc. to it after download
+      makes page more initially responsive (static HTML fast to download and display)
+  
     Adding DOM Elements
       const newDiv: HTMLDivElement = document.createElement('div');
       newDiv.id = 'new-div';
@@ -2221,6 +2234,12 @@ setTimeout(fn, delay = 0)
   this is part of Java's simulated multithreading
   you can rely on lambdas with no timeout adding to the back of the task queue in order
     eg. a loop of 100 setTimeout calls will end up with processing in the order you expect
+clearTimeout(timeout)
+  eg. const timeout = setTimeout(fn);
+  eg. const timeout = setTimeout(fn, delay);
+  in either case, setTimeout() returns an object to pass to clearTimeout() to cancel
+    you can even cancel if no delay and already queued up the fn (will get unqueued)
+  no problem calling on already cleared or nonexistent timeout (noop)
 
 Promise<T>
   const promise: Promise<string> = new Promise((resolve, reject) => {
@@ -2291,6 +2310,11 @@ async/await keywords
     you can call an async function without storing the promise safely
       you won't be able to get the value, but if it has some other side effect
         then that will happen
+
+Promise errors
+  .catch() is the first chance to catch an error (or .then() if you pass in an error handler)
+  if you don't, or if you use async/await, then you must catch exception
+  don't forget that even fetch() and response.json() can throw errors (before status code could be read)
 
 Ajax
   XMLHttpRequest is the built-in browser type for making calls to the server
