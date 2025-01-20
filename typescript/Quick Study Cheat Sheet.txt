@@ -497,6 +497,22 @@ Objects (as classes)
   a lot of the ideas about objects as structs above apply
     the end result of creating an instance is that kind of object anyway
 
+Objects (as maps)
+  a true Map in JavaScript has its own key-value storage that is totally separate from the Object keys-values
+  you can instead choose to use an Object as your map
+    then it will have the benefit of [] syntax (like Python) instead of .set()/.get()
+      and also . syntax
+  keys(), values(), entries() are available on both but differ in this way:
+    Object.keys(o), etc. for objects
+      will do wrong thing on a map
+    m.keys(), etc. for maps
+      will fail on non-map object
+  entries are just arrays of 2 values (tuples) [key, value]
+    when you iterate over that, you are just destructuring
+  maps iterate as entries by default while objects don't iterate at all without Object.* methods
+  'in' membership test is for Objects while .has() is for maps
+  in TypeScript, you need an index signature to be able to use an object as a map
+
 Readonly
   let a: ReadonlyArray<number> = [1, 2, 3, 4, 5];
     also ReadonlyMap, etc.
