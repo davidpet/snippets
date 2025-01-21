@@ -933,6 +933,13 @@ x instanceof MyClass
   membership check
   if y is an object, this will check if it has a method or variable called 'fn'
   may be defeated by minification
+  if the member is present but undefined, 'in' will be true
+    only checking if the symbol is there, not whether it's defined
+
+delete o.x
+  deletes a property from an object (does not work on top-level variables)
+  instead of just making undefined, it actually gets rid of it
+  like python 'del'
 
 Truthiness
   !! and ! are opposites
@@ -1378,6 +1385,38 @@ Construction Order
       base fields aren't available until after super() is called beause that's when it really creates the base
       you also can't use 'this' until after super() is called for similar reasons
     the compiler enforces all this for you in TS
+
+Access Modifiers
+  private, public, and protected are TypeScript keywords for compile-time access checking
+    they dissappear in the final JS code and all become public things at runtime
+  JavaScript itself has # syntax for private members which is a runtime protection separate from the TS one
+    class MyClass {
+      #x = 100;  // private
+      y = 200;  // public
+
+      #f() {console.log(this.#x)} // private
+    }
+    const m = new MyClass();
+    console.log(m.#x); // ILLEGAL
+
+    just putting # at the front of the name (and using that everywhere) makes it private
+    a private member is only visible from inside the class in code
+      even methods added to a class dynamically don't see it
+      even from inside the class, it can only be seen by the . operator
+        not seen by [] or 'in' operators
+        also not seen by any reflection mechanism such as Object.keys(), Reflect.get(), structuredClone(), or JSON.stringify()
+    cross-member access ("we are all robots") does work
+  JavaScript also has a convention for putting _ in front for protected members
+    but this is not enforced in any way and also has nothing to do with the TS protected keyword
+  the TS keywords are not going to be changed to accomodate the JS features in the future
+    you can choose whether you want compile-time or runtime private
+    not allowed:
+      c'tor params for #
+      combine # with any TS access modifier in a single declaration
+    allowed:
+      readonly on #
+      private and # members see each other inside the class
+  note that for structural typing in TS, missing # or private members will cause a compile error
 
 Prototype Inheritance
   because inheritance is impelmented in the JS layer using prototypes, that is the basis for inheritance behavior in TS
