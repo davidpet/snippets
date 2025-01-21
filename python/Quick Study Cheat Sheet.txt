@@ -1767,14 +1767,27 @@ time
     sleep(time)
     localtime() # struct of time information fields
 
-datetime
-    time(hours, minutes)
-    datetime.now()
-    date.today()
-    timedelta(days=1)
-        total_seconds()
-    datetime.now() + timedelta(days=1)
+datetime, time, tzinfo
+    ** see "Dates and Times" notebook for details and examples **
 
+    date/time objects: datetime.datetime, datetime.date, datetime.time, datetime.timedelta (a time span)
+        comparisons and arithmetic (with and to timedeltas) supported
+    timezone objects: zoneinfo.ZoneInfo, datetime.timezone.utc
+    time functions: time(), time_ns(), sleep()
+
+    naive vs. aware dates
+        naive = default = taken literally
+        aware = has a timezone attached
+            still prints literally
+            but can be converted to other timezones
+            also compares with other timezones correctly via internal conversion
+
+    datetime.datetime.now()
+    datetime.datetime.now(tz=datetime.timezone.utc)
+    dt.date()
+    dt.time()
+    td = dt1 - dt2
+    
 asyncio
     lets you do async/await type stuff
     async/await keywords are already in the language
