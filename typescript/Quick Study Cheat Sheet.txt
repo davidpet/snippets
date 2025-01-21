@@ -2407,6 +2407,32 @@ Progressive Web Apps (PWAs)
     eg. load data from page before page is needed
     sync local data, etc.
 
+IntersectionObserver
+  watches how much one or more targets intersect with an ancestor element (or viewport itself by default)
+    one or more thresholds specified - callback called when thresholds are crossed (and initially)
+  ** see Standard Library notebook for details **
+
+Proxy
+  lets you redefine certain fundamental behaviors on a target object via traps
+  const proxy = new Proxy(handler, target);
+    then you can pass proxy around as an object and read/write properties with . and []
+  handler is an object with certain properties (traps)
+    eg. get(target, prop)
+      target object and propname asked for - then you do what you want and return it
+        can be based on the real thing or not
+    any trap not specified is defaulted to normal behavior
+  console.log(proxy.x);
+    will call get(original, 'x') in handler
+    then whatever that returns, will get logged here
+  {} for target means all props determined dynamically
+  {} for handler means all default behavior (straight passthrough)
+  available traps have corresponding [[ ]] hidden built-in methods (very fundamental)
+    see MDN for complete list
+Reflect
+  class with static methods that look like Proxy traps
+    eg. Reflect.get(target, prop)
+    you can use it instead of . and [] within proxy traps for safety
+
 [Decorators]
 similar to Python, you can make a function that takes a declaration and wraps it
 the interface is more complicated - look it up when needed
