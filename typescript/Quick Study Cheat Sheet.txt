@@ -2471,6 +2471,7 @@ Reflect
   class with static methods that look like Proxy traps
     eg. Reflect.get(target, prop)
     you can use it instead of . and [] within proxy traps for safety
+this is very similar to what metaclasses can do in Python (though not accomplished quite the same way)
 
 [Decorators]
 similar to Python, you can make a function that takes a declaration and wraps it
