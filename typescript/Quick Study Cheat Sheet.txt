@@ -31,6 +31,7 @@ number (both float and integer)
   all the usual literals (inc. exponential, hex, etc.)
   built-in symbols for dealing with floating point:
     NaN
+      note that by IEEE spec, NaN never compares equal to anything including itself (even by ===)
     Infinity
     -Infinity
     Number.isNan(x) // the boxed type has static methods
@@ -277,7 +278,7 @@ Arrays
     use _, __, etc. for don't care values
       const [first, _, ...rest] = a; // ignoring 2nd value
 
-  a.filter() and a.map()
+  a.filter()/a.map()
     both return an array, not some lazy stream like Python
   
   a.indexOf(item)
@@ -969,6 +970,186 @@ semicolons are technically optional
 [] operator for indexing
   available on arrays and objects, but not for getting keys/values in a map
 
+Deeper JS Details of Casting/Coercion:
+  primitive types can be converted between each other in these ways:
+    (remember that string is primitive, are are null and undefined)
+
+    String(n), Number(s) [boxed types as functions instead of c'tors]
+    new String(n) = breaks pooling because new object (eg. new Number(5) !== new Number(5))
+    Number('Infinity') and Number('NaN') are just utilizing string->number conversion
+    note that you CANNOT do number('5') with lowercase names (even though typeof shows it as lowercase)
+
+    unary + and -
+      conversion to number (and negate if minus)
+    
+    built-in functions: parseInt(), parseFloat, toString(), etc.
+      note that parseInt() has optional RADIX parameter
+        eg. parseInt('a', 16) -> 10
+      
+      parseInt() and Number() generally return NaN if the conversion is improper
+        and they also coerce their arg to a string
+        but they differ in terms of a string like '5b'
+          parseInt() will just stop with the '5' while Number() will return NaN
+
+      some weird cases of numeric conversion (inc. +, Number(), parseInt()):
+        [] -> 0
+        [10] -> 10
+        [10, 20] -> NaN
+
+        {} -> NaN
+        {a: 100} -> NaN
+        function() {} -> NaN
+
+        undefined -> NaN
+        null -> 0
+
+        true -> 1
+        false -> 0
+
+        "" -> 0
+        Number() -> 0
+
+    Object.toString()
+      the base implementation doesn't do anything useful
+        "[object Object]"
+      primitives override it to make it more useful
+        as do built-in objects (eg. array will join its members with comma (no [] shown) )
+      if you do your own object, you have to override it to make it useful
+      console.log() does not use it (does its own thing where you can inspect the actual object)
+
+  custom objects/classes can support conversions in these ways:
+    Object.toString()
+      as mentioned above in primitives, you can override this method to customize your string conversion
+        this will apply in the following ways: template strings, String(), toString(), o.toString(), etc.
+    Object.valueOf()
+      this method is meant to get a primitive value representing your object
+      the base implementation returns the 'this' reference, which is not a primitive
+        boxed for primitives
+      thus, by default, this method will not do anything useful since a lot of operations ignore non-primitive returns from valueOf()
+      the built-in primitives tend to return the proper primitive type from this
+        but built-in objects like arrays will just return the object
+      it is mostly used implicitly (eg. +m -> if valueOf() returns a number, this will take that number)
+    [Symbol.toPrimitive]
+      this is not defined on the base Object, but you can add it
+      if present, it will take precedence over valueOf() and toString() in all coercions
+        it is not called by either of those functions when used directly
+      it takes a type HINT parameter that can be one: "number", "string", "default"
+        these tell it the type of coercion being requested where default means primitive coercion
+        you can use the hint or ignore it and do what you want
+  
+  Types of Implicit Coercions
+    Primitive
+      used by +, ==, and some APIs like Date()
+      when the value needs to be a primitive but we don't say what type
+
+      1. if already primitive, return that
+      2. if has [Symbol.toPrimitive], call that with 'default' hint
+         arrays will default to string conversion here (maybe?  sometimes not)
+         if returns a non-primitive, throws TypeError
+      3. try valueOf() -> if it's a primitive, use that
+      4. try toString() -> if it's a priimitive (will be by default), use that
+      5. otherwise, throw TypeError
+    Numeric
+      used by arithmetic operators
+      can be number or bigint
+      
+      1. If already a number or bigint, we're done
+      2. If another primitive type already, do the direct built-in conversion
+      3. Do primitive coercion but w/ a type hint of 'number' instead
+      4. When we get a primitive (any type), do a direct conversion
+
+      some places may more specifically require 'number' or 'bigint'
+        eg. array indices must be number
+    String
+      used by templates, String(), + operator (when doing string concat)
+
+      1. If already string, return it
+      2. Directly convert other primitive types to string
+      3. Similar next steps to numeric and primitive coercion, but switch toString() and valueOf() order and type hint is 'string'
+    Boolean
+      just a name for truthiness check
+    Object
+      just a name for boxing
+
+      Object.valueOf() if not overriden will also do this
+      Object() does this as well
+        but also wraps null and undefined so won't throw on calling members
+    More Complex Operator Coercions
+      + Operator (binary)
+        doubles as math plus and string concat
+
+        1. Do primitive coercion on both operands
+        2. If one side is NaN and other is a type other than number, throw away step 1 and do string coercion on both instead
+            This is not documented but can be clearly seen by testing
+        3. If only one side is a string, convert the other to string directly and do a concat operation
+        4. If both sides are bigint, do addition
+        5. If still not done, then convert both sides to number and do addition
+      Arithmetic Operators
+        Try to convert both operands to numbers and perform the calculation
+        Return NaN if any kind of mixed/invalid operation
+      Loose Equality (== and != instead of === and !==)
+        Instead of only comparing same types (with objects being same type) like ===, attempts conversions
+          contrary to rumors, it does not always do string comparison
+        
+        1. If they are same type, do direct comparison like with ===
+            (remember all objects are same type in this context)
+        2. If one side is nullish, the other side better be nullish too
+        3. If one side is object, do primitive coercion
+           Now we have two primitives
+        4. If same type, go back to step 1 and finish
+        5. If one side is boolean, convert it to number and go back to step 1
+        6. If comparing 'string' and 'number', convert the string to a number
+        7. If both numeric, do a numerical comparison
+        8. If comparing 'string' and 'bigint', convert the string to bigint
+      Other Comparison Operators (<, > <=, >=)
+        1. Do primitive coercion on both sides
+        2. If both strings, do lexographical comparison
+        3. Otherwise, convert both to number and do numerical comparison
+
+        In addition, the combined ones (<= and >=) do something like this:
+          1. Swap the operands (but still coerce them in original order)
+          2. Remove the = part from the operator
+          3. Negate the result
+
+          a <= b becomes !(b < a)
+    Operator Overloading
+      JavaScript officially has no operator overloading
+      but by using valueOf(), toString(), and Symbol.toPrimitive, you can somewhat simulate it
+        eg. you can make == (if you're willing to use it) and plus and comparison operators behave a certain way for your object
+    Quirky Examples
+      Math.min() < Math.max() -> false
+        Math.min() returns Infinity while Math.max() returns -Infinity
+      3 > 2 > 1 -> false
+        but most languages except Python will do that
+      typeof null -> object
+        old bug
+      typeof undefined -> undefined
+        makes sense
+      parseInt(null, 24) -> 23
+        null -> "null" w/ radix 24 -> only parses the n and then bails because u is invalid -> becomes 23
+      true + true + true -> 3
+      null > 0 -> false
+      null == 0 -> false
+      null >= 0 -> true
+        (!(0 > null)) = !(false) = true
+      [] == ![] -> true
+        [] == false -> "" == 0 -> 0 == 0 -> true
+      parseInt(0.0000005) -> 5
+        parseInt("5e-7") -> 5 (because e invalid)
+    Weird JavaScript Generators
+      you can see the JavaScript snippets for more details
+      but the basic idea is this:
+        you are allowed to use {}()[]+! chars only
+          you can get true and false from !![] and ![]
+          you can get 0 and 1 from doing + on those
+          you can get other numbers by adding multiple 1s with +
+          you can get other values with similar tricks
+          you can get characters by string coercions of various things and indices with []
+          you can build strings with + concatenation
+          you can do o["name"] to implement o.name
+          you can execute any string as code by calling [].filter.constructor(code)(params)
+            [].filter.constructor sends you back to the base Function() which can be used to eval a string as code
+
 [Control Flow]
 'if/else if/else', 'while', 'do/while', and 'switch' work exactly like other c-like languages
 'break' and 'continue' as well
@@ -1233,6 +1414,10 @@ map, reduce, filter
   note that reduce signature looks like arr.reduce(fn, seed) [weird order]
 
   NOTE: there is no sum() function unlike Python - have to use reduce() for that
+
+  WARNING: the callbacks from map, reduce, and filter have optional 2nd (index) and 3rd (whole array) args
+    if you're not aware of this, you could run into this bug: [1, 2, 3].map(parseInt) -> [1, NaN, Nan]
+      the reason is because the 2nd arg (index) becomes the radix for parseInt()!
 
 some, every
   boolean methods of array that takes predicate
@@ -1668,6 +1853,7 @@ Prototypes In-Depth
   class instances have the class as their prototype
   classes have their superclass as their prototype (all the way down to Object.prototype)
     Object.prototype's prototype is null
+      it is possible to make other objects with null prototypes, which will have odd behavior
   anonymous objects have Object.prototype as their prototype
     meaning they are instances of Object with stuff added dynamically
   functions have Function.prototype as their prototype
@@ -2063,6 +2249,8 @@ most standard library symbols come from JS
   but for instance, new Date() already works in JS because object creation is from there
 
 a lot of built-in functions, collections, primitives, etc. already discussed above in various places
+
+eval() and Function() to run string as code (discouraged and often disallowed entirely)
 
 Browser DOM
   these are global objects you can automatically access in both JS and TS
