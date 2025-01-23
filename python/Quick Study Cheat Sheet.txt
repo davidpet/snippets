@@ -733,6 +733,15 @@ hasattr(obj, name) to see if an attribute exists on an object
     useful if you're going to be hiding variables in functions, for instance
     eg. hasattr(x, 'count')
 
+chainable comparisons
+    1 < 2 < 3
+        instead of (1 < 2) < 3 like in other languages (which would become True < 3 which would become False)
+        (1 < 2) and (2 < 3)
+        but each thing is only evaluated once
+            so 1 < f() < 3 would only call f() once even though it would appear in two different groups
+    this is just how comparisons are understood in python syntax
+        nothing else works that way
+
 [Control Flow]
 ; isn't required, but it is a way to fit multiple statements on one line
     eg. for shell one-liners
