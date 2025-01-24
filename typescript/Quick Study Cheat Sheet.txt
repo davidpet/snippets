@@ -2458,6 +2458,7 @@ Browser DOM
         `el.append(...)` is a variadic version of `n.appendChild()`
         `el.getAttribute()`, `el.setAttribute()`, `el.hasAttribute()`, `el.toggleAttribute`
         `el.scrollIntoView()`
+        `el.getBoundingClientReact()` for translating mouse events into viewport coords
         `el.getElementsByTagName()`, `el.getElementsByClassName`, `el.querySelector()`, `el.querySelectorAll()`
       HTMLElement = Element subclass for HTML
         `el.hidden` gives access to the `hidden` attribute
