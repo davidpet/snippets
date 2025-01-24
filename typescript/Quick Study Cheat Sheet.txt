@@ -2563,6 +2563,38 @@ Browser DOM
     you delete a cookie by setting its expiration date to the past
     ** see Standard Library notebook for examples **
 
+  Graphics and Animation
+    CSS has animations that don't depend on JS
+    JS has similar (maybe the same - not sure) animations using element.animate()
+    in addition, you can move around and modify elements in JS using Date.now() [microseconds] as a timing source and setTimeout() to create a render loop
+    however, if you want a more reliable timing and better synchronization to the monitor refresh rate, use requestAnimationLoop()
+
+    requestAnimationFrame(callback)
+      callback will be called ONCE before the next screen repaint
+      it will receive 1 param: the time in microseconds since the web app started (page navigation)
+        this is a better time source than Date.now()
+      to repeat in a loop, just call requestAnimationFrame(callback) again at the end of the callback
+
+    <canvas width="300" height="200" id="mycanvas"></canvas>
+      HTMLCanvasElement API lets you draw custom graphics on the page
+        often good to synchronize it with requestAnimationFrame() and repaint the whole thing
+      the normal API is for device-independent graphics, but if you need more power (and more hardware-dependence), you can use WebGL (canvas supports it)
+    const context = canvas.getContext('2D')
+      gets a 2D context for drawing
+      this can be long-lived and kept around
+        don't create for every animation frame
+    set properties like fill, stroke, etc. on context and call methods to draw shapes
+      property changes only affect future draws
+    context.clearRect(0, 0, canvas.width, canvas.height)
+      erases everything in the context for a fresh start
+        NOTE: erasing means setting to (0, 0, 0, 0) or transparent black (transparent)
+          this is what contexts and image data start off as
+    context.createImageData()
+      to do pixel-by-pixel drawing in bulk
+      imagedata.data is an array where each sequence of 4 items is (r, g, b, a)
+        index = (x + y * imageData.width) * 4
+      you commit using context.putImageData() when you're done
+
 console
   log(), info(), error(), warn() [as shown in Strings section above]
   table() makes a tabular display so you don't have to expand fields to see it
