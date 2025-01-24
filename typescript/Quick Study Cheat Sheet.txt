@@ -1150,6 +1150,16 @@ Deeper JS Details of Casting/Coercion:
           you can execute any string as code by calling [].filter.constructor(code)(params)
             [].filter.constructor sends you back to the base Function() which can be used to eval a string as code
 
+  Pipeline Operator
+    as of Jan 25 this is a "stage 2" proposal for JS that will hopefully come soon
+    inspired by functionanl programming
+    turns this:
+      let x = h(g(f(10)));
+    into this:
+      let x = 10 |> f |> g |> h;
+    differs from fluent API because the object doesn't have to implement any special methods
+    differs from Dart cascade because not calling methods or setting props on an object with .. in between
+
 [Control Flow]
 'if/else if/else', 'while', 'do/while', and 'switch' work exactly like other c-like languages
 'break' and 'continue' as well
