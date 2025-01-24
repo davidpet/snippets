@@ -2352,6 +2352,131 @@ Browser DOM
       `DOMContentLoaded`
       `submit`/`change`/`focus`/`blur`/`input`
       `animationstart`/`animationcancel`/`animationend`
+    Event Types and Members
+      ** not all of the members are in the notebook and not all of what's in the notebooks are shown here **
+      **** you can study the "Standard Library" notebook for more, and the MDN docs for event more *********
+
+      Event = common base
+        can create directly or subclass it
+        if all you need is a unique event name, you can do:
+          target.dispatchEvent(new Event('MyEvent', {bubbles: true, cancelable: true} /* these default to false */));
+            options params (2nd arg) may have more members specific to subclasses as a way to pass more data
+        creating an event directly in code (instead of the browser creating it) is called a "synthetic event"
+
+        e.target = element event was originally dispatched to
+        e.eventPhase = capture, bubble, target
+        e.isTrusted = true if not synthetic (but browsers have different rules)
+        
+        e.preventDefault() = stop browser from doing non-code default actions
+          eg. checking a checkbox after click handler
+          eg. submitting a form after submit button click handler
+        e.stopPropagation()/e.stopImmediatePropagation() = covered in event phases above
+        e.composedPath() = array of elements with listeners that will be called for this Event
+
+        and lots lots more (too many to study and memorize - just look at MDN when needed)
+
+      CustomEvent = just adds a detail member to the c'tor options object and to the class itself
+        if you  just need to wrap a single data object, this will work
+        but you may still prefer to make your own subclass of Event instead to make the code clearer
+
+      MouseEvent = for click, dblclick, mousedown, etc.
+        readonly members with state of the mouse and keyboard
+        also has coordiantes and click count info
+      KeyboardEvent = for keydown, keypress, keyup
+        keypress is deprecated
+        keydown is sent duplicitavely for held keys
+      InputEvent = changes to <input> control data (inc. text boxes, checkboxes, etc.)
+      FocusEvent = for blur and focus events
+        when you switch from control A to B:
+          A gets blur and focusout
+          B gets focus and focusin
+      SubmitEvent = form being submitted
+      ErrorEvent = for propagating errors to other elements to handle without having to throw excpetions and break the flow
+
+    Error
+      ** not all of the members are in the notebook and not all of what's in the notebooks are shown here **
+      **** you can study the "Standard Library" notebook for more, and the MDN docs for event more *********
+
+      Error = the base error class
+        you can technically throw any object, but usually you will want to throw Error or a subclass of it
+        a lot of c'tors, but these are most common:
+          `Error()`
+          `Error(message)`
+          `Error(message, {cause: innerException})`
+
+        e.message
+        e.cause (an inner exception)
+        strack-trace related members for debugging
+      TypeError = param is not valid type
+      RangeError = param is out of range
+      AggregateError = for reporting multiple errors
+
+    DOM Element API
+      ** not all of the members are in the notebook and not all of what's in the notebooks are shown here **
+      **** you can study the "Standard Library" notebook for more, and the MDN docs for event more *********
+
+      HINT: most of the members of these classes can be modified to modify the real DOM
+        that was the original point of all this
+        ones that are collections usually can't be directly modified, but the collections themselves will have modification methods to add and remove members, etc.
+
+      EventTarget = common base for anything that can have events
+        addEventListener(), removeEventListener(), dispatchEvent()
+      Node = common base for elements, text, comments, etc.
+        some subclasses = Element, Comment, Text, Document
+        sublcass of EventTarget
+          and thus has all those members
+        
+        n.childNodes` gets all children of the node (inc. elements, text, comments, whatever)
+          as an __array-like__ thing
+        `n.firstChild`, `n.lastChild`, `n.nextSibling`, etc. (self-explanatory)
+        `n.nodeType` is a number representing the type of the node
+          basically redundant with the fact that the object is a specific subclass already
+        `n.nodeValue` gives text for comments and text nodes and null for elements
+        `n.textContent` is dangerous
+
+        `n.appendChild(node)` adds a child node (if it has a parent, moves it off that parent)
+        `n.removeChild(node)` is the opposite
+        `n.insertBefore(node, putBefore)`
+        `n.replaceChild(node, toReplace)`
+        `n.cloneNode()` to clone
+        `n.contains(node)` to check for a descendent node
+      Element = common base for all elements
+        subclass of 'Node' and thus has all those members above
+        the elements don't have to be HTML (inc. SVG and MathML elements)
+
+        `el.attributes` gets a __map-like__ object representing attributes on an HTML element
+        `el.children` gets __array-like__ object representing direct child __elements__
+        `el.classList` gets __set-like__ list of tokens from `class` attribute
+        `el.className` gets the whole `class` string with spaces
+        `el.client*` properties give the position and size of the element in its container
+        `el.scroll*` properties give the position and size in the scroll view
+        `el.id` gets the ID attribute
+        `el.innerHTML` is dangerous
+        `el.tagName` is what it says it is
+        `el.aria*` for a11y
+        
+        `el.append(...)` is a variadic version of `n.appendChild()`
+        `el.getAttribute()`, `el.setAttribute()`, `el.hasAttribute()`, `el.toggleAttribute`
+        `el.scrollIntoView()`
+        `el.getElementsByTagName()`, `el.getElementsByClassName`, `el.querySelector()`, `el.querySelectorAll()`
+      HTMLElement = Element subclass for HTML
+        `el.hidden` gives access to the `hidden` attribute
+        `el.draggable`, `el.inert`, etc.
+        `el.tabIndex`
+        `el.title` for popups
+        `el.style` for CSS Styles
+          all CSS properties but as __camelCase__
+          also `getPropertyValue()` and `setProperty()`
+
+        `el.blur()`, `el.click()`, `el.focus()`
+        `el.*popover()` for making an element top-level
+      HTMLButtonElement = subclass of HTMLElement for button 
+        btn.disabled = boolean property (read/write)
+        btn.value = stuff inside <button></button> as modifiable string
+        a lot of form stuff too
+      HTMLDivElement and HTMLSpanElement
+        these have no unique members
+      Other Interesting Ones: HTMLAnchorElement + HTMLImageElement
 
     Hydration
       turning static HTML from server-side rendering into active part of web app
