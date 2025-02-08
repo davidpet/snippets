@@ -230,6 +230,13 @@ BigInt
     it will not throw if too large
     might lose precision, become infinite, etc.
 
+Circular References
+  not normally an issue due to garbage collection
+    unless you get yourself into an infinite loop following them
+  console.log() can handle cycles
+    but JSON.stringify() cannot [will detect but throw]
+  structuredClone() duplicates cycles correctly
+
 [Collections]
 Literals
   only array and object have literals ([] and {})

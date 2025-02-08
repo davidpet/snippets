@@ -158,6 +158,12 @@ Default Values
     str() is ''
     bool() is False
 
+Circular References (cycles)
+    usually not an issue for garbage collected languages
+        Python uses refcounting, but it supplements it with garbage collection, so it's ok
+    str() and repr() both use ... to represent a circular reference (they can detect it)
+    other than that, just make sure you don't write code that can get into infinite loops that way
+
 [Collections]
 collections in Python have literals but you can also use their explicit constructors (eg. list())
 a lot of the stuff mentioned in list will apply other places
@@ -3002,3 +3008,18 @@ pdb
         
         quit
             exit the debugger
+
+[Implementations]
+CPython - main reference implementation, written in C
+    ActivePython is just a distribution of this (for all platforms)
+Cython - superset of Python including C-like syntax
+    for interop directly with C/C++
+PyPy - faster, JIT compiler
+    written in RPython (subset of Python)
+IronPython - .NET written and executed
+Jython - Java written and JVM executed
+Micropython - embedded subset
+    CircuitPython - easier to learn fork
+Stackless - minimizes use of C stack
+    and adds esoteric features like microthreads
+Numba - JIT for Python and Numpy
