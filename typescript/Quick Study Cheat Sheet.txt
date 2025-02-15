@@ -689,7 +689,7 @@ implicit concatenation NOT SUPPORTED
   eg. can't do "a" "b" "c" like in C++
 
 '' and "" are both for string (char is just a single character string, not special thing)
-`Hello, {name}!` // 'name' should be variable in current scope
+`Hello, ${name}!` // 'name' should be variable in current scope
   backtick quote
   variable can be a number too!
   the thing in {} can also be a TS expression instead of just a name!
