@@ -2054,6 +2054,36 @@ pip3 install somepackage
 remember to put environment stuff in .gitignore
     GitHub python template does that already
 
+[virtualenv]
+like venv but 3rd party and more features
+
+pip install virtualenv
+virtualenv somefolder
+    make environment
+    now it's just like venv
+
+[pyenv]
+python version management (packages not handled - use venv or similar for that instead)
+    brew install, follow github instructions for adding stuff to .zshrc
+
+pyenv install 3.8
+pyenv versions
+
+pyenv global
+    all folders and sessions by default
+pyenv global 3.8
+
+pyenv local
+    .python-version file dropped
+    affects child folders
+    overrides global
+pyenv local 3.8
+
+pyenv shell
+    current shell session
+    overrides global and local
+pyenv shell 3.8
+
 [3rd party libraries]
 termcolor
     from termcolor import colored
