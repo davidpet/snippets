@@ -2028,6 +2028,11 @@ Import Type
   import type {MyClass} from './types';
   import {type MyClass, PI} from './types'; // mixed classes and variables
 
+Simulated Classes
+  export * as and import * as can use a capitalized word, and then it looks like a class
+  eg. in ngrx where you use createAction() to make a function that is an action
+    MyActions.create looks like a create() function in a static wrapper
+
 Statefulness of Imports
   you can't directly assign a variable that was imported to change it
     eg. import {x} from './myfile'; x = 100; // ILLEGAL
@@ -2625,6 +2630,8 @@ console
   debugger;
     not part of console but feels related
     forces a breakpoint without having to set it in devtools
+  WARNING: console.log() might prevent garbage collection of an object
+    keep in mind for PRODUCTION
 alert()
   modal popup box with message and OK button
 
@@ -2896,6 +2903,9 @@ there are no ? and ! nullable function params or class members
   nullability is the norm already
 'override' keyword is TS only
 'as', 'implements', and 'satisfies' are TS only
+function overloads are TS only
+  you can do the same in JS by just writing a function that checks types
+    same thing you have to do in TS, but TS has ability to define sigantures for overloads that funnel into that
 some OOP features only exist in TS:
   interfaces
   abstract
