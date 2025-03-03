@@ -2577,6 +2577,30 @@ Browser DOM
     localStorage.removeItem(key);
     localStorage.clear();
 
+  indxedDB: NoSQL local storage DB with indexing
+    *** see https://github.com/davidpet/snippets/blob/main/typescript/Standard%20Library.ipynb for API details ***
+    
+    an app can have one or more DBs
+    a DB can have one or more object store(s)
+    an object store has objects, which can have any fields they want (don't have to match each other)
+      object store is like a table, but not really a table because of the mismatches allowed
+        one of the benefits of NoSQL
+    an object has a primary key
+    an object store can also have indexes
+    you can only query for objects by primary key or indexed field
+      otherwise you have to enumerate all of them in a store and do a linear search
+    CRUD operations are TRANSACTIONAL
+    DBs are versioned and upgrading is part of the API
+    Chrome Devtools shows in Application tab
+      left pane = DB -> object store -> indexed fields
+      right pane = the actual objects on object store node
+    the built-in JS API has a lot of async 'request' objects where you add handlers to it
+      which you can wrap in Promises if needed
+    ngx-indexed-db makes it easier for Angular
+      automatically handles upgrades, transactions, etc.
+      just configure in your dependency injection and inject a service
+        CRUD operations return an Observable
+
   Cookies
     a cookie is a string that's stored for the current "origin"
       it is sent with all future requestes, including page loads, ajax, etc.
