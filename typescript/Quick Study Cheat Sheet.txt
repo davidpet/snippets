@@ -2579,7 +2579,7 @@ Browser DOM
 
   indxedDB: NoSQL local storage DB with indexing
     *** see https://github.com/davidpet/snippets/blob/main/typescript/Standard%20Library.ipynb for API details ***
-    
+
     an app can have one or more DBs
     a DB can have one or more object store(s)
     an object store has objects, which can have any fields they want (don't have to match each other)
@@ -2656,6 +2656,7 @@ console
     forces a breakpoint without having to set it in devtools
   WARNING: console.log() might prevent garbage collection of an object
     keep in mind for PRODUCTION
+  NOTE: console.log() object is frozen at time of print [doesn't update when object updated]
 alert()
   modal popup box with message and OK button
 
@@ -2844,7 +2845,10 @@ IntersectionObserver
   watches how much one or more targets intersect with an ancestor element (or viewport itself by default)
     one or more thresholds specified - callback called when thresholds are crossed (and initially)
   ** see Standard Library notebook for details **
-
+MutationObserver
+  similar API to IntersectionObserver
+  changes to DOM subtree of element (attributes, children, etc.)
+  
 Proxy
   lets you redefine certain fundamental behaviors on a target object via traps
   const proxy = new Proxy(handler, target);
