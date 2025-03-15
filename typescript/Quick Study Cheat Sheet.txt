@@ -2407,7 +2407,8 @@ Browser DOM
       KeyboardEvent = for keydown, keypress, keyup
         keypress is deprecated
         keydown is sent duplicitavely for held keys
-      InputEvent = changes to <input> control data (inc. text boxes, checkboxes, etc.)
+      InputEvent = changes to <input> control data (inc. text boxes, checkboxes, contenteditable, etc.)
+        one event per char (deletion = null)(overwrite = first char then each char, no null)
       FocusEvent = for blur and focus events
         when you switch from control A to B:
           A gets blur and focusout
@@ -2482,6 +2483,7 @@ Browser DOM
         `el.scrollIntoView()`
         `el.getBoundingClientReact()` for translating mouse events into viewport coords
         `el.getElementsByTagName()`, `el.getElementsByClassName`, `el.querySelector()`, `el.querySelectorAll()`
+        `el.closest(selector)` searches nodes and its ancestors for match (directly up)
       HTMLElement = Element subclass for HTML
         `el.hidden` gives access to the `hidden` attribute
         `el.draggable`, `el.inert`, etc.
@@ -2500,6 +2502,15 @@ Browser DOM
       HTMLDivElement and HTMLSpanElement
         these have no unique members
       Other Interesting Ones: HTMLAnchorElement + HTMLImageElement
+    
+    innerText and innerHTML
+      innerText = read scraped test, write replaces all nodes with text node
+      innerHTML = decompile to HTML code, write replaces nodes based on compiling new code
+
+    DOM Debugging 
+      `console.log(el.cloneNode(true))`
+        deep copies an element/node and puts it to console for inspection
+      can also watch the `Elements` tab in realtime while interacting with DOM to execute code paths
 
     Hydration
       turning static HTML from server-side rendering into active part of web app
@@ -2526,6 +2537,15 @@ Browser DOM
       element.remove() // more direct, but not supported in IE
         polyfill can fix that though
     
+    Selections
+      document.getSelection()
+        anchorNode/anchorOffset -> focusNode/focusOffset [same if just caret]
+          always selection even if no caret shown (eg. click in a non-editable <div>)
+        rangeCount/getRangeAt(index)
+          startContainer/startOffset -> endContainer/endOffset
+          insertNode(node) -> inserts at beginning
+        <input> vs. <form> as selected node depends on browser
+
     Classes
       element.className = space-separated string (like in the real DOM)
       element.classList = a special object with convenience operations on the class names that are present
