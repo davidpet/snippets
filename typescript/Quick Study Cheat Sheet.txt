@@ -2540,11 +2540,13 @@ Browser DOM
     Selections
       document.getSelection()
         anchorNode/anchorOffset -> focusNode/focusOffset [same if just caret]
+          offsets are in chars if text node, otherwise in nodes
           always selection even if no caret shown (eg. click in a non-editable <div>)
         rangeCount/getRangeAt(index)
           startContainer/startOffset -> endContainer/endOffset
           insertNode(node) -> inserts at beginning
         <input> vs. <form> as selected node depends on browser
+        object that you can modify (via methods) (eg. to insert nodes)
 
     Classes
       element.className = space-separated string (like in the real DOM)
@@ -2671,12 +2673,15 @@ console
   time()/timeEnd()
     starts and stops a timer (displaying the result)
     eg. timeEnd() in .then() of fetch()
+  console.log(new Date().toISOString()); // prints timestamp with fractional seconds
   debugger;
     not part of console but feels related
     forces a breakpoint without having to set it in devtools
   WARNING: console.log() might prevent garbage collection of an object
     keep in mind for PRODUCTION
+    disableConsole = true; // can mitigate that
   NOTE: console.log() object is frozen at time of print [doesn't update when object updated]
+  NOTE: console.clear() to clear console, but have to disable "Preserve Logs" in devtools (console settings)
 alert()
   modal popup box with message and OK button
 
@@ -2711,6 +2716,10 @@ clearTimeout(timeout)
   in either case, setTimeout() returns an object to pass to clearTimeout() to cancel
     you can even cancel if no delay and already queued up the fn (will get unqueued)
   no problem calling on already cleared or nonexistent timeout (noop)
+Microtasks
+  Tasks are normally queued up to run in order of insertion after the current event loop iteration
+  There is also a __microtask API__ in JavaScript to queue microtasks
+    which are tasks that must all be completed before the next task can be picked up.
 
 Promise<T>
   const promise: Promise<string> = new Promise((resolve, reject) => {
