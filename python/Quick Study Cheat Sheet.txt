@@ -508,6 +508,9 @@ Thread Safety
 Swapping
     a,b = b,a # right side makes tuple, left side unpacks it
 
+Duplicates
+    len(a) != len(set(a))
+
 Not Available:
     persistent slice that responds to changes in original and/or can be used to modify the original
     a lot of the optimization methods in set and dictionary
@@ -2215,6 +2218,10 @@ def coalesce(a: int | None) -> int:
     if a is None:
         return 0
     return a
+
+# type hint syntax comes from actual types
+isinstance(x, int | bool | float)
+    int | bool | float gives a UnionType object (instead of just a Type object like int would give)
 
 [unit tests]
 ** see Unit Tests notebook **
