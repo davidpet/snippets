@@ -2374,7 +2374,7 @@ Browser DOM
       `touch*`
       `drag*`
       `DOMContentLoaded`
-      `submit`/`change`/`focus`/`blur`/`input`
+      `submit`/`change`/`focus`/`blur`/`input`/`paste`
       `animationstart`/`animationcancel`/`animationend`
     Event Types and Members
       ** not all of the members are in the notebook and not all of what's in the notebooks are shown here **
@@ -2413,6 +2413,11 @@ Browser DOM
         usually one event per char (deletion = null)(overwrite = first char then each char, no null)
         in some cases might get multiple chars per event and/or a null for a newline (eg. with execcommand())
         keep in mind the DOM change already happened before this event fired
+      PasteEvent = about to paste into <input>, <textarea>, <div>, etc.
+        use e.preventDefault() to stop default pasting behavior
+          eg. if you want to process it yourself
+        e.clipboardData.getData('text/plain') then modify the DOM with that how you want
+          contenteditable will paste 'text/html' by default if you don't stop it
       FocusEvent = for blur and focus events
         when you switch from control A to B:
           A gets blur and focusout
@@ -2507,9 +2512,20 @@ Browser DOM
         these have no unique members
       Other Interesting Ones: HTMLAnchorElement + HTMLImageElement
     
-    innerText and innerHTML
+    innerText, innerHTML, and textContent
       innerText = read scraped test, write replaces all nodes with text node
       innerHTML = decompile to HTML code, write replaces nodes based on compiling new code
+      textContent = like innerText but more raw (eg. doesn't respect CSS hiding, and gets text for <script>s)
+
+    DocumentFragment
+      like <></> in React, but for the real DOM
+      const fragment = new DocumentFragment();
+        then append to it as if a DOM element
+        staging a little DOM tree for (probably) eventual insertion
+        still use document.createElement() to create elements to insert into it though
+      domNode.append(fragment);
+        all the children of the fragment get moved to domNode in order at the same level
+        then the fragment becomes empty
 
     DOM Debugging 
       `console.log(el.cloneNode(true))`
