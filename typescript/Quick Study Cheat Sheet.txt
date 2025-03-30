@@ -918,10 +918,12 @@ Casting/Coercion
 
 ?. safe-navigation operator (also called optional chaining, or Elvis operator)
   a?.b?.c?.d
-  if any link in the chain is nullish (null|undefined), stops and returns that
+  if any link in the chain is nullish (null|undefined), stops and returns that (or maybe converts to undefined)
 
   a.?[0] = special syntax for arrays (.? followed by [])
     arrays don't normally allow a.[0] syntax
+
+  f.?(100) = function call where f might be null or undefined
 
 typeof x
   gets a string representing the primitive type of an object (in JS)
