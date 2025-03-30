@@ -2410,7 +2410,9 @@ Browser DOM
         keypress is deprecated
         keydown is sent duplicitavely for held keys
       InputEvent = changes to <input> control data (inc. text boxes, checkboxes, contenteditable, etc.)
-        one event per char (deletion = null)(overwrite = first char then each char, no null)
+        usually one event per char (deletion = null)(overwrite = first char then each char, no null)
+        in some cases might get multiple chars per event and/or a null for a newline (eg. with execcommand())
+        keep in mind the DOM change already happened before this event fired
       FocusEvent = for blur and focus events
         when you switch from control A to B:
           A gets blur and focusout
@@ -2549,6 +2551,7 @@ Browser DOM
           insertNode(node) -> inserts at beginning
         <input> vs. <form> as selected node depends on browser
         object that you can modify (via methods) (eg. to insert nodes)
+        console.log(String(selection)) for seeing selected text
 
     Classes
       element.className = space-separated string (like in the real DOM)
