@@ -237,6 +237,12 @@ Circular References
     but JSON.stringify() cannot [will detect but throw]
   structuredClone() duplicates cycles correctly
 
+Literals as Types
+  (compile-only feature since JS doesn't care about types)
+  let s: number | 'hi' | 'low' = 100;
+  s = 'hi';
+  s = 'something else'; // ILLEGAL
+
 [Collections]
 Literals
   only array and object have literals ([] and {})
@@ -1529,6 +1535,14 @@ Properties
     usually impossible since no overloading
   you can independently control access to the getter and setter
   you can access a property from an instance as if it was a variable
+
+  in most cases, m['x'] and m.x getting/setting a member field vs. a getter/setter call are equivalent
+    no setter is like using readonly
+      ignored in JS, compile error in TS
+    no getter means always returns undefined (compile error in TS)
+    Object.getOwnPropertyDescriptor() can tell the difference
+    TS interfaces treat them as completely interchangeable
+      but in the old days, you could only do fields (and it represented both kinds of things)
 
 Parameter Properties
   a constructor parameter with an access specifier in front
@@ -2922,6 +2936,11 @@ Reflect
     eg. Reflect.get(target, prop)
     you can use it instead of . and [] within proxy traps for safety
 this is very similar to what metaclasses can do in Python (though not accomplished quite the same way)
+
+Record<TKey, TValue>
+  utility type (interface) provided globally by TS compiler
+  when an object is used like a dictionary, the whole object is a Record<>
+  { 'a': 100, 'b': 200 } is a Record<string, number>
 
 [Decorators]
 similar to Python, you can make a function that takes a declaration and wraps it
