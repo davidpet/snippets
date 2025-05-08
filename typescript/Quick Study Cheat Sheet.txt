@@ -2516,6 +2516,8 @@ Browser DOM
       innerText = read scraped test, write replaces all nodes with text node
       innerHTML = decompile to HTML code, write replaces nodes based on compiling new code
       textContent = like innerText but more raw (eg. doesn't respect CSS hiding, and gets text for <script>s)
+      all 3 turn newlines into spaces
+        can wrap lines in <div> to get around that (in future parsing, and in display)
 
     DocumentFragment
       like <></> in React, but for the real DOM
