@@ -1669,7 +1669,9 @@ Interfaces
 
   can be used like a base class in polymorphism just like other languages
 
-  private members are not allowed
+  private members become part of the actual interface and are required (as private) in classes that use the interface
+    this differs from all other languages pretty much
+    it also differs from past behavior, so in Jupyter Notebooks it doesn't do this yet
 
   Partial<Person> gets an interface that looks like Person but all fields are optional
     like adding ? to all fields that don't have it yet
