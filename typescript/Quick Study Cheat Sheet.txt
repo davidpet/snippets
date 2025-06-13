@@ -2184,6 +2184,10 @@ tsconfig.json
   noImplicitOverride = requiring override keyword to override a method
   target = which version of JS to emit code for
     this affects what code you can write as well (eg. which bulit-in data structures you can use)
+  paths = aliases to use in imports (often with @)
+    individual file (eg. barrel) or whole folder
+  stylePreprocessorOptions = css equivalent of paths
+  extends = for inheriting from another tsconfig file
 
 package.json
   NPM package information for your project
@@ -2943,6 +2947,15 @@ Record<TKey, TValue>
   utility type (interface) provided globally by TS compiler
   when an object is used like a dictionary, the whole object is a Record<>
   { 'a': 100, 'b': 200 } is a Record<string, number>
+
+Import Maps
+  browser feature
+  <script type="importmap">
+    or other elements if use es-module-shims polyfill (which is a parallel hacked together module system)
+  can dynamically add to it in JS until the first import happens, and then it's locked
+  import { of } from 'rxjs' stays as is, and then 'rxjs' is added as a key in the map by the bundler
+    value = the CDN url where you'd get Rxjs from (or your local bundle of it)
+    future imports from other modules in same app can reuse that key instead of hardcoding their full bundle paths
 
 [Decorators]
 similar to Python, you can make a function that takes a declaration and wraps it
