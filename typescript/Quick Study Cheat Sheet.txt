@@ -61,12 +61,17 @@ let a: any = 5;
   often used for compatibility with JavaScript code where anything goes
   a could be reassigned a different type of object arbitrarily
   you can do whatever operations you want on it, like you're in JavaScript land
+    at least that used to be, but later versions are more strict (or configured to be so by Angular)
+    while 'any' still exists, you're not allowed to cast to it to get around the compiler anymore (a lot of the time)
   also, you can arbitrarily set and read properties of a without compiler errors
     a way to go straight to the JS system with a particular object
 let a: unknown = 5;
   similar to any, but you can't do any operations on it that are type-specific
   you have to convert to a type first (eg. via type narrowing)
   otherwise, it's similar to using object directly
+  (a as unknown as {x: number}).x = 100;
+    this type of pattern replaces what you would do before with 'any' or directly casting with 'as'
+      now it's more strict so you have to use 'as unknown as'
 
 let n: null = null; // the type of null is null
 let u: undefined = undefined; // the type of undefined is undefined
@@ -2059,6 +2064,7 @@ Statefulness of Imports
   all the various places that import or rename that variable will see the change!
   the top-level code from the imported module is only run once on the first import
     then the state just continues to live and get returned by other modules that import it
+  two modules of the same name will only share data if they have the same fully resolved URL to the browser
 Bare Imports
   import './thefile';
     code in the file runs but we don't import any symbols
