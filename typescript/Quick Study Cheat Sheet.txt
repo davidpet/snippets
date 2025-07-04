@@ -381,11 +381,21 @@ Arrays
 
     JS stores arrays like this sparsely
 
+    a.length = 5; // directly resize array
+    a.length += 2; // add 2 sparse undefined to end
+    a.length -= 2; // cut off 2 items
+
   const s = arr.join(',');
     joining array elements into string with delim
   
   no built-in value comparison via === or .equals()
     either do a loop or do JSON.stringify() and compare the result
+
+  a.push(1, 2, 3)
+    variadic push adds multiple items to end
+  a.push(...b) OR a.concat(b)
+    concatentation
+    note that a + b on arrays will not concat (it will do a string conversion)
 
   Missing:
     binary search for sorted arrays
@@ -2639,6 +2649,9 @@ Browser DOM
       if you do setTimeout(), your handler might run if the delay is short (or might not)
       all your code is cleared out when the new page is up
 
+    pathName = URL without origin or query params (just path relative to origin)
+      if no file given in address bar (eg. not index.html itself), then file won't be in pathName either
+
   localStorage: persistent key-value storage for your application
     per "origin" (protocol + domain inc. subdomains + port)
     no expiration, but limited to 5 MB (after which will throw when trying to add new)
@@ -2844,6 +2857,14 @@ Promise errors
   .catch() is the first chance to catch an error (or .then() if you pass in an error handler)
   if you don't, or if you use async/await, then you must catch exception
   don't forget that even fetch() and response.json() can throw errors (before status code could be read)
+
+Awaiting Promise Multiple Times
+  await p; await p;
+    second await will come back quickly with the same data (won't rerun the promise)
+      functionally equivalent to two callers calling .then() separately
+    same goes for errors, etc.
+  Use Case: keep a list of promises for views in a page and await them on entering
+    first time might have to wait (or might not if done in background) - 2nd time will be fast
 
 Ajax
   XMLHttpRequest is the built-in browser type for making calls to the server
