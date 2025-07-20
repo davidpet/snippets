@@ -958,6 +958,20 @@ typeof x
     even null is 'object' (but 'undefined' is 'undefined')
   number, boolean, and string work as you'd expect (it's very useful for these specific types)
 
+  in addition to the JS usage of 'typeof', TS adds its own usage in type-only contexts
+    for functions, variables, and their members, you can use 'typeof' to get a compile-time type for that thing
+      let x = 100;
+      let f = (x) => x * 2;
+      let o = {a: 100};
+      type X = typeof x;
+      type F = typeof f;
+      type O = typeof o.a;
+    on weird caveat is that if you do this, the typeof operator will be locked to a value instead of a type
+      const x = 100;
+      // const x: number = 100; // workaround
+    can be used with ReturnType<> utility type
+      type R = ReturnType<typeof f>; // R now aliases number
+
 x instanceof MyClass
   boolean check of whether the class is in the inheritance chain of x
   it works because JavaScript uses prototype inheritance, so JS will check the prototype chain for the class object
@@ -1535,6 +1549,7 @@ need to use 'this' in front of all member access from methods (never implicit)
   but also not passed in as param like in python
 members are 'public' by default because that's how JS works (where there is no access level)
   no such thing as package-private like Java: just public, private, protected
+  you can still specify 'public' to be explicit (even though it's default)
 methods do not have 'function' keyword, which makes them look more Java-like and less JS-like
 member variables are declared in the body like Java (not in the c'tor like Python)
   but there is a special construct called Parameter Properties covered below that can act that way
@@ -2991,6 +3006,10 @@ Record<TKey, TValue>
   utility type (interface) provided globally by TS compiler
   when an object is used like a dictionary, the whole object is a Record<>
   { 'a': 100, 'b': 200 } is a Record<string, number>
+ReturnType<TFunction>
+  another utility type
+  gets return type of a function in type context
+  type R = ReturnType<typeof myfunction>;
 
 Import Maps
   browser feature
