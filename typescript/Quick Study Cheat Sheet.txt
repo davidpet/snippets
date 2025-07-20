@@ -175,6 +175,9 @@ Symbol/symbol
     eg. private [mySymbol]: number;
   one special behavior of symbol keys is they are ignored by Object.keys()
     so in a way it's kind of a hidden property
+  can also use as an enum with more compact syntax
+    fetch(CLEAR_CACHE), fetch(USE_CACHE), fetch()
+      where param is a symbol and CLEAR_CACHE and USE_CACHE are specific symbols
 
 var
   var is the old-fashioned way of declaring variables (before let and const came along)
@@ -971,6 +974,13 @@ delete o.x
   deletes a property from an object (does not work on top-level variables)
   instead of just making undefined, it actually gets rid of it
   like python 'del'
+  does not work on maps
+delete o['x']
+  works same way
+delete arr[1]
+  makes the entry empty (sparse), but still leaves the array the same size
+delete o['nonexistent']
+  deleting a non-existent index or key is just a no op (does not throw)
 
 Truthiness
   !! and ! are opposites
@@ -2660,6 +2670,13 @@ Browser DOM
     const value = localStorage.getItem(key);
     localStorage.removeItem(key);
     localStorage.clear();
+
+  sessionStorage: like localStorage but per browser tab
+    nothing to do with HTTP sessions
+    same API as localStorage
+    persists as long as browser tab persists, for given app
+      even if navigate away and back, refresh, etc.
+      eg. save text user entered so you can restore it if they navigate back
 
   indxedDB: NoSQL local storage DB with indexing
     *** see https://github.com/davidpet/snippets/blob/main/typescript/Standard%20Library.ipynb for API details ***
