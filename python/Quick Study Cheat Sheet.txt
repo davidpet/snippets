@@ -2091,6 +2091,11 @@ pyenv rehash
     if python hanging a while at beginning of calls
     or after installing anything executable
 
+[poetry]
+like virtualenv but w/ subshell and also npm-style package/dependency management
+** see conda + pip notebook for details **
+a key thing to remember about it is that it can have scripting issues due to subshells and exit
+
 [3rd party libraries]
 termcolor
     from termcolor import colored
