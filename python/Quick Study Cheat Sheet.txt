@@ -2087,6 +2087,10 @@ pyenv shell
     overrides global and local
 pyenv shell 3.8
 
+pyenv rehash
+    if python hanging a while at beginning of calls
+    or after installing anything executable
+
 [3rd party libraries]
 termcolor
     from termcolor import colored
