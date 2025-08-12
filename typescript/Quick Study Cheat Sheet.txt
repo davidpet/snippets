@@ -1743,6 +1743,11 @@ Structural Typing
   if you use structural typing with a class, it's treated like an interfaces
     you're basically making an object with the right interface but missing the prototype chain
       it will not behave properly with polymorphic constructs
+  If you specify the type and the literal inline, you are not allowed to add any extra properties.
+    But if you add any indirection to it, such as another variable, the as operator, a function call, etc. then structural typing works OK.
+    eg. const m = {x: 100, y: 200} as Myclass; // OK even if m has extra members
+    eg. const m = n;  // OK even if n has extra members
+    eg. const m: MyClass = {x: 100, y: 200}; // illegal if m has extra members
 
 Object
   all reference types implicitly inherit from Object (and not primitives)
@@ -2729,6 +2734,10 @@ Browser DOM
     you delete a cookie by setting its expiration date to the past
     ** see Standard Library notebook for examples **
 
+  Storage Between Browsers
+    APIs like localStorage, cookies, etc. are per-browser application. For instance, Firefox and Chrome will not share storage or cookies.
+    However, they will be shared between window of the same appliation, if applicable.
+
   Graphics and Animation
     CSS has animations that don't depend on JS
     JS has similar (maybe the same - not sure) animations using element.animate()
@@ -2760,6 +2769,10 @@ Browser DOM
       imagedata.data is an array where each sequence of 4 items is (r, g, b, a)
         index = (x + y * imageData.width) * 4
       you commit using context.putImageData() when you're done
+
+Querying <script> and <style> tags
+  You can query and append <script> and <style> tags (by ID, type, etc.) and get their content with .textcontent just like other nodes.
+  For instance, Babel can be used to compile JSX from <script> tags that specify a babel type, and then execute the code.
 
 console
   log(), info(), error(), warn() [as shown in Strings section above]
@@ -2901,6 +2914,10 @@ Awaiting Promise Multiple Times
     same goes for errors, etc.
   Use Case: keep a list of promises for views in a page and await them on entering
     first time might have to wait (or might not if done in background) - 2nd time will be fast
+Introducing Delay in Promise Chain (eg. for testing)
+  const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+  p.then(val => delay(5000).then(() => val)) etc. etc.
+  // makes use of how promises are defined and how they flatten
 
 Ajax
   XMLHttpRequest is the built-in browser type for making calls to the server
@@ -3023,6 +3040,18 @@ Import Maps
   import { of } from 'rxjs' stays as is, and then 'rxjs' is added as a key in the map by the bundler
     value = the CDN url where you'd get Rxjs from (or your local bundle of it)
     future imports from other modules in same app can reuse that key instead of hardcoding their full bundle paths
+
+BroadcastChannel
+  like a named pipe with serialization/deserialization (using structuredClone() algorithm)
+  can send data between windows/tabs of same origin within same browser application
+  channel.postMessage() to send data and then channel.addEventListener() for 'message' events to receive them
+    sender automatically doesn't get its own message back
+  high overhead compared to things like Angular services for sharing data
+MessageChannel
+  like BroadcastChannel but has 2 ports
+    data sent on one shows up at the other
+  not a named pipe
+  has APIs for "transferring" a port to another context (such as inside an iframe or to a web worker)
 
 [Decorators]
 similar to Python, you can make a function that takes a declaration and wraps it
