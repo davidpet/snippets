@@ -2025,7 +2025,7 @@ you cannot do something like T() to create a new value
   TS maintains T as just a type, not a class object
 
 [Type Metaprogramming]
-***see https://github.com/davidpet/snippets/tree/main/typescript/Type%20Metaprogramming.ipynb***
+***see https://github.com/davidpet/snippets/tree/main/typescript/Type%20Metaprogramming.ipynb ***
 trying to summarize the notes of that notebook here would basically just repeat the whole notebook
 
 [Imports/Modules]
