@@ -643,6 +643,19 @@ Ascii Values
 Comparison
     == and <, etc. use lexographical comparison just like arrays, tuples, etc.
 
+Bytes and Encoding
+    'hello' is a str
+    b'hello' is a bytes (which is a sequence of 0-255 values in binary format)
+
+    'hello'.encode('utf-8') -> b'hello' (using utf-8 to map to binary data)
+    b'hello'.decode('utf-8') -> 'hello' (using the inverse operation)
+    encode() is only on str and decode() is only on bytes
+        both use system default (usually utf-8) if encoding not given
+    
+    b'abc\x01\x02' gives the bytes a, b, c, 1, 2 [where 1 and 2 are actual binary values given in hex in the literal]
+    bytes([1, 2, 3]) gives b'\x01\x02\x03'
+    list(b'\x01\x02') gives [1, 2]
+
 [Operators]
 mostly the same as C-like languages with some exceptions
     additional operators like // and ** also support assignment (//= and **=) like others
@@ -1430,6 +1443,7 @@ print(os_path)
 
 from os import *
 # import all symbols (usually not recommended)
+# can control which ones get included with __all__ list in the module itself (not present = include all)
 
 anything can be at the top-level of a module (variables, classes, functions, etc.)
 
@@ -1494,6 +1508,16 @@ __main__.py
     in either case, __main__.py is the entry point
     if you use this, you may not need to check __name__=='__main__' in __init__.py or anywhere else anymore
         because the top-level code is already run by __main__.py
+
+def f():
+    import mymodule #noqa
+    # works same way as top-level import, but lazy-loaded
+    # noqa comment is to stop linter from complaining
+    # returns nothing
+    return mymodule.x
+
+    # to put it in a variable instead of at top-level (and to use string):
+    return importlib.import_module('mymodule')
 
 [stdlib]                            
 print(x)
@@ -1701,7 +1725,9 @@ os
     makedirs() [to make multiple levels]
     rmdir() [must be empty]
     environ = dictionary of environment variables (no $)
-        can be used to get/set in current shell instance
+        can be used to get/set in current shell instance w/ all the usual dictionary members
+        getenv(name, default)
+        setdefault(name, default) # sets and gets at same time
     getenv(varname, default)
     putenv(varname, value)
 
@@ -1835,12 +1861,9 @@ dataclasses
     dataclass: decorator for defining a data class
 
 logging
-    basicConfig(filename, level, format)
-    logger = getLogger(name)
-        various APIs define their own loggers to use
-    logger.info('this is an info message')
-    logger.error('this is an error!')
-    logger.debug('this is a debug message!')
+    *** see https://github.com/davidpet/snippets/blob/main/python/Logging.ipynb ***
+    trying to show just a few lines here isn't that useful in the real world
+    keep in mind: loggers are in a hierarchy, a logger has 0 or more handlers, a handler has 0 or 1 formatter(s)
 
 importlib
     reload(module): to reload a module (eg. to test changes)
@@ -1866,6 +1889,14 @@ json
 
     s = dumps(mydict, indent=2)
     mydict = loads(s)
+
+hashlib
+    h = hashlib.sha256('hi'.encode('utf-8')) # must use bytes
+    print(h.hexdigest()) # must read hex string out this way
+
+    print(hashlib.sha256(b'hi').hexdigest())
+
+    print(hashlib.sha256(b'salt' + b'hi').hexdigest())
 
 urllib: basic http requests and responses
     3rd party 'requests' library is considered better
@@ -2108,6 +2139,9 @@ sortedcontainers
     SortedDictionary
 requests
     http request framework (more intuitive and fully-featured than urllib)
+    *** see 3rd Party Libraries notebook for details ***
+    you call methods like requests.get(url) and requests.post(url, json=payload)
+    you can add/override individual headers, do authentication, set query params as dictionary, etc.
 manim
     3blue1brown's animation library
     ** have notebook for it **
@@ -2123,6 +2157,8 @@ scikit-learn
     I've used it for feature scaling for my TF models
     it can also do linear regression, PCA, etc.
     ** have notes in Google Drive for it **
+pymemcache
+    lets you use a memcache instance (eg. locally installed via brew or apt) from python code
 
 [decorators]
 function or callable class that wraps a function or class
