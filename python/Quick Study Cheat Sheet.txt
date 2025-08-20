@@ -2141,6 +2141,7 @@ requests
     http request framework (more intuitive and fully-featured than urllib)
     *** see 3rd Party Libraries notebook for details ***
     you call methods like requests.get(url) and requests.post(url, json=payload)
+        requests.request() for specifying method as string generically
     you can add/override individual headers, do authentication, set query params as dictionary, etc.
 manim
     3blue1brown's animation library
