@@ -2192,6 +2192,53 @@ built-in decorators:
     the @ takes the end result of the resolution
     properties rely on this
 
+@ just evaluates the REST OF THE LINE as a python expression
+    it then CALLS the result on the NEXT OBJECT
+    it then REBINDS the name to the result of that
+
+a decorator that takes arguments is a factory that returns a decorator function
+    an extra layer of wrapping inside with a closure
+
+    @mydecorator(1, 2, 3)
+    def f():
+        pass
+    @mydecorator    # INVALID in this case
+    def f();
+        pass
+
+    thus, a decorator can generally not be used both ways
+        unless it's implemented to be used that way by checking the type of the first arg
+            which is not that common
+    
+decorators stack vertically
+    @dec1
+    @dec2
+    def f():
+        pass
+
+    code that runs before the decorators call their inner functions will run top-down
+    code that runs after will run bottom-up
+
+decorators can wrap other decorators
+    you can figure out what that will do by using the general explanation of what @ does above
+
+    @method_decorator(login_required)
+    @method_decorator(cache_page(30))
+    def my_view(self, request):
+        pass
+
+    this example from DRF shows wrapping and stacking and arguments + no arguments combined
+    @login_required and @cache_page are decorators for functions
+    @method_decorator turns them into decorators for class methods
+    then the results are stacked onto a class method
+
+inline decorator use
+    decorated_greet = mydecorator(greet)
+    decorated_greet = mydecorator(1, 2, 3)(greet)
+
+    you do not use @ if you just treat the decorator as a function
+    the result of calling it can be set to a variable that differs from the original
+
 [docstring]
 """ multi-line strings in certain places
 top of module for module documentation
