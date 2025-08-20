@@ -247,7 +247,7 @@ dict
     del x['c']
     x.pop('b')
     x.clear()
-    x.setdefault(key, value) # set value only if not present
+    x.setdefault(key, value) # set value only if not present (returns result either way)
 
     default iteration and membership checks are for keys
     you can be more explicit: x.keys(), x.values(), x.items() which are tuples of key and value
@@ -1176,9 +1176,13 @@ Inheritance
             you are changing the static class!
                 eg. appending to an array defined in the class body affects all instances
                     this is a sharp corner you don't see in other languages - be careful!
+    you can treat static members as overriding base class static members just like instance members
+        and then instance members as overriding those
     no 'virtual' keyword - everything is virtual (like Java) due to how the lookups work
         just using the same name overrides already
         both for variables and functions
+        useful for overriding built-in/library functions
+            in conjunction with forwarding args with (*args, **kwargs) to use original implementation
     static methods act this way as well
         the difference is that they don't have to have self as the first param
     also note that everything is by name only, not by args or type
@@ -1187,6 +1191,10 @@ Inheritance
     diamond inheritance
         ambiguity resolved by taking first thing from left in class's inheritance list (MRO)
         a result of how attribute lookups work
+        MRO is not strictly DFS or BFS
+            uses C3 Linearization
+            with no common ancestor, acts like DFS
+                within common ancester, more like BFS
 
     unlike other languages, base c'tor is only automatically called if derived class has no c'tor!
         can explicitly call it like below though
