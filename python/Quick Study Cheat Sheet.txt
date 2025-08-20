@@ -1872,6 +1872,7 @@ logging
     *** see https://github.com/davidpet/snippets/blob/main/python/Logging.ipynb ***
     trying to show just a few lines here isn't that useful in the real world
     keep in mind: loggers are in a hierarchy, a logger has 0 or more handlers, a handler has 0 or 1 formatter(s)
+        and filters can stop messages at either the handler or logger level
 
 importlib
     reload(module): to reload a module (eg. to test changes)
@@ -2203,6 +2204,7 @@ built-in decorators:
 @ just evaluates the REST OF THE LINE as a python expression
     it then CALLS the result on the NEXT OBJECT
     it then REBINDS the name to the result of that
+    it can be done at any scope (local function, global functions, etc.)
 
 a decorator that takes arguments is a factory that returns a decorator function
     an extra layer of wrapping inside with a closure
@@ -2246,6 +2248,12 @@ inline decorator use
 
     you do not use @ if you just treat the decorator as a function
     the result of calling it can be set to a variable that differs from the original
+
+@functools.wraps
+    even though @ rebinds the function name, it does not forward metadata
+    annotate the inner wrapp with @functools.wraps(original_function) to forward the metadata
+        if a factory that takes args, place on the inner wrapper that will be returned by @ operator
+    inner function name, annotations, docstrings, etc.
 
 [docstring]
 """ multi-line strings in certain places
