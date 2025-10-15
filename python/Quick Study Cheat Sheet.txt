@@ -2255,6 +2255,13 @@ inline decorator use
         if a factory that takes args, place on the inner wrapper that will be returned by @ operator
     inner function name, annotations, docstrings, etc.
 
+decorators applied to intance methods see the unbound class method (function that has self as 1st arg)
+    it is the callsite that makes it bound, but the decorator doesn't see it that way
+    the snippets notebook shows example implementation of Django's @method_decorator
+        lets you apply a normal function decorator to a class method transparently (self param not shown to the original decorator)
+            in essence, this works by binding the class method so it behaves as a normal function and then calling the function decorator on that
+                (and then calling the result through)
+
 [docstring]
 """ multi-line strings in certain places
 top of module for module documentation
