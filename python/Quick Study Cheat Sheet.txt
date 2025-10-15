@@ -2339,6 +2339,7 @@ it works much like JUnit type stuff from other languages
 class is instantiated to run test method
 setup and teardown, etc.
 mocking, faking, etc. available
+pytest is a newer way that is even more flexible/sophisticated (shown in notebook)
 
 [Jupyter]
 throughout the notebooks, there are examples of jupyter usage
