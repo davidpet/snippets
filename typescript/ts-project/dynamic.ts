@@ -10,4 +10,10 @@ async function f() {
 }
 f();
 
+async function g() {
+    const {x} = await import('./importable7'); // slight similarity to top-level imports!
+    console.log(x); // 0
+}
+g();
+
 console.log('done'); // this runs before any promises resolve

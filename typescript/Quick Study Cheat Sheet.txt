@@ -2122,6 +2122,8 @@ Dynamic Imports
     p (after the promise resolves) will have a 'default' field and a named field for each non-default import
       eg. p.x, p.MyComponent
     this is never hoisted because it runs inline asynchronously
+    const {x} = await import ('./somefile');
+      this version (which just takes members from the imported module) looks somewhat similar to a top-level import!
   const p = require('./somefile');
     this is the Node-style way of importing
     it works like dynamic import above, but SYNCHRONOUS
@@ -3052,6 +3054,22 @@ MessageChannel
     data sent on one shows up at the other
   not a named pipe
   has APIs for "transferring" a port to another context (such as inside an iframe or to a web worker)
+
+window.open()/window.close()
+  window.open(url, target?, options?)
+    like JS anchor tag
+    target = '_blank' by default
+    options = comma-separated names or name=value
+      popup
+      noopener
+    returns WindowProxy representing all window members on other window
+      eg. can call window.close() on it
+      eg. can post messages to it
+      eg. can see its global variables
+  window.close()
+    close window if it is script-cloable
+      includes: anchor tags, window.open()
+      excludes: direct address bar navigation, certain modifiers on anchor tag opening (open in new tab is fine though)
 
 [Decorators]
 similar to Python, you can make a function that takes a declaration and wraps it
