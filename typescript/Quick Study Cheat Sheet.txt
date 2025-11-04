@@ -3033,7 +3033,7 @@ ReturnType<TFunction>
   another utility type
   gets return type of a function in type context
   type R = ReturnType<typeof myfunction>;
-
+ 
 Import Maps
   browser feature
   <script type="importmap">
