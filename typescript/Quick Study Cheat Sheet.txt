@@ -3071,6 +3071,31 @@ window.open()/window.close()
       includes: anchor tags, window.open()
       excludes: direct address bar navigation, certain modifiers on anchor tag opening (open in new tab is fine though)
 
+window.postMessage(message)
+  sends a message to a Window instance (eg. a child iframe or a popup)
+    message received via 'message' event on 'Window' itself on the other end
+      event.data = the message
+      event.source = the source Window
+      event.origin = the source origin
+  window.postMessage(message, targetOrigin)
+    targetOrigin (default / meaning source and target same origin)
+      specifies what origin the target window should be from (as security measure)
+      if wrong origin, the message won't post, and a console warning will be printed
+      target should also check event.origin against expectation as other half of this security mechanism
+
+<iframe>
+  page inside is fully independent in terms of html (has its own <html> root), css, and JS
+  parent can try to access child Window with:
+    window.frames
+    iframeElement.contentWindow
+  child can try to access parent Window with:
+    window.parent
+  if the parent and iframe are from different origins, you can get much info
+    eg. window.document won't give you much (or anything)
+    the intended workaround is to use window.postMessage() and your own protocol for communication
+  CAVEAT: src is set to / (same origin) at first (even if you set it to something else) and then reset to the real value later
+    this can trip up state handlers if you aren't aware
+
 [Decorators]
 similar to Python, you can make a function that takes a declaration and wraps it
 the interface is more complicated - look it up when needed

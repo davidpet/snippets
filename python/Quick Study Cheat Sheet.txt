@@ -2136,6 +2136,32 @@ like virtualenv but w/ subshell and also npm-style package/dependency management
 ** see conda + pip notebook for details **
 a key thing to remember about it is that it can have scripting issues due to subshells and exit
 
+[uv]
+3rd party pacakge manager and virtual environment
+somewhat npm-like (though not full npm)
+
+uv init
+    makes current folder a uv project
+    adds: .git, uv.lock, pyproject.toml, .venv
+uv add {package}
+    pip installs package into virtual environment of project
+uv run {command} {args}
+    runs command in virtual environment of project
+    eg. uv run python myscript.py
+    eg. uv run pytest
+source .venv/bin/activate
+    activates the virtual environment
+    then you can run commands without 'uv run'
+    eg. python myscript.py
+    uses system-installed python by default
+
+uvx = installed by uv, like npx in the npm world
+    downloads and runs in a local temporary isolated environment
+    uvx {command} {args}
+        works if command is either well-known by the uv maintainers or matches its package name
+    uvx --from {package} {command} {args}
+        if need to give the package name
+
 [3rd party libraries]
 termcolor
     from termcolor import colored
