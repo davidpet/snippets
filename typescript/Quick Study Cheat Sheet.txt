@@ -2655,6 +2655,9 @@ Browser DOM
       /absolute/path/to/file.js
         relative to web app root (server config, not JS config)
       relative/path/to/file.js OR ./relative/path/to/file.js OR ../relative/path/to/file.js (for parent)
+        relative to base URL (see Web notes)
+      URL() uses these rules too (as do most other things)
+      but ES6 style 'import' statements use the more conventional definition for relative paths instead
         relative to current file
 
     Image Preloading
@@ -3085,6 +3088,9 @@ window.postMessage(message)
 
 <iframe>
   page inside is fully independent in terms of html (has its own <html> root), css, and JS
+    URL and query params separate and independent too
+    links inside (whether relative or absolute) act as if iframe is a document in isolation (and load in it)
+    address bar of browser = just the top-level document's URL and query params
   parent can try to access child Window with:
     window.frames
     iframeElement.contentWindow
@@ -3093,6 +3099,7 @@ window.postMessage(message)
   if the parent and iframe are from different origins, you can get much info
     eg. window.document won't give you much (or anything)
     the intended workaround is to use window.postMessage() and your own protocol for communication
+    includes setting/getting each others' URLS and query params
   CAVEAT: src is set to / (same origin) at first (even if you set it to something else) and then reset to the real value later
     this can trip up state handlers if you aren't aware
 
