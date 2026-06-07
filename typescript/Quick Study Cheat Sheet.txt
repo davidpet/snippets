@@ -476,6 +476,7 @@ Objects (as structs)
   let o = {a: 1, b: 2, c: 3}; // we will ignore c
   let {a, b} = o;  // destructure into variables called a and b with those values from the object
   let {a: x, b: y} = o; // renaming the variables to x and y locally
+  let {a, ...p} = o;  // p := o w/out field a (destructuring as a way to delete fields)
   function f({a, b}: {a: number, b: number}) {}
     destructuring in function param mixed with specifying type
       eg. in React you could do this to get prop members as variables instead of having a props param
@@ -722,8 +723,12 @@ implicit concatenation NOT SUPPORTED
     no need to escape the newlines
 to use a normal string with an object of params, you have to do it yourself using string.replace()
   there is no built-in way, but many frameworks have it
-there are no raw strings
 there are no format specifiers
+raw string:
+  String.raw`n: ${n}\n`
+    note no () and that \n will be equivalent to \\n in normal strings
+    otherwise same as ``
+    the weird syntax is known as "tagged template literals""
 
 s.length
 s[0], s.charAt() // read-only
@@ -2907,6 +2912,10 @@ async/await keywords
       you won't be able to get the value, but if it has some other side effect
         then that will happen
 
+    await 5
+      a sync value like this can be awaited - it returns right away and executes the code below it (with no delay)
+      the resulting async function would still return a promise (which might be resolved right away if no async stuff)
+
 Promise errors
   .catch() is the first chance to catch an error (or .then() if you pass in an error handler)
   if you don't, or if you use async/await, then you must catch exception
@@ -3085,6 +3094,10 @@ window.postMessage(message)
       specifies what origin the target window should be from (as security measure)
       if wrong origin, the message won't post, and a console warning will be printed
       target should also check event.origin against expectation as other half of this security mechanism
+
+  window.matchMedia()
+    track changes to document with regard to match status against media query
+      eg. aspect ratio changes
 
 <iframe>
   page inside is fully independent in terms of html (has its own <html> root), css, and JS
