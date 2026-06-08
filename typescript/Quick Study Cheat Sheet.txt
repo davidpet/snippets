@@ -251,6 +251,16 @@ Literals as Types
   s = 'hi';
   s = 'something else'; // ILLEGAL
 
+Naming Conventions (TS)
+  Constants
+    local - camelCase
+    member - camelCase
+    global/module - camelCase for soft constants, SNAKE_CASE for true constants
+    React component or enum value (any of the above contexts) - PascalCase
+  Enums
+    PascalCase for enum & its values
+      unless fundamental constant, then SNAKE_CASE
+
 [Collections]
 Literals
   only array and object have literals ([] and {})
@@ -2899,7 +2909,10 @@ async/await keywords
     }
     const f = async function() {};
     const l = async () => {};
-
+    const l = async () => 5;
+      l() returns Promise<number> beacuse it's an async function!
+        usefull for inline promise creation in tests!
+  
     'async' makes a function that returns a promise into an async function
       still have to explicitly return promise in signature
     in the body, you return the synchronous value instead of a promise
