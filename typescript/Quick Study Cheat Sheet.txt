@@ -261,6 +261,15 @@ Naming Conventions (TS)
     PascalCase for enum & its values
       unless fundamental constant, then SNAKE_CASE
 
+as const
+  1. prevent type-widening
+    return {ret: true as const} -> return type of function inferred to be literal instead of boolean
+    let m = 5 as const; -> m can only hold the literal value 5
+  2. prevent local editing (like C++)
+    const o = {a: 100, b:200} as const; -> cannot edit o.a or o.b locally
+      but you can if you pass it somewhere else
+    cannot use it to make const params like C++ though
+
 [Collections]
 Literals
   only array and object have literals ([] and {})
