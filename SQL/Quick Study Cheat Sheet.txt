@@ -475,9 +475,63 @@ remember to rollback transaction if an exception is thrown
 Java = Hibernate
 C# = Entity framework
 Python = SQLAlchemy
+TypeScript = Drizzle
+
+[Drizzle]
+django-like stuff but for SQL (in TypeScript)
+	inc. migrations, ORM, etc.
+	queries and migrations stay close to plain SQL rather than hiding it
+gives BS auto-generated names to migration files by default (eg. 0003_lush_smiling_tiger.sql)
+	use drizzle-kit generate --name for a readable history (make sure you tell claude to specify a meaningful name)
+journal (meta/_journal.json) in addition to just the files (because migrations are sql scripts)
+migrations are tracked in a given DB by a special hidden table (drizzle.__drizzle_migrations) that tracks which migrations have been applied
+
+[DB Migrations - general concept applies to multiple frameworks]
+general idea - DB structure is created by series of migrations run IN ORDER (complete set)
+	so migrations will be creating tables, setting properties (indexes etc.) on them, and changing existing columns
+	most migrations are auto-generated from schema changes
+	for complicated operations like creating a new column from existing ones, custom migration code is supported
+migrations are indexed so they run in order, and special storage (eg. a table) is used by the framework in the target DB to store which migrations have been applied
+	then when you run migrations on that DB instance, the tables get updated from where they left off
+Framework specifics:
+	Django - migrations are python scripts that use django libraries
+		makemigrations (generate) / migrate (apply); tracked in django_migrations table
+		auto-generated parts (eg. AddField) + custom code via RunPython
+	Drizzle - migrations are straight SQL scripts
+		_journal.json used to sequence the SQL scripts (since they don't have the data structures inside that django migration scripts can have as python)
+		snapshot jsons have the state of the DB after the corresponding migration is applied (for schema diff purposes)
+			this is technically redundant with just replaying all the migrations in order (which is what django does)
+			it is also a potential gap that could cause issues (if the snapshot becomes wrong)
 
 [Security of Connection String]
 if stored locally, must be encrypted
 have to think about how to store the decryption key though
 external solutions from Google and AWS can help make it more secure
 easier to make secure on a web app than on a desktop app (because can choose what's exposed to clients)
+
+[PostgreSQL (Postgres) Dialect]
+has OOP features the others don't (eg. table inheritance, composite types) (though you usually won't touch them in practice)
+good for complex apps and multi-tenant apps
+more fully featured than MySQL (though MySQL may be faster for read-heavy apps)
+
+RLS - row level security
+	enforcing visibility of rows for database roles
+		replaces adding a WHERE clause (and avoids the case where that clause gets mangled or left out, causing a leak)
+	configured via ALTER TABLE ... ENABLE ROW LEVEL SECURITY + CREATE POLICY
+		you can pick how it will filter (eg. based on a given column) - matched against the connecting role (via connection string) or a runtime variable
+			runtime variable = better for multi-tenant case - single DB role connects but it sets the tenant ID in runtime variable
+	eg. users (with their own DB roles) in a todo app only see their own todos
+	eg. multitenant app
+	although it appears magic/automatic, there's still going to be a similar performance hit as if you had used the WHERE clause on the backend
+	the role you get by default when you make a table is the owner/admin and sees all the rows by default
+		unless you do extra config to force it to have RLS too (FORCE ROW LEVEL SECURITY)
+		better to just make a 2nd role so you still have this role for maintenance/repair
+
+Runtime variables
+	key-value pairs you can set at various scopes
+	for RLS, use transaction scope (SET LOCAL) (because the other scopes can leak between connections, eg. with pooling)
+
+SECURITY DEFINER functions
+	use functions in the DB (which run with owner level permissions) (explicitly GRANT EXECUTE to a lower user)
+	trigger the functions from code when logged in as that user
+	that pattern allows for actions that directly change one table to cascade into actions on privileged tables that require knowing more than just the current org
